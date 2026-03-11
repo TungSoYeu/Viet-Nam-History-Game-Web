@@ -36,6 +36,11 @@ const questionSchema = new mongoose.Schema({
         min: 1,
         max: 5,
         default: 1
+    },
+    location: {
+        type: String,
+        trim: true,
+        default: null
     }
 }, {
     timestamps: true

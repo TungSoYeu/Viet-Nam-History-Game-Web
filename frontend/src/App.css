@@ -1,9 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&display=swap');
 
+:root {
+  --bronze-dark: #4a3728;
+  --bronze-mid: #8b5a2b;
+  --bronze-light: #c49a6c;
+  --paper-bg: #fcf8f1;
+}
+
 body {
   margin: 0;
   font-family: 'Crimson Text', serif;
-  background-color: #fcf8f1;
+  background-color: var(--paper-bg);
+  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+}
+
+/* Container limits for iPads/Desktops */
+.responsive-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-container {
+    padding: 0 2rem;
+  }
 }
 
 .history-bg {
@@ -16,32 +38,37 @@ body {
 .historical-title {
   font-family: 'Playfair Display', serif;
   font-weight: 900;
-  color: #4a3728;
+  color: var(--bronze-dark);
   text-transform: uppercase;
   letter-spacing: 2px;
-  border-bottom: 3px double #4a3728;
+  border-bottom: 3px double var(--bronze-dark);
   padding-bottom: 10px;
+  /* Fluid font size */
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
+  text-align: center;
 }
 
 .historical-card {
   background-color: #fffaf0;
-  border: 2px solid #8b5a2b;
-  box-shadow: 10px 10px 0px #4a3728;
-  padding: 2rem;
-  border-radius: 4px;
+  border: 2px solid var(--bronze-mid);
+  box-shadow: 8px 8px 0px var(--bronze-dark);
+  padding: clamp(1rem, 3vw, 2rem);
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
 }
 
 .btn-historical {
-  background-color: #8b5a2b;
+  background-color: var(--bronze-mid);
   color: #fff;
   font-weight: bold;
   padding: 12px 24px;
   border: none;
-  border-bottom: 4px solid #4a3728;
+  border-bottom: 4px solid var(--bronze-dark);
   cursor: pointer;
   transition: all 0.2s;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-size: clamp(0.875rem, 2vw, 1.1rem);
 }
 
 .btn-historical:hover {
@@ -52,6 +79,34 @@ body {
 .btn-historical:active {
   transform: translateY(2px);
   border-bottom: 0px;
+}
+
+/* Responsive Helper Classes */
+.hide-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: flex !important;
+  }
+}
+
+.text-fluid-sm {
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+.text-fluid-md {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.text-fluid-lg {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* Map specific tweaks - Slightly reduced for better balance */
+.map-icon {
+  font-size: clamp(0.4rem, 0.8vw, 0.8rem);
 }
 
 .lesson-card {

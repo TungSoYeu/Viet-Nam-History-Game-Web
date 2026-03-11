@@ -21,7 +21,8 @@ export default function PvPBattle() {
     setFeedback({
       correct: isCorrect,
       message: isCorrect ? "Chính xác!" : "Sai rồi!",
-      correctAnswer: isCorrect ? null : question.correctAnswer
+      correctAnswer: isCorrect ? null : question.correctAnswer,
+      explanation: question.explanation
     });
 
     if (isCorrect) setScore(prev => prev + 1);
@@ -55,7 +56,15 @@ export default function PvPBattle() {
     .then(() => setIsFinished(true));
   };
 
-  if (!challengeId) return <div className="p-8 text-center">Lỗi dữ liệu trận đấu.</div>;
+  if (!challengeId || !questions || questions.length === 0) {
+    return (
+      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Mất kết nối với trận đấu</h2>
+        <p className="mb-8">Dữ liệu trận đấu không khả dụng (có thể do bạn đã tải lại trang).</p>
+        <button onClick={() => navigate('/pvp')} className="btn-historical">Quay lại Võ Đài</button>
+      </div>
+    );
+  }
 
   if (isFinished) {
     return (
@@ -82,11 +91,14 @@ export default function PvPBattle() {
         <Questions question={currentQuestion} onAnswer={handleAnswer} feedback={feedback} />
         
         {feedback && (
-          <div className="mt-8 text-center">
-            <p className={`text-xl font-bold ${feedback.correct ? 'text-green-600' : 'text-red-600'}`}>
-              {feedback.message}
-            </p>
-            <button onClick={nextQuestion} className="mt-4 px-8 py-2 bg-purple-700 text-white rounded-lg font-bold">
+          <div className={`mt-8 p-6 rounded-lg w-full border-2 ${feedback.correct ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+            <p className="font-bold text-xl mb-2">{feedback.message}</p>
+            {feedback.explanation && (
+              <p className="mb-4 italic text-gray-700 leading-relaxed text-sm">
+                <span className="font-bold">Sử ký:</span> "{feedback.explanation}"
+              </p>
+            )}
+            <button onClick={nextQuestion} className="mt-2 px-8 py-2 bg-purple-700 text-white rounded-lg font-bold">
               Tiếp Theo ➔
             </button>
           </div>

@@ -64,16 +64,10 @@ export default function Timeline() {
                 📜 Vào Học Thuật
               </button>
               <button 
-                onClick={() => navigate(`/play/${selectedLesson._id}`)}
-                className="btn-historical w-full py-4 text-xl flex items-center justify-center gap-3 bg-red-800"
-              >
-                ⚔️ Vào Chinh Phục
-              </button>
-              <button 
                 onClick={() => setSelectedLesson(null)}
                 className="mt-4 text-gray-500 font-bold"
               >
-                Hủy bỏ
+                Quay lại
               </button>
             </div>
           </div>

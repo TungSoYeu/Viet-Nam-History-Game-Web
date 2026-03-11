@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Question = require('../models/Question');
 const User = require('../models/User');
 const Matching = require('../models/Matching');
@@ -22,11 +23,6 @@ exports.checkAnswer = async (req, res) => {
       if (user) {
         if (isCorrect) {
           user.experience += experienceGain;
-        } else {
-          // Chỉ trừ nến ở các chế độ không phải Time Attack
-          if (mode !== 'timeAttack') {
-            user.lives = Math.max(0, user.lives - 1);
-          }
         }
         await user.save();
         updatedUser = user;
@@ -47,9 +43,19 @@ exports.checkAnswer = async (req, res) => {
 
 // --- MODE 4: MATCHING GAME ---
 exports.getRandomMatching = async (req, res) => {
+  const { lessonId } = req.query;
   try {
-    const matchings = await Matching.aggregate([{ $sample: { size: 1 } }]);
-    if (matchings.length === 0) return res.status(404).json({ message: "Chưa có dữ liệu nối chữ" });
+    let query = {};
+    if (lessonId && lessonId !== 'all') {
+        query.lessonId = new mongoose.Types.ObjectId(lessonId);
+    }
+
+    const matchings = await Matching.aggregate([
+        { $match: query },
+        { $sample: { size: 1 } }
+    ]);
+
+    if (matchings.length === 0) return res.status(404).json({ message: "Chưa có dữ liệu nối chữ cho thời kỳ này" });
     res.json(matchings[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -60,10 +66,23 @@ exports.getRandomMatching = async (req, res) => {
 
 // 1. Tạo lời thách đấu (Player 1)
 exports.createPvPChallenge = async (req, res) => {
-  const { creatorId, opponentId } = req.body;
+  const { creatorId, opponentId, lessonId } = req.body;
   try {
     // Lấy 10 câu hỏi ngẫu nhiên dùng chung
-    const questions = await Question.aggregate([{ $sample: { size: 10 } }]);
+    let query = {};
+    if (lessonId && lessonId !== 'all') {
+        query.lessonId = new mongoose.Types.ObjectId(lessonId);
+    }
+    
+    const questions = await Question.aggregate([
+        { $match: query },
+        { $sample: { size: 10 } }
+    ]);
+
+    if (questions.length < 5) {
+        return res.status(400).json({ message: "Không đủ câu hỏi (tối thiểu 5) trong thời kỳ này để tạo thách đấu!" });
+    }
+
     const questionIds = questions.map(q => q._id);
 
     const challenge = new Challenge({
@@ -130,18 +149,53 @@ exports.getMyChallenges = async (req, res) => {
                 { challenger: userId, status: 'pending' },
                 { challenger: null, creator: { $ne: userId }, status: 'pending' }
             ]
-        }).populate('creator', 'username');
+        })
+        .populate('creator', 'username')
+        .populate('questions'); // Thêm populate questions để đồng bộ câu hỏi
         res.json(challenges);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-// Lấy tất cả các thách đấu đang chờ (cho global lobby)
+// 4. Lấy tất cả các thách đấu đang chờ (cho global lobby)
 exports.getPendingChallenges = async (req, res) => {
   try {
-    const challenges = await Challenge.find({ status: 'pending' }).populate('creator', 'username');
+    const challenges = await Challenge.find({ status: 'pending' })
+        .populate('creator', 'username')
+        .populate('questions'); 
     res.json(challenges);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// --- MODE 6: TERRITORY MAP ---
+exports.getQuestionsByLocation = async (req, res) => {
+  const { location } = req.params;
+  try {
+    const questions = await Question.aggregate([
+      { $match: { location: location } },
+      { $sample: { size: 3 } }
+    ]);
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.unlockTerritory = async (req, res) => {
+  const { userId, location } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "Người dùng không tồn tại" });
+
+    if (!user.unlockedTerritories.includes(location)) {
+      user.unlockedTerritories.push(location);
+      user.experience += 100; // Thưởng XP khi mở khóa lãnh thổ
+      await user.save();
+    }
+    res.json({ success: true, unlockedTerritories: user.unlockedTerritories });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
