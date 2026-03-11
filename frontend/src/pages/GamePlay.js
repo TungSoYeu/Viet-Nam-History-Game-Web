@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Questions from '../components/Questions';
-import Lives from '../components/Lives';
 
 export default function GamePlay() {
   const navigate = useNavigate();
@@ -10,7 +9,6 @@ export default function GamePlay() {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(5);
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +16,7 @@ export default function GamePlay() {
     fetch(`http://localhost:5000/api/questions/${lessonId}`)
       .then(res => res.json())
       .then(data => {
-        setQuestions(data);
+        setQuestions(data.sort(() => Math.random() - 0.5));
         setLoading(false);
       })
       .catch(err => {
@@ -45,8 +43,6 @@ export default function GamePlay() {
       setFeedback(data);
       if (data.correct) {
         setScore(prev => prev + data.experienceGain);
-      } else {
-        setLives(prev => Math.max(0, prev - 1));
       }
     })
     .catch(err => console.error("Lỗi khi gửi đáp án:", err));
@@ -57,22 +53,13 @@ export default function GamePlay() {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      alert(`Chúc mừng! Bạn đã hoàn thành triều đại này với ${score} điểm!`);
+      alert(`Chúc mừng! Bạn đã hoàn thành triều đại này với ${score} XP!`);
       navigate('/timeline');
     }
   };
 
   if (loading) return <div className="p-8 text-center text-amber-900">Đang chuẩn bị thử thách...</div>;
   if (questions.length === 0) return <div className="p-8 text-center text-red-800">Không có câu hỏi nào cho triều đại này.</div>;
-  if (lives <= 0) {
-    return (
-      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-4xl font-bold text-red-600 mb-4">Dập Tắt Ngọn Nến</h2>
-        <p className="text-xl mb-8">Rất tiếc, bạn đã hết sinh mệnh. Hãy ôn tập lại lịch sử nhé!</p>
-        <button onClick={() => navigate('/timeline')} className="btn-historical">Quay lại Dòng Thời Gian</button>
-      </div>
-    );
-  }
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
@@ -92,7 +79,7 @@ export default function GamePlay() {
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <Lives count={lives} />
+        <div className="text-amber-600 font-bold text-lg">{score} XP</div>
       </div>
 
       <div className="historical-card flex-1 flex flex-col items-center justify-center text-center">

@@ -12,6 +12,10 @@ const matchingSchema = new mongoose.Schema({
     right: { type: String, required: true },
     image: { type: String }
   }],
+  lessonId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson'
+  },
   difficulty: { type: Number, default: 1 }
 }, { timestamps: true });
 

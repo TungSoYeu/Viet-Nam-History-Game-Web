@@ -14,13 +14,14 @@ import MatchingMode from './pages/MatchingMode';
 import PvPMode from './pages/PvPMode';
 import PvPBattle from './pages/PvPBattle';
 import ChangePassword from './pages/ChangePassword';
+import TerritoryMap from './pages/TerritoryMap';
 import AdminDashboard from './pages/AdminDashboard';
 import Leaderboard from './pages/Leaderboard';
 
 function App() {
   return (
     <Router>
-      <div className="history-bg">
+      <div className="App">
         <Navbar />
         <Routes>
           <Route path="/" element={<Login />} />
@@ -33,6 +34,7 @@ function App() {
           <Route path="/matching" element={<MatchingMode />} />
           <Route path="/pvp" element={<PvPMode />} />
           <Route path="/pvp/battle" element={<PvPBattle />} />
+          <Route path="/territory-map" element={<TerritoryMap />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/leaderboard" element={<Leaderboard />} />

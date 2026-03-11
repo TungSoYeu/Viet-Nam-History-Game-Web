@@ -1,33 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Questions from '../components/Questions';
+import PeriodSelector from '../components/PeriodSelector';
 
 export default function TimeAttackMode() {
   const navigate = useNavigate();
+  const [selectedPeriod, setSelectedPeriod] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [combo, setCombo] = useState(0);
   const [feedback, setFeedback] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/questions/all`)
+    if (!selectedPeriod) return;
+
+    setLoading(true);
+    const endpoint = selectedPeriod === 'all' 
+        ? '/api/questions/all' 
+        : `/api/questions/${selectedPeriod}`;
+
+    fetch(`http://localhost:5000${endpoint}`)
       .then(res => res.json())
       .then(data => {
-        setQuestions(data.sort(() => Math.random() - 0.5));
+        // Shuffle and take only 10 questions for Time Attack Mode
+        const sampledQuestions = data
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 10);
+        setQuestions(sampledQuestions);
         setLoading(false);
       })
       .catch(err => {
         console.error("Lỗi khi tải câu hỏi:", err);
         setLoading(false);
       });
-  }, []);
+  }, [selectedPeriod]);
 
   useEffect(() => {
-    if (loading || isGameOver || timeLeft <= 0) return;
+    if (loading || isGameOver || timeLeft <= 0 || !selectedPeriod) return;
     
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -41,7 +54,7 @@ export default function TimeAttackMode() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loading, isGameOver, timeLeft]);
+  }, [loading, isGameOver, timeLeft, selectedPeriod]);
 
   const handleAnswer = (userAnswer) => {
     const question = questions[currentIndex];
@@ -81,6 +94,17 @@ export default function TimeAttackMode() {
       setIsGameOver(true);
     }
   };
+
+  if (!selectedPeriod) {
+    return (
+      <PeriodSelector 
+        title="Thử Thách Nén Nhang"
+        description="Hãy chọn thời kỳ bạn am hiểu nhất để chạy đua với thời gian!"
+        onSelect={(id) => setSelectedPeriod(id)}
+        onBack={() => navigate('/modes')}
+      />
+    );
+  }
 
   if (loading) return <div className="p-8 text-center text-blue-900 font-bold">Đang mồi lửa nén nhang...</div>;
 

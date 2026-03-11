@@ -6,7 +6,7 @@ require('dotenv').config({ path: './backend/.env' });
 
 const seedDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/history-game';
+    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/history_game';
     await mongoose.connect(mongoUri);
     console.log("🚀 Đang kết nối Database để làm mới hệ thống...");
 
@@ -29,6 +29,8 @@ const seedDB = async () => {
           { front: "Nỏ Liên Châu", back: "Vũ khí thần kỳ của An Dương Vương giúp bảo vệ thành Cổ Loa." }
         ]
       },
+      { title: "Thời Bắc Thuộc", description: "Hơn một ngàn năm đấu tranh giành độc lập.", order: 2 },
+      { title: "Nhà Ngô - Đinh - Tiền Lê", description: "Thời kỳ phục hưng và thống nhất đất nước.", order: 3 },
       { 
         title: "Nhà Lý", 
         description: "Dời đô về Thăng Long, phát triển văn hóa rực rỡ.", 
@@ -42,14 +44,17 @@ const seedDB = async () => {
         ]
       },
       { title: "Nhà Trần", description: "Hào khí Đông A, ba lần đánh bại quân Nguyên Mông.", order: 5 },
-      { title: "Nhà Tây Sơn", description: "Quang Trung đại phá quân Thanh, thống nhất đất nước.", order: 8 },
+      { title: "Nhà Hồ & Hậu Lê", description: "Kháng chiến chống Minh và thời kỳ cực thịnh phong kiến.", order: 6 },
+      { title: "Nhà Tây Sơn", description: "Quang Trung đại phá quân Thanh, thống nhất đất nước.", order: 7 },
+      { title: "Nhà Nguyễn", description: "Triều đại phong kiến cuối cùng của Việt Nam.", order: 8 },
+      { title: "Thời Pháp Thuộc & Kháng Chiến", description: "Cuộc đấu tranh giải phóng dân tộc hiện đại.", order: 9 },
     ];
 
     const createdLessons = await Lesson.insertMany(lessonData);
     console.log("✅ Đã nạp các thời kỳ lịch sử (kèm Wiki & Flashcards).");
 
     const findId = (title) => {
-        const lesson = createdLessons.find(l => l.title === title);
+        const lesson = createdLessons.find(l => l.title.includes(title));
         return lesson ? lesson._id : createdLessons[0]._id;
     };
 
@@ -58,8 +63,8 @@ const seedDB = async () => {
         content: "Ai là vị vua đầu tiên của nước Văn Lang?",
         options: ["Kinh Dương Vương", "Hùng Vương", "An Dương Vương", "Lạc Long Quân"],
         correctAnswer: "Kinh Dương Vương",
-        explanation: "Kinh Dương Vương là thủy tot của dân tộc, cha của Lạc Long Quân.",
-        lessonId: findId("Văn Lang & Âu Lạc"),
+        explanation: "Kinh Dương Vương là thủy tổ của dân tộc, cha của Lạc Long Quân.",
+        lessonId: findId("Văn Lang"),
         difficulty: 1
       },
       {
@@ -76,6 +81,14 @@ const seedDB = async () => {
         correctAnswer: "Lý Chiêu Hoàng",
         explanation: "Bà là vị vua cuối cùng của triều Lý trước khi nhường ngôi cho Trần Cảnh.",
         lessonId: findId("Nhà Lý"),
+        difficulty: 1
+      },
+      {
+        content: "Ngô Quyền đánh bại quân Nam Hán trên sông nào vào năm 938?",
+        options: ["Sông Hồng", "Sông Bạch Đằng", "Sông Gianh", "Sông Như Nguyệt"],
+        correctAnswer: "Sông Bạch Đằng",
+        explanation: "Chiến thắng Bạch Đằng năm 938 kết thúc 1000 năm Bắc thuộc.",
+        lessonId: findId("Nhà Ngô"),
         difficulty: 1
       }
     ];
@@ -94,19 +107,9 @@ const seedDB = async () => {
           { left: "Lê Lợi", right: "Nhà Hậu Lê" },
           { left: "Quang Trung", right: "Nhà Tây Sơn" }
         ]
-      },
-      {
-        title: "Nối Sự Kiện với Năm Diễn Ra",
-        type: "Event-Year",
-        pairs: [
-          { left: "Chiến thắng Bạch Đằng", right: "938" },
-          { left: "Dời đô về Thăng Long", right: "1010" },
-          { left: "Khởi nghĩa Lam Sơn", right: "1418" },
-          { left: "Đại phá quân Thanh", right: "1789" }
-        ]
       }
     ]);
-    console.log("✅ Đã nạp dữ liệu Nối Dữ Kiện (Mode 4).");
+    console.log("✅ Đã nạp dữ liệu Nối Dữ Kiện.");
 
     console.log("✨ HỆ THỐNG ĐÃ SẴN SÀNG!");
     process.exit(0);

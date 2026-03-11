@@ -10,7 +10,11 @@ export default function Leaderboard() {
     fetch('http://localhost:5000/api/leaderboard')
       .then(res => res.json())
       .then(data => {
-        setTopUsers(data);
+        if (Array.isArray(data)) {
+          setTopUsers(data);
+        } else {
+          setTopUsers([]);
+        }
         setLoading(false);
       })
       .catch(err => {
