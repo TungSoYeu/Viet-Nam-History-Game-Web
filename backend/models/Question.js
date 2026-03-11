@@ -1,16 +1,44 @@
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
-  // Câu hỏi này thuộc về triều đại (Bài học) nào?
-  lessonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', required: true },
-  // Loại câu hỏi: 'trac-nghiem', 'ghep-the', 'sap-xep'
-  questionType: { type: String, required: true },
-  // Nội dung câu hỏi (Ví dụ: Ai đánh thắng quân Nam Hán trên sông Bạch Đằng?)
-  content: { type: String, required: true },
-  // Các lựa chọn đáp án (dành cho dạng trắc nghiệm)
-  options: [{ type: String }],
-  // Đáp án đúng để "bộ não" máy chủ kiểm tra đối chiếu
-  correctAnswer: { type: mongoose.Schema.Types.Mixed, required: true }
+    content: {
+        type: String,
+        required: [true, 'Nội dung câu hỏi là bắt buộc'],
+        trim: true
+    },
+    options: {
+        type: [String],
+        validate: {
+            validator: function(v) {
+                return v.length === 4;
+            },
+            message: 'Phải có chính xác 4 đáp án'
+        },
+        required: true
+    },
+    correctAnswer: {
+        type: String,
+        required: [true, 'Đáp án đúng là bắt buộc']
+    },
+    explanation: {
+        type: String,
+        required: [true, 'Giải thích lịch sử là bắt buộc'],
+        trim: true
+    },
+    // Đã thay thế historicalPeriod bằng lessonId để liên kết với bảng Lesson
+    lessonId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lesson',
+        required: [true, 'ID bài học (Triều đại) là bắt buộc']
+    },
+    difficulty: {
+        type: Number,
+        min: 1,
+        max: 5,
+        default: 1
+    }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Question', questionSchema);

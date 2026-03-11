@@ -1,14 +1,25 @@
 const mongoose = require('mongoose');
 
 const lessonSchema = new mongoose.Schema({
-  // Tên bến đỗ hoặc triều đại
   title: { type: String, required: true },
-  // Mô tả ngắn gọn về bối cảnh thời kỳ này
   description: { type: String },
-  // Thứ tự xuất hiện trên Dòng chảy thời gian
   order: { type: Number, required: true },
-  // Đường dẫn hình ảnh đại diện (giấy dó, trống đồng...)
-  imageUrl: { type: String }
+  imageUrl: { type: String },
+  
+  // Khu vực Học tập (Royal Library)
+  wiki: {
+    content: { type: String }, // Nội dung chi tiết (Markdown/HTML)
+    images: [{ type: String }], // Danh sách ảnh tư liệu
+    maps: [{ type: String }],   // Bản đồ lãnh thổ
+    videoUrl: { type: String }  // Video tóm tắt
+  },
+  
+  // Flashcards để học nhanh
+  flashcards: [{
+    front: { type: String, required: true }, // Nhân vật/Sự kiện
+    back: { type: String, required: true },  // Thành tựu/Chi tiết
+    image: { type: String }
+  }]
 });
 
 module.exports = mongoose.model('Lesson', lessonSchema);

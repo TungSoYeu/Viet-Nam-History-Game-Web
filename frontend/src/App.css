@@ -1,109 +1,100 @@
-/* Global Styles */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@400;700;900&display=swap');
-
-:root {
-  --bronze-gold: #c5a059;
-  --deep-bronze: #8b4513;
-  --imperial-yellow: #ffcc33;
-  --royal-red: #b22222;
-  --paper-bg: #fdf5e6;
-  --silk-yellow: #fff8dc;
-}
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&display=swap');
 
 body {
   margin: 0;
-  padding: 0;
-  font-family: 'Libre+Baskerville', serif;
-  background-color: var(--paper-bg);
-  color: #333;
+  font-family: 'Crimson Text', serif;
+  background-color: #fcf8f1;
 }
 
-/* Historical Motif Background */
 .history-bg {
   min-height: 100vh;
-  background-color: var(--paper-bg);
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 L55 45 L60 50 L55 55 Z' fill='%23c5a059' opacity='0.2'/%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%23c5a059' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");
-  background-attachment: fixed;
-  position: relative;
+  background-image: 
+    linear-gradient(rgba(252, 248, 241, 0.9), rgba(252, 248, 241, 0.9)),
+    url('https://www.transparenttextures.com/patterns/handmade-paper.png');
 }
 
-.history-bg::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg' opacity='0.05'%3E%3Ccircle cx='200' cy='200' r='190' fill='none' stroke='%238B4513' stroke-width='2'/%3E%3Cg transform='translate(200, 200)'%3E%3Cpath d='M0 -60 L10 -15 L50 -10 L15 5 L20 50 L0 20 L-20 50 L-15 5 L-50 -10 L-10 -15 Z' fill='%238B4513'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 80%;
-  pointer-events: none;
-}
-
-/* Custom Buttons */
-.btn-historical {
-  background-color: var(--royal-red);
-  color: white;
-  padding: 12px 24px;
-  border: 2px solid var(--deep-bronze);
-  border-radius: 4px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-historical:hover {
-  background-color: var(--deep-bronze);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-}
-
-.btn-historical:active {
-  transform: translateY(0);
-}
-
-/* Timeline/Lesson Buttons */
-.lesson-card {
-  background: var(--silk-yellow);
-  border: 3px solid var(--bronze-gold);
-  padding: 20px;
-  margin: 15px 0;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--deep-bronze);
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-  box-shadow: 3px 3px 0px var(--bronze-gold);
-}
-
-.lesson-card:hover {
-  background: var(--imperial-yellow);
-  transform: scale(1.02);
-}
-
-/* Typography */
 .historical-title {
   font-family: 'Playfair Display', serif;
-  color: var(--royal-red);
-  text-align: center;
   font-weight: 900;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  color: #4a3728;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 3px double #4a3728;
+  padding-bottom: 10px;
 }
 
 .historical-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(5px);
-  border: 2px solid var(--bronze-gold);
-  border-radius: 12px;
+  background-color: #fffaf0;
+  border: 2px solid #8b5a2b;
+  box-shadow: 10px 10px 0px #4a3728;
   padding: 2rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+.btn-historical {
+  background-color: #8b5a2b;
+  color: #fff;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-bottom: 4px solid #4a3728;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-historical:hover {
+  transform: translateY(-2px);
+  background-color: #724a23;
+}
+
+.btn-historical:active {
+  transform: translateY(2px);
+  border-bottom: 0px;
+}
+
+.lesson-card {
+  background: #fdf2d5;
+  border: 2px solid #c49a6c;
+  border-radius: 8px;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 15px rgba(0,0,0,0.1);
+}
+
+.lesson-card:hover {
+  background: #f8e4b1;
+  transform: scale(1.03);
+  box-shadow: 6px 6px 20px rgba(139, 90, 43, 0.2);
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* Flashcard Animations */
+.perspective-1000 { perspective: 1000px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; }
+.rotate-y-180 { transform: rotateY(180deg); }
+
+@keyframes bounce-in {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s ease forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

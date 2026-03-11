@@ -1,25 +1,38 @@
-// backend/server.js
 const express = require('express');
-const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const cors = require('cors');
-require('dotenv').config();
+const connectDB = require('./config/db');
+
+// Load env vars
+dotenv.config();
+
+// Connect to database
+connectDB();
 
 const app = express();
 
-// Cho phép Frontend (React) và Backend trò chuyện với nhau
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Kết nối với kho lưu trữ MongoDB Compass
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('Đã thắp sáng đuốc! Kết nối thành công với MongoDB! 🚀'))
-.catch((err) => console.log('Gió thổi tắt đuốc, lỗi kết nối MongoDB:', err));
+// Mount routers
+const questionRoutes = require('./routes/questionRoutes');
+const apiRoutes = require('./routes/api'); // Giữ lại cho frontend hiện tại
 
-// Kéo các đường dẫn API vào máy chủ
-const apiRoutes = require('./routes/api');
+app.use('/api/questions', questionRoutes);
 app.use('/api', apiRoutes);
 
+// Global Error Handler (Must return JSON)
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || "Lỗi máy chủ nội bộ"
+    });
+});
+
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-  console.log(`Cỗ xe thời gian đang chạy trên cổng ${PORT} 🚢`);
+    console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
