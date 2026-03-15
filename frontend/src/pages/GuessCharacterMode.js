@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, UserSearch, PlusCircle, Trophy, CheckCircle, XCircle } from 'lucide-react';
 import axios from 'axios';
 
 export default function GuessCharacterMode() {
@@ -70,10 +71,12 @@ export default function GuessCharacterMode() {
   return (
     <div className="p-4 md:p-6 min-h-screen history-bg max-w-2xl mx-auto flex flex-col items-center">
       <div className="w-full flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow border-2 border-amber-200">
-        <button onClick={() => navigate('/modes')} className="font-bold text-amber-900 hover:text-red-600 flex items-center gap-2">
-           <span className="text-2xl">🔙</span> Thoát
+        <button onClick={() => navigate('/modes')} className="font-bold text-amber-900 hover:text-red-600 flex items-center gap-2 transition-colors">
+           <ArrowLeft size={20} /> Thoát
         </button>
-        <h2 className="text-xl md:text-3xl font-black text-amber-900 uppercase tracking-widest text-center">Danh Nhân Ẩn Tích</h2>
+        <h2 className="text-xl md:text-3xl font-black text-amber-900 uppercase tracking-widest text-center flex items-center gap-2">
+          <UserSearch size={28} /> Danh Nhân Ẩn Tích
+        </h2>
       </div>
 
       <div className="w-full flex justify-between items-center mb-4 px-2">
@@ -92,8 +95,8 @@ export default function GuessCharacterMode() {
           ))}
           
           {visibleClues < 5 && !isFinished && (
-              <button onClick={handleOpenClue} className="p-4 border-2 border-dashed border-gray-400 text-gray-500 rounded-xl hover:bg-gray-100 transition font-bold">
-                  ➕ Mở thêm manh mối (Trừ 10 XP)
+              <button onClick={handleOpenClue} className="p-4 border-2 border-dashed border-gray-400 text-gray-500 rounded-xl hover:bg-gray-100 transition font-bold flex items-center justify-center gap-2 w-full">
+                  <PlusCircle size={20} /> Mở thêm manh mối (Trừ 10 XP)
               </button>
           )}
       </div>
@@ -117,14 +120,19 @@ export default function GuessCharacterMode() {
 
       {/* Popup kết quả */}
       {isFinished && (
-        <div className="w-full bg-white p-8 rounded-2xl shadow-xl text-center border-4 border-amber-600 animate-bounce-in mt-4">
+        <div className="w-full bg-white p-8 rounded-2xl shadow-xl text-center border-4 border-amber-600 animate-bounce-in mt-4 flex flex-col items-center">
+            <div className="mb-4">
+                {score > 0 ? <CheckCircle size={64} className="text-green-600" /> : <XCircle size={64} className="text-red-600" />}
+            </div>
             <h2 className={`text-3xl font-black mb-2 uppercase ${score > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {score > 0 ? 'Tuyệt vời!' : 'Đáng tiếc!'}
             </h2>
             <p className="text-gray-800 font-bold mb-6 text-xl">{resultMsg}</p>
             <div className="text-center mb-6">
-                <span className="block text-sm text-gray-500 mb-1">Chân dung anh hùng</span>
-                <span className="text-4xl font-black text-amber-900 uppercase">{characterData.name}</span>
+                <span className="block text-sm text-gray-500 mb-1 uppercase tracking-widest">Chân dung anh hùng</span>
+                <span className="text-4xl font-black text-amber-900 uppercase flex items-center justify-center gap-3">
+                   <Trophy size={32} className="text-amber-500" /> {characterData.name}
+                </span>
             </div>
             <div className="flex gap-4">
                 <button onClick={() => window.location.reload()} className="btn-historical flex-1 py-3 bg-green-700 text-white rounded-xl">

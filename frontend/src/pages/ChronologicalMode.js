@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ArrowUp, ArrowDown, Trophy, History } from 'lucide-react';
 import axios from 'axios';
 
 export default function ChronologicalMode() {
@@ -79,14 +80,16 @@ export default function ChronologicalMode() {
   return (
     <div className="p-4 md:p-6 min-h-screen max-w-3xl mx-auto flex flex-col items-center">
       <div className="w-full flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow border-2 border-amber-200">
-        <button onClick={() => navigate('/modes')} className="font-bold text-amber-900 hover:text-red-600 flex items-center gap-2">
-           <span className="text-2xl">🔙</span> Thoát
+        <button onClick={() => navigate('/modes')} className="font-bold text-amber-900 hover:text-red-600 flex items-center gap-2 transition-colors">
+           <ArrowLeft size={20} /> Thoát
         </button>
-        <h2 className="text-xl md:text-3xl font-black text-amber-900 uppercase tracking-widest text-center">Dòng Chảy Lịch Sử</h2>
+        <h2 className="text-xl md:text-3xl font-black text-amber-900 uppercase tracking-widest text-center flex items-center gap-2">
+          <History size={28} /> Dòng Chảy Lịch Sử
+        </h2>
       </div>
 
-      <div className="bg-amber-100 p-4 rounded-xl border border-amber-300 w-full mb-6 text-center text-amber-900 font-bold">
-         Sử dụng nút ⬆️ ⬇️ để sắp xếp các sự kiện từ Xưa nhất (Trên) đến Gần nhất (Dưới).
+      <div className="bg-amber-100 p-4 rounded-xl border border-amber-300 w-full mb-6 text-center text-amber-900 font-bold flex items-center justify-center gap-2 text-sm md:text-base">
+         Sử dụng nút <ArrowUp size={18} /> <ArrowDown size={18} /> để sắp xếp các sự kiện từ Xưa nhất (Trên) đến Gần nhất (Dưới).
       </div>
 
       <div className="w-full flex flex-col gap-3">
@@ -99,11 +102,11 @@ export default function ChronologicalMode() {
                 {ev.text}
             </div>
             <div className="flex flex-col border-l-2 border-amber-200 bg-amber-50">
-                <button onClick={() => moveUp(index)} disabled={index === 0} className="px-4 py-2 hover:bg-amber-200 disabled:opacity-30 border-b border-amber-200">
-                    ⬆️
+                <button onClick={() => moveUp(index)} disabled={index === 0} className="px-4 py-2 hover:bg-amber-200 disabled:opacity-30 border-b border-amber-200 flex items-center justify-center">
+                    <ArrowUp size={18} />
                 </button>
-                <button onClick={() => moveDown(index)} disabled={index === events.length - 1} className="px-4 py-2 hover:bg-amber-200 disabled:opacity-30">
-                    ⬇️
+                <button onClick={() => moveDown(index)} disabled={index === events.length - 1} className="px-4 py-2 hover:bg-amber-200 disabled:opacity-30 flex items-center justify-center">
+                    <ArrowDown size={18} />
                 </button>
             </div>
           </div>
@@ -116,8 +119,8 @@ export default function ChronologicalMode() {
 
       {isFinished && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl text-center border-4 border-amber-600 animate-bounce-in">
-            <span className="text-6xl mb-4 block">🏆</span>
+          <div className="bg-white p-8 rounded-2xl shadow-2xl text-center border-4 border-amber-600 animate-bounce-in flex flex-col items-center">
+            <Trophy size={80} className="text-amber-500 mb-4" />
             <h2 className="text-3xl font-black text-green-600 mb-2 uppercase">Lịch Sử Thông Suốt!</h2>
             <p className="text-gray-600 font-bold mb-6 italic">Bạn được cộng {score} XP.</p>
             <div className="flex gap-4">

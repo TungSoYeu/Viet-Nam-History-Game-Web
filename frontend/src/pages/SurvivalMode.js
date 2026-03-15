@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Trophy, AlertCircle, Swords, ArrowLeft, ChevronRight } from 'lucide-react';
 import Questions from '../components/Questions';
 import Lives from '../components/Lives';
 import PeriodSelector from '../components/PeriodSelector';
@@ -88,7 +89,9 @@ export default function SurvivalMode() {
   if (isVictory) {
       return (
         <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-green-50">
-          <div className="text-8xl mb-6">🏆</div>
+          <div className="text-green-600 mb-6">
+            <Trophy size={96} />
+          </div>
           <h2 className="text-5xl font-black text-green-700 mb-4 uppercase">Chinh Phục Thành Công!</h2>
           <p className="text-2xl mb-8 text-green-900 font-bold">Bạn đã vượt qua 10 thử thách lịch sử với số điểm tuyệt đối!</p>
           <div className="flex gap-4">
@@ -102,7 +105,9 @@ export default function SurvivalMode() {
   if (isFailed) {
     return (
       <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-red-50">
-        <div className="text-8xl mb-6">🏮</div>
+        <div className="text-red-600 mb-6">
+          <AlertCircle size={96} />
+        </div>
         <h2 className="text-5xl font-black text-red-700 mb-4 uppercase">Thử Thách Thất Bại</h2>
         <p className="text-2xl mb-8 text-red-900 italic">"Chưa đủ kiến thức để vượt ải. Hãy quay lại dùi mài sử học!"</p>
         <div className="flex gap-4">
@@ -126,9 +131,11 @@ export default function SurvivalMode() {
   return (
     <div className="p-6 min-h-screen max-w-2xl mx-auto flex flex-col">
       <div className="flex justify-between items-center mb-12">
-        <button onClick={() => navigate('/modes')} className="text-deep-bronze font-bold">Thoát</button>
-        <div className="text-red-600 font-bold text-xl flex items-center gap-2">
-            ⚔️ CHINH PHỤC (10/10)
+        <button onClick={() => navigate('/modes')} className="text-deep-bronze font-bold flex items-center gap-1 hover:text-red-700 transition-colors">
+          <ArrowLeft size={20} /> Thoát
+        </button>
+        <div className="text-red-600 font-bold text-xl flex items-center gap-2 uppercase tracking-tighter">
+            <Swords size={24} /> CHINH PHỤC (10/10)
         </div>
         <div className="text-amber-800 font-black">
             {currentIndex + 1} / 10
@@ -150,7 +157,9 @@ export default function SurvivalMode() {
             {feedback.explanation && (
                 <p className="mb-4 italic text-sm text-gray-600">"{feedback.explanation}"</p>
             )}
-            <button onClick={nextQuestion} className="px-8 py-3 bg-amber-700 text-white rounded-lg font-bold">Kế Tiếp ➔</button>
+            <button onClick={nextQuestion} className="px-8 py-3 bg-amber-700 text-white rounded-lg font-bold flex items-center gap-2 mx-auto hover:bg-amber-800 transition-colors">
+              Kế Tiếp <ChevronRight size={20} />
+            </button>
           </div>
         )}
       </div>

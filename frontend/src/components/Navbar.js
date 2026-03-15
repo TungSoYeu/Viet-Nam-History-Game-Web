@@ -1,5 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import { 
+  Menu, 
+  ScrollText, 
+  Castle, 
+  Swords, 
+  Trophy, 
+  User, 
+  Settings, 
+  Key, 
+  LogOut, 
+  Camera, 
+  ChevronDown,
+  X,
+  Map,
+  ShieldCheck,
+  Timer,
+  LayoutGrid,
+  Milestone,
+  Flag,
+  Flame,
+  Hourglass,
+  Puzzle,
+  History,
+  GraduationCap,
+  UserSearch,
+  Image as ImageIcon
+} from 'lucide-react';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -93,6 +121,7 @@ export default function Navbar() {
             setUser(data);
             setEditData({
               fullName: data.fullName || '',
+              email: data.email || '',
               dateOfBirth: data.dateOfBirth ? data.dateOfBirth.split('T')[0] : ''
             });
         })
@@ -100,7 +129,23 @@ export default function Navbar() {
     }
   }, [location]);
 
-  if (location.pathname === '/') return null;
+  if (location.pathname === '/' || location.pathname === '/login') return null;
+
+  const handleGoogleSuccess = (credentialResponse) => {
+    fetch('http://localhost:5000/api/google-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tokenId: credentialResponse.credential })
+    })
+    .then(res => res.json())
+    .then(data => {
+      setUser(data);
+      alert("Liên kết Google thành công!");
+      // Cập nhật localStorage nếu cần (ví dụ avatar/fullName có thể thay đổi)
+      if (data.avatar) localStorage.setItem('avatar', data.avatar);
+    })
+    .catch(err => alert("Lỗi liên kết Google: " + err.message));
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -195,6 +240,7 @@ export default function Navbar() {
     const payload = {
       userId,
       fullName: editData.fullName,
+      email: editData.email,
       dateOfBirth: editData.dateOfBirth || null,
       school: fullSchoolInfo,
       province: selectedProvince?.name || user.province,
@@ -226,152 +272,158 @@ export default function Navbar() {
   };
 
   const modes = [
-    { name: "Mở Mang Bờ Cõi", path: "/territory-map", icon: "🚩" },
-    { name: "Sinh Tồn (Endless)", path: "/survival", icon: "🔥" },
-    { name: "Thử Thách Thời Gian", path: "/time-attack", icon: "⏳" },
-    { name: "Nối Dữ Kiện", path: "/matching", icon: "🧩" },
-    { name: "Võ Đài PvP", path: "/pvp", icon: "⚔️" },
-    { name: "Dòng Chảy Lịch Sử", path: "/chronological", icon: "📜"},
-    { name: "Khoa Cử Đình Nguyên", path: "/millionaire", icon: "🏛️"},
-    { name: "Danh Nhân Ẩn Tích", path: "/guess-character", icon: "👤"},
-    { name: "Lật Mở Tranh Cổ", path: "/reveal-picture", icon: "🖼️"},
+    { name: "Mở Mang Bờ Cõi", path: "/territory-map", icon: <Map size={20} /> },
+    { name: "Sinh Tồn (Endless)", path: "/survival", icon: <ShieldCheck size={20} /> },
+    { name: "Thử Thách Thời Gian", path: "/time-attack", icon: <Timer size={20} /> },
+    { name: "Nối Dữ Kiện", path: "/matching", icon: <LayoutGrid size={20} /> },
+    { name: "Võ Đài PvP", path: "/pvp", icon: <Swords size={20} /> },
+    { name: "Dòng Chảy Lịch Sử", path: "/chronological", icon: <Milestone size={20} /> },
+    { name: "Khoa Cử Đình Nguyên", path: "/millionaire", icon: <GraduationCap size={20} /> },
+    { name: "Danh Nhân Ẩn Tích", path: "/guess-character", icon: <UserSearch size={20} /> },
+    { name: "Lật Mở Tranh Cổ", path: "/reveal-picture", icon: <ImageIcon size={20} /> },
   ];
 
   return (
-    // 2. GẮN REF VÀO THẺ NAV CHÍNH
-    <nav ref={navRef} className="bg-amber-900 text-amber-50 shadow-2xl border-b-4 border-amber-700 sticky top-0 z-[100]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          
-          <div className="flex items-center gap-4 md:gap-8">
-            <button 
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="md:hidden text-3xl p-2 hover:bg-amber-800 rounded transition"
-            >
-              ☰
-            </button>
-
-            <Link to="/modes" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-2 group">
-              <span className="text-3xl group-hover:rotate-12 transition-transform">📜</span>
-              <span className="font-black text-xl tracking-tighter uppercase hidden md:block">Sử Việt</span>
-            </Link>
-
-            <div className="hidden md:flex items-baseline space-x-4">
-              <Link to="/timeline" className={`px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-800 border-b-2 border-amber-400' : ''}`}>
-                🏯 Học Thuật
+    <>
+      {/* TOP NAV - Visible only on Desktop/Tablet */}
+      <nav ref={navRef} className="bg-amber-900 text-amber-50 shadow-2xl border-b-4 border-amber-700 sticky top-0 z-[100] h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex items-center justify-between h-full">
+            
+            <div className="flex items-center gap-8">
+              <Link to="/modes" className="flex items-center gap-2 group">
+                <ScrollText size={32} className="group-hover:rotate-12 transition-transform text-amber-400" />
+                <span className="font-black text-xl tracking-tighter uppercase">Sử Việt</span>
               </Link>
-              
-              <div className="relative">
-                <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className="px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-1">
-                  ⚔️ Thách Đấu <span className="text-[10px]">▼</span>
-                </button>
-                {showModes && (
-                  <div className="absolute left-0 mt-2 w-64 bg-amber-50 rounded-xl shadow-2xl border-2 border-amber-900 py-2 animate-fade-in">
-                    {modes.map((mode, idx) => (
-                      <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-amber-900 hover:bg-amber-200 font-bold transition">
-                        <span>{mode.icon}</span> {mode.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-baseline space-x-4">
+                <Link to="/timeline" className={`px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-2 ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-800 border-b-2 border-amber-400' : ''}`}>
+                  <Castle size={18} /> Học Thuật
+                </Link>
+                
+                <div className="relative">
+                  <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className="px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-2">
+                    <Swords size={18} /> Thách Đấu <ChevronDown size={14} className={`transition-transform ${showModes ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showModes && (
+                    <div className="absolute left-0 mt-2 w-64 bg-amber-50 rounded-xl shadow-2xl border-2 border-amber-900 py-2 animate-fade-in overflow-hidden">
+                      {modes.map((mode, idx) => (
+                        <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-amber-900 hover:bg-amber-200 font-bold transition">
+                          <span className="text-amber-700">{mode.icon}</span> {mode.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <Link to="/leaderboard" className={`px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-800 border-b-2 border-amber-400' : ''}`}>
+                  <Trophy size={18} /> Phong Thần
+                </Link>
               </div>
+            </div>
 
-              <Link to="/leaderboard" className={`px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition ${location.pathname === '/leaderboard' ? 'bg-amber-800 border-b-2 border-amber-400' : ''}`}>
-                🏆 Phong Thần
-              </Link>
+            {/* Profile/XP Section */}
+            <div className="flex items-center gap-4 relative">
+               <div 
+                 onClick={() => {
+                   setShowUserMenu(!showUserMenu);
+                   setShowModes(false);
+                 }}
+                 className="flex items-center gap-2 md:gap-4 bg-amber-950 px-3 md:px-4 py-2 rounded-full border border-amber-700 shadow-inner cursor-pointer hover:bg-black transition"
+               >
+                  <img 
+                    src={getAvatarUrl(user?.avatar)} 
+                    alt="Avatar"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-amber-500 object-cover"
+                  />
+                  <div className="hidden sm:flex flex-col items-start">
+                     <span className="text-[10px] opacity-60 font-bold uppercase tracking-tighter">Danh tướng</span>
+                     <span className="font-bold text-amber-300 leading-tight">{username || 'Ẩn danh'}</span>
+                  </div>
+                  <div className="h-8 w-[1px] bg-amber-800 mx-1 hidden sm:block"></div>
+                  <div className="flex flex-col items-center">
+                     <span className="hidden sm:block text-[10px] font-bold text-amber-400 uppercase tracking-widest">Tích lũy</span>
+                     <span className="text-xs font-black text-amber-300">{user?.experience || 0} XP</span>
+                  </div>
+               </div>
+
+               {showUserMenu && (
+                 <div className="absolute right-0 top-14 w-56 bg-white border-2 border-amber-900 rounded-lg shadow-xl py-2 z-50 animate-fade-in overflow-hidden text-sm">
+                    <button 
+                      onClick={() => { setShowProfile(true); setShowUserMenu(false); }}
+                      className="w-full text-left px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b flex items-center gap-2"
+                    >
+                      <User size={16} /> Thông Tin Cá Nhân
+                    </button>
+                    {role === 'admin' && (
+                      <Link to="/admin" onClick={() => setShowUserMenu(false)} className="flex px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b items-center gap-2">
+                        <Settings size={16} /> Bảng Điều Khiển
+                      </Link>
+                    )}
+                    <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="flex px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b items-center gap-2">
+                      <Key size={16} /> Đổi Mật Khẩu
+                    </Link>
+                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-700 font-bold hover:bg-red-50 flex items-center gap-2">
+                      <LogOut size={16} /> Đăng Xuất
+                    </button>
+                 </div>
+               )}
             </div>
           </div>
+        </div>
+      </nav>
 
-          <div className="flex items-center gap-4 relative">
-             <div 
-               onClick={() => {
-                 setShowUserMenu(!showUserMenu);
-                 setShowModes(false);
-                 setShowMobileMenu(false);
-               }}
-               className="flex items-center gap-2 md:gap-4 bg-amber-950 px-3 md:px-4 py-2 rounded-full border border-amber-700 shadow-inner cursor-pointer hover:bg-black transition"
-             >
-                <img 
-                  src={getAvatarUrl(user?.avatar)} 
-                  alt="Avatar"
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-amber-500 object-cover"
-                />
-                <div className="hidden md:flex flex-col items-start">
-                   <span className="text-[10px] opacity-60 font-bold uppercase tracking-tighter">Danh tướng</span>
-                   <span className="font-bold text-amber-300 leading-tight">{username || 'Ẩn danh'}</span>
-                </div>
-                <div className="h-8 w-[1px] bg-amber-800 mx-1 hidden md:block"></div>
-                <div className="flex flex-col items-center">
-                   <span className="hidden md:block text-[10px] font-bold text-amber-400 uppercase tracking-widest">Tích lũy</span>
-                   <span className="text-xs font-black text-amber-300">{user?.experience || 0} XP</span>
-                </div>
-             </div>
-
-             {showUserMenu && (
-               <div className="absolute right-0 top-14 w-56 bg-white border-2 border-amber-900 rounded-lg shadow-xl py-2 z-50 animate-fade-in">
-                  <button 
-                    onClick={() => { setShowProfile(true); setShowUserMenu(false); }}
-                    className="w-full text-left px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b"
-                  >
-                    👤 Thông Tin Cá Nhân
-                  </button>
-                  {role === 'admin' && (
-                    <Link to="/admin" onClick={() => setShowUserMenu(false)} className="block px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b">⚙️ Bảng Điều Khiển</Link>
-                  )}
-                  <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="block px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b">🔑 Đổi Mật Khẩu</Link>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-700 font-bold hover:bg-red-50">🚪 Đăng Xuất</button>
-               </div>
-             )}
+      {/* BOTTOM NAV - Mobile Only */}
+      <nav className="md:hidden bottom-nav">
+        <Link to="/modes" className={`bottom-nav-item ${location.pathname === '/modes' ? 'active' : ''}`}>
+          <div className="icon-wrapper"><Map size={24} /></div>
+          <span>Chơi Game</span>
+        </Link>
+        <Link to="/timeline" className={`bottom-nav-item ${location.pathname === '/timeline' ? 'active' : ''}`}>
+          <div className="icon-wrapper"><Castle size={24} /></div>
+          <span>Thư Viện</span>
+        </Link>
+        <Link to="/leaderboard" className={`bottom-nav-item ${location.pathname === '/leaderboard' ? 'active' : ''}`}>
+          <div className="icon-wrapper"><Trophy size={24} /></div>
+          <span>Xếp Hạng</span>
+        </Link>
+        <button 
+          onClick={() => setShowProfile(true)}
+          className={`bottom-nav-item ${showProfile ? 'active' : ''}`}
+        >
+          <div className="icon-wrapper">
+            <img 
+              src={getAvatarUrl(user?.avatar)} 
+              alt="Avatar"
+              className="w-6 h-6 rounded-full border border-amber-500 object-cover"
+            />
           </div>
-        </div>
-      </div>
+          <span>Hồ Sơ</span>
+        </button>
+      </nav>
 
-      {showMobileMenu && (
-        <div className="md:hidden absolute top-20 left-0 w-full bg-amber-900 border-b-4 border-amber-700 shadow-2xl flex flex-col items-center py-2 animate-fade-in z-[90]">
-           <Link to="/timeline" onClick={() => setShowMobileMenu(false)} className="text-amber-50 font-bold uppercase text-lg w-full text-center py-4 hover:bg-amber-800 border-b border-amber-800">
-              🏯 Học Thuật
-           </Link>
-           
-           <div className="w-full flex flex-col">
-             <button onClick={() => setShowModes(!showModes)} className="text-amber-50 font-bold uppercase text-lg w-full text-center py-4 hover:bg-amber-800 flex justify-center items-center gap-2 border-b border-amber-800">
-                ⚔️ Thách Đấu <span className={`text-[12px] transition-transform ${showModes ? 'rotate-180' : ''}`}>▼</span>
-             </button>
-             {showModes && (
-                <div className="flex flex-col items-center w-full bg-amber-950 py-2">
-                   {modes.map((mode, idx) => (
-                      <Link key={idx} to={mode.path} onClick={() => {setShowMobileMenu(false); setShowModes(false);}} className="text-amber-200 py-3 w-full text-center font-bold hover:bg-amber-800">
-                        {mode.icon} {mode.name}
-                      </Link>
-                   ))}
-                </div>
-             )}
-           </div>
-
-           <Link to="/leaderboard" onClick={() => setShowMobileMenu(false)} className="text-amber-50 font-bold uppercase text-lg w-full text-center py-4 hover:bg-amber-800">
-              🏆 Bảng Phong Thần
-           </Link>
-        </div>
-      )}
-
+      {/* Shared Modals */}
       {showProfile && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[200] p-4">
-            <div className="historical-card w-full max-w-md bg-white relative animate-bounce-in">
+            <div className="historical-card w-full max-w-md bg-white relative animate-bounce-in max-h-[90vh] flex flex-col">
                 <button 
                     onClick={() => setShowProfile(false)}
-                    className="absolute top-4 right-4 text-2xl font-black text-amber-900 hover:text-red-700"
+                    className="absolute top-2 right-2 md:top-4 md:right-4 p-2 text-amber-900 hover:text-red-700 transition-colors z-[210]"
+                    aria-label="Close"
                 >
-                    ✕
+                    <X size={28} />
                 </button>
                 
-                <div className="text-center mb-8 border-b-2 border-amber-100 pb-4">
+                <div className="text-center mb-6 border-b-2 border-amber-100 pb-4 shrink-0">
                     <div className="relative inline-block group mb-4">
                         <img 
                             src={previewUrl || getAvatarUrl(user?.avatar)} 
                             alt="Avatar"
                             className="w-32 h-32 rounded-full border-4 border-amber-900 object-cover shadow-xl"
                         />
-                        <label className="absolute bottom-0 right-0 bg-amber-900 text-white p-2 rounded-full cursor-pointer hover:bg-black transition shadow-lg">
-                            <span className="text-xl">📷</span>
+                        <label className="absolute bottom-0 right-0 bg-amber-900 text-white p-2 rounded-full cursor-pointer hover:bg-black transition shadow-lg flex items-center justify-center">
+                            <Camera size={20} />
                             <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
                         </label>
                     </div>
@@ -388,7 +440,37 @@ export default function Navbar() {
                     <p className="text-amber-700 italic font-bold">@{username}</p>
                 </div>
 
-                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar flex-1">
+                    <div className="flex flex-col">
+                        <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Địa chỉ Email</span>
+                        {isEditing ? (
+                          <input 
+                            type="email"
+                            className="text-lg font-bold text-gray-800 border-2 border-amber-100 rounded p-1 outline-none focus:border-amber-500"
+                            value={editData.email}
+                            onChange={(e) => setEditData({...editData, email: e.target.value})}
+                          />
+                        ) : (
+                          <span className="text-xl font-bold text-gray-800">{user?.email || 'Chưa cập nhật'}</span>
+                        )}
+                    </div>
+
+                    {!user?.googleId && !isEditing && (
+                      <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-blue-800">Liên kết Google</p>
+                          <p className="text-[10px] text-blue-600">Đăng nhập nhanh không cần mật mã</p>
+                        </div>
+                        <div className="scale-75 origin-right">
+                          <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => alert('Liên kết thất bại')}
+                            shape="pill"
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex flex-col">
                         <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Họ và Tên</span>
                         {isEditing ? (
@@ -513,6 +595,6 @@ export default function Navbar() {
             </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }
