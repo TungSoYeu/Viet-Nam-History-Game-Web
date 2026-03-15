@@ -7,57 +7,98 @@ export default function ModeSelection() {
   const [selectedMode, setSelectedMode] = useState(null);
 
   const competitionModes = [
-    { 
-        id: 'territory', 
-        name: "Mở Mang Bờ Cõi", 
-        desc: "Chinh phục bản đồ Việt Nam qua các trận đánh lịch sử.", 
-        longDesc: "Hành trình mở rộng bờ cõi từ thời sơ khai đến hiện đại. Mỗi vùng đất chiếm lĩnh được sẽ là một cột mốc vàng son của dân tộc. Bạn đã sẵn sàng cầm gươm đi mở cõi?",
-        path: "/territory-map", 
-        color: "bg-orange-500",
-        icon: "🚩",
-        stats: "63 Tỉnh Thành"
-    },
-    { 
-        id: 'challenge', 
-        name: "Chinh Phục Thử Thách", 
-        desc: "Vượt qua 10 câu hỏi hiểm hóc (Yêu cầu chính xác 100%)", 
-        longDesc: "Thử thách khắc nghiệt nhất cho các nhà sử học. Chỉ một sai lầm nhỏ cũng khiến bạn phải bắt đầu lại từ con số không. Sự chính xác tuyệt đối là chìa khóa để ghi danh bảng vàng.",
-        path: "/survival", 
-        color: "bg-red-600",
-        icon: "⚔️",
-        stats: "10/10 Correct"
-    },
-    { 
-        id: 'timeAttack', 
-        name: "Thử Thách Thời Gian", 
-        desc: "Cuộc đua với nén nhang. Trả lời nhanh để tích điểm!", 
-        longDesc: "Thời gian không chờ đợi một ai. Hãy trả lời thật nhanh trước khi nén nhang tàn lụi. Mỗi giây phút trôi qua là một cơ hội để chứng minh sự nhạy bén và kiến thức uyên thâm.",
-        path: "/time-attack", 
-        color: "bg-blue-600",
-        icon: "⏳",
-        stats: "60 Giây"
-    },
-    { 
-        id: 'matching', 
-        name: "Nối Dữ Kiện", 
-        desc: "Sắp xếp các sự kiện và nhân vật đúng trình tự.", 
-        longDesc: "Lịch sử là một chuỗi các mắt xích logic. Hãy kết nối các nhân vật, sự kiện và triều đại lại với nhau để tạo nên một bức tranh toàn cảnh về quá khứ hào hùng của dân tộc.",
-        path: "/matching", 
-        color: "bg-green-600",
-        icon: "🧩",
-        stats: "Logic & Trí Nhớ"
-    },
-    { 
-        id: 'pvp', 
-        name: "Đấu Trí (PvP)", 
-        desc: "Hạ chiến thư và so tài cùng các anh hùng khác.", 
-        longDesc: "Võ đài dành riêng cho các bậc anh tài. Hãy gửi lời thách đấu tới bạn bè hoặc các đối thủ ẩn danh để xem ai mới thực sự là bậc thầy sử học Việt Nam.",
-        path: "/pvp", 
-        color: "bg-purple-600",
-        icon: "🤝",
-        stats: "Xếp Hạng Rank"
-    },
-  ];
+        { 
+            id: 'territory', 
+            name: "Mở Mang Bờ Cõi", 
+            desc: "Chinh phục bản đồ Việt Nam qua các trận đánh lịch sử.", 
+            longDesc: "Hành trình mở rộng bờ cõi từ thời sơ khai đến hiện đại. Mỗi vùng đất chiếm lĩnh được sẽ là một cột mốc vàng son của dân tộc. Bạn đã sẵn sàng cầm gươm đi mở cõi?",
+            path: "/territory-map", 
+            color: "bg-orange-500",
+            icon: "🚩",
+            stats: "63 Tỉnh Thành"
+        },
+        { 
+            id: 'challenge', 
+            name: "Chinh Phục Thử Thách", 
+            desc: "Vượt qua 10 câu hỏi hiểm hóc (Yêu cầu chính xác 100%).", 
+            longDesc: "Thử thách khắc nghiệt nhất cho các nhà sử học. Chỉ một sai lầm nhỏ cũng khiến bạn phải bắt đầu lại từ con số không. Sự chính xác tuyệt đối là chìa khóa để ghi danh bảng vàng.",
+            path: "/survival", 
+            color: "bg-red-600",
+            icon: "🔥", // Đổi icon một chút để phân biệt với PvP
+            stats: "10/10 Correct"
+        },
+        { 
+            id: 'timeAttack', 
+            name: "Thử Thách Thời Gian", 
+            desc: "Cuộc đua với nén nhang. Trả lời nhanh để tích điểm!", 
+            longDesc: "Thời gian không chờ đợi một ai. Hãy trả lời thật nhanh trước khi nén nhang tàn lụi. Mỗi giây phút trôi qua là một cơ hội để chứng minh sự nhạy bén và kiến thức uyên thâm.",
+            path: "/time-attack", 
+            color: "bg-blue-600",
+            icon: "⏳",
+            stats: "60 Giây"
+        },
+        { 
+            id: 'matching', 
+            name: "Nối Dữ Kiện", 
+            desc: "Sắp xếp các sự kiện và nhân vật đúng trình tự.", 
+            longDesc: "Lịch sử là một chuỗi các mắt xích logic. Hãy kết nối các nhân vật, sự kiện và triều đại lại với nhau để tạo nên một bức tranh toàn cảnh về quá khứ hào hùng của dân tộc.",
+            path: "/matching", 
+            color: "bg-green-600",
+            icon: "🧩",
+            stats: "Logic & Trí Nhớ"
+        },
+        { 
+            id: 'pvp', 
+            name: "Võ Đài PvP", 
+            desc: "Thách đấu kiến thức lịch sử với người chơi khác.", 
+            longDesc: "Đấu trường rực lửa nơi các danh tướng so tài cao thấp. Gửi lời thách đấu, đọ sức về cả tốc độ lẫn sự chính xác để khẳng định ai mới là người am tường sử Việt nhất.",
+            path: "/pvp", 
+            color: "bg-pink-600",
+            icon: "⚔️",
+            stats: "1v1 Trực tiếp"
+        },
+        // --- 4 MODE MỚI ---
+        { 
+            id: 'chronological', 
+            name: "Dòng Chảy Lịch Sử", 
+            desc: "Sắp xếp các sự kiện theo đúng dòng thời gian.", 
+            longDesc: "Lịch sử là một dòng chảy không ngừng nghỉ. Thử thách tư duy logic của bạn bằng cách sắp xếp các cột mốc, cuộc khởi nghĩa và triều đại từ quá khứ đến hiện tại một cách chính xác nhất.",
+            path: "/chronological", 
+            color: "bg-purple-600",
+            icon: "📜",
+            stats: "Sắp xếp 5 sự kiện"
+        },
+        { 
+            id: 'millionaire', 
+            name: "Khoa Cử Đình Nguyên", 
+            desc: "Vượt qua 15 câu hỏi để đoạt ngôi Trạng Nguyên.", 
+            longDesc: "Kỳ thi cao nhất của các sĩ tử thời xưa. Trải qua 15 câu hỏi trắc nghiệm hóc búa từ thi Hương, thi Hội đến thi Đình. Bạn có 2 quyền trợ giúp để ghi danh lên bảng vàng Trạng Nguyên.",
+            path: "/millionaire", 
+            color: "bg-yellow-600",
+            icon: "🏛️",
+            stats: "15 Câu - 2 Trợ giúp"
+        },
+        { 
+            id: 'guessCharacter', 
+            name: "Danh Nhân Ẩn Tích", 
+            desc: "Lật mở manh mối để đoán tên anh hùng dân tộc.", 
+            longDesc: "Mỗi danh nhân đều để lại những dấu ấn đậm nét. Hãy sử dụng tư duy nhạy bén, lật mở từng dữ kiện từ khó đến dễ để tìm ra tên của vị anh hùng vĩ đại đang được ẩn giấu.",
+            path: "/guess-character", 
+            color: "bg-teal-600",
+            icon: "👤",
+            stats: "5 Dữ kiện gợi ý"
+        },
+        { 
+            id: 'revealPicture', 
+            name: "Lật Mở Tranh Cổ", 
+            desc: "Trả lời câu hỏi để giải mã bức tranh lịch sử.", 
+            longDesc: "Một bức tranh lịch sử hùng tráng bị che khuất bởi 9 ô vuông bí ẩn. Bằng kiến thức của mình, hãy trả lời đúng các câu hỏi để lật mở từng mảnh ghép và đoán xem đó là sự kiện gì.",
+            path: "/reveal-picture", 
+            color: "bg-indigo-600",
+            icon: "🖼️",
+            stats: "Lưới ảnh 3x3"
+        }
+    ];
 
   // If a mode is selected, show its "Homepage"
   if (selectedMode) {

@@ -14,6 +14,8 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount routers
 const questionRoutes = require('./routes/questionRoutes');

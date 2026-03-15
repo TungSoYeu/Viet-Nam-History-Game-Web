@@ -50,7 +50,12 @@ export default function Leaderboard() {
                     <span className={`w-10 h-10 flex items-center justify-center rounded-full shadow-sm border ${index === 0 ? 'bg-yellow-400 border-amber-500' : 'bg-gray-100 border-gray-300'}`}>
                       {getRankBadge(index)}
                     </span> 
-                    {user.username}
+                    <div className="flex flex-col">
+                      <span>{user.username}</span>
+                      <span className="text-xs text-gray-400 font-normal">
+                        {user.province || user.city ? `${user.city}${user.city && user.province ? ', ' : ''}${user.province}` : 'Ẩn danh'}
+                      </span>
+                    </div>
                   </span> 
                   <span className="font-mono text-amber-800">{user.experience} EXP</span>
                 </div>

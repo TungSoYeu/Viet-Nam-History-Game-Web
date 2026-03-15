@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [qLesson, setQLesson] = useState('');
   const [qExplanation, setQExplanation] = useState('');
   const [qDifficulty, setQDifficulty] = useState(1);
+  const [qType, setQType] = useState('general');
   const [qLocation, setQLocation] = useState('');
 
   // Lesson Form State
@@ -56,10 +57,11 @@ export default function AdminDashboard() {
         content: qContent,
         options: qOptions,
         correctAnswer: qCorrect,
-        lessonId: qLesson,
+        lessonId: qLesson || null,
         explanation: qExplanation,
         difficulty: qDifficulty,
-        location: qLocation
+        type: qType,
+        location: qLocation || null
       })
     })
     .then(res => res.json())
@@ -153,7 +155,7 @@ export default function AdminDashboard() {
 
         <div className="flex flex-wrap gap-2 mb-8">
            <button onClick={() => setActiveTab('question')} className={`px-4 py-2 font-bold rounded-lg transition ${activeTab === 'question' ? 'bg-amber-800 text-white shadow-lg' : 'bg-white text-amber-800 border-2 border-amber-800'}`}>
-              ⚔️ Câu Hỏi (Campaign/Survival)
+              ⚔️ Câu Hỏi (Survival)
            </button>
            <button onClick={() => setActiveTab('matching')} className={`px-4 py-2 font-bold rounded-lg transition ${activeTab === 'matching' ? 'bg-amber-800 text-white shadow-lg' : 'bg-white text-amber-800 border-2 border-amber-800'}`}>
               🧩 Nối Dữ Kiện (Matching)
@@ -201,6 +203,20 @@ export default function AdminDashboard() {
 
                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
+                    <label className="block font-bold mb-1 text-amber-800">Loại câu hỏi:</label>
+                    <select 
+                      className="w-full p-2 border-2 border-amber-100 rounded-lg focus:border-amber-500 outline-none"
+                      value={qType}
+                      onChange={(e) => setQType(e.target.value)}
+                      required
+                    >
+                       <option value="general">Cơ bản (General)</option>
+                       <option value="survival">Sinh tồn (Survival)</option>
+                       <option value="time-attack">Tốc chiến (Time-Attack)</option>
+                       <option value="territory">Mở mang bờ cõi (Territory)</option>
+                    </select>
+                  </div>
+                  <div>
                     <label className="block font-bold mb-1 text-amber-800">Đáp án đúng:</label>
                     <input 
                       type="text"
@@ -217,9 +233,8 @@ export default function AdminDashboard() {
                       className="w-full p-2 border-2 border-amber-100 rounded-lg focus:border-amber-500 outline-none"
                       value={qLesson}
                       onChange={(e) => setQLesson(e.target.value)}
-                      required
                     >
-                       <option value="">-- Chọn triều đại --</option>
+                       <option value="">-- Không chọn --</option>
                        {lessons.map(l => (
                          <option key={l._id} value={l._id}>{l.title}</option>
                        ))}
@@ -235,17 +250,24 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block font-bold mb-1 text-amber-800">Vùng miền (Lãnh thổ):</label>
+                    <label className="block font-bold mb-1 text-amber-800">Vùng miền (Nếu là Territory):</label>
                     <select 
                       className="w-full p-2 border-2 border-amber-100 rounded-lg focus:border-amber-500 outline-none"
                       value={qLocation}
                       onChange={(e) => setQLocation(e.target.value)}
                     >
-                       <option value="">-- Không có (Mặc định) --</option>
-                       <option value="lang-son">Lạng Sơn (Chi Lăng)</option>
-                       <option value="quang-ninh">Quảng Ninh (Bạch Đằng)</option>
-                       <option value="da-nang">Đà Nẵng (Sơn Trà)</option>
-                       <option value="dien-bien">Điện Biên (Mường Thanh)</option>
+                       <option value="">-- Không có --</option>
+                       <option value="DienBienPhu">Điện Biên Phủ</option>
+                       <option value="ChiLang">Ải Chi Lăng</option>
+                       <option value="ThangLong">Thăng Long</option>
+                       <option value="BachDang">Sông Bạch Đằng</option>
+                       <option value="LamSon">Lam Sơn</option>
+                       <option value="PhuXuan">Phú Xuân</option>
+                       <option value="DaNang">Đà Nẵng</option>
+                       <option value="ThiNai">Thị Nại</option>
+                       <option value="GiaDinh">Gia Định</option>
+                       <option value="RachGam">Rạch Gầm</option>
+                       <option value="ConDao">Côn Đảo</option>
                     </select>
                   </div>
                </div>

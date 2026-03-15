@@ -76,3 +76,29 @@ exports.deleteQuestion = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+exports.getQuestionsByRegion = async (req, res, next) => {
+    try {
+        const { region } = req.params;
+        
+        // Tìm các câu hỏi thuộc mode territory và khớp với cứ điểm
+        const questions = await Question.find({ 
+            type: 'territory', 
+            location: region 
+        });
+
+        if (!questions || questions.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Chưa có dữ liệu câu hỏi cho cứ điểm này." 
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            count: questions.length,
+            data: questions
+        });
+    } catch (error) {
+        next(error);
+    }
+};

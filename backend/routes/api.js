@@ -8,13 +8,16 @@ const Question = require('../models/Question');
 const User = require('../models/User');
 const Matching = require('../models/Matching');
 const { isAdmin } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 // Mã bí mật để tạo tài khoản Admin (Bạn có thể đổi mã này thành bất kỳ chuỗi nào)
 const ADMIN_SECRET_CODE = "HISTORY_ADMIN_2024"; 
 
 // Đường dẫn đăng ký người chơi mới & Admin
 router.post('/register', async (req, res) => {
-  const { username, password, adminCode, fullName, dateOfBirth, school } = req.body;
+  const { username, password, adminCode, fullName, dateOfBirth, school, province, city } = req.body;
+  console.log("Registering user:", username);
+  
   if (!username || !password) return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin!" });
 
   try {
@@ -38,7 +41,9 @@ router.post('/register', async (req, res) => {
       role,
       fullName: fullName || '',
       dateOfBirth: dateOfBirth || null,
-      school: school || ''
+      school: school || '',
+      province: province || '',
+      city: city || ''
     });
     // Nếu là admin, có thể cho thêm đặc quyền mặc định (ví dụ: nhiều XP)
     if (role === 'admin') {
@@ -46,15 +51,19 @@ router.post('/register', async (req, res) => {
     }
 
     await user.save();
+    console.log("User registered successfully:", user._id);
     res.json({ success: true, message: "Đăng ký thành công!", role });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi khi đăng ký", error: err });
+    console.error("Registration error:", err);
+    res.status(500).json({ message: "Lỗi khi đăng ký", error: err.message });
   }
 });
 
 // Đường dẫn đăng nhập
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log("Login attempt:", username);
+  
   if (!username || !password) return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin!" });
 
   try {
@@ -67,9 +76,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: "Mật khẩu không chính xác!" });
     }
 
+    console.log("Login successful:", user.username);
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: "Lỗi khi đăng nhập", error: err });
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Lỗi khi đăng nhập", error: err.message });
   }
 });
 
@@ -88,6 +99,66 @@ router.patch('/user/change-password', async (req, res) => {
         await user.save();
         res.json({ success: true, message: "Đổi mật khẩu thành công" });
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Diagnostic route
+router.get('/ping', (req, res) => res.json({ message: "API is working", time: new Date() }));
+
+// Đường dẫn cập nhật Avatar
+router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) => {
+    const userId = req.body.userId;
+    console.log("Avatar update requested for userId:", userId);
+    
+    if (!req.file) {
+        return res.status(400).json({ message: "Vui lòng chọn ảnh để tải lên!" });
+    }
+
+    try {
+        const avatarPath = `/uploads/avatars/${req.file.filename}`;
+        const user = await User.findByIdAndUpdate(
+            userId, 
+            { avatar: avatarPath }, 
+            { new: true }
+        );
+
+        if (!user) return res.status(404).json({ message: "Người dùng không tồn tại" });
+
+        res.json({ success: true, message: "Cập nhật ảnh đại diện thành công!", user });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Đường dẫn cập nhật thông tin cá nhân
+router.patch('/user/update-info', async (req, res) => {
+    const { userId, fullName, dateOfBirth, school, province, city } = req.body;
+    console.log("Updating info for userId:", userId);
+    
+    try {
+        const updateData = {};
+        if (fullName !== undefined) updateData.fullName = fullName;
+        if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
+        if (school !== undefined) updateData.school = school;
+        if (province !== undefined) updateData.province = province;
+        if (city !== undefined) updateData.city = city;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            { new: true }
+        );
+
+        if (!user) {
+            console.log("User not found for update:", userId);
+            return res.status(404).json({ message: "Người dùng không tồn tại" });
+        }
+
+        console.log("Update success for:", user.username);
+        res.json({ success: true, message: "Cập nhật thông tin thành công!", user });
+    } catch (err) {
+        console.error("Update-info error:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -161,6 +232,18 @@ router.get('/questions/:lessonId', async (req, res) => {
 });
 
 router.post('/submit-answer', gameController.checkAnswer);
+
+// User Profile Routes
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) return res.status(404).json({ message: "Người dùng không tồn tại" });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 router.get('/matching/all', async (req, res) => {
   try {
     const games = await Matching.find();
@@ -178,5 +261,14 @@ router.get('/pvp/pending', gameController.getPendingChallenges);
 // Territory Map Routes
 router.get('/territory/questions/:location', gameController.getQuestionsByLocation);
 router.post('/territory/unlock', gameController.unlockTerritory);
+
+// User Experience Route
+router.post('/user/add-xp', gameController.addExperience);
+
+// New Modes Routes
+router.get('/chronological/random', gameController.getRandomChronological);
+router.get('/millionaire/random', gameController.getRandomMillionaire);
+router.get('/guess-character/random', gameController.getRandomGuessCharacter);
+router.get('/reveal-picture/random', gameController.getRandomRevealPicture);
 
 module.exports = router;

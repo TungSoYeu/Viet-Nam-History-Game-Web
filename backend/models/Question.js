@@ -1,49 +1,31 @@
+// file: backend/models/Question.js
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
-    content: {
-        type: String,
-        required: [true, 'Nội dung câu hỏi là bắt buộc'],
-        trim: true
-    },
-    options: {
-        type: [String],
-        validate: {
-            validator: function(v) {
-                return v.length === 4;
-            },
-            message: 'Phải có chính xác 4 đáp án'
-        },
-        required: true
-    },
-    correctAnswer: {
-        type: String,
-        required: [true, 'Đáp án đúng là bắt buộc']
-    },
-    explanation: {
-        type: String,
-        required: [true, 'Giải thích lịch sử là bắt buộc'],
-        trim: true
-    },
-    // Đã thay thế historicalPeriod bằng lessonId để liên kết với bảng Lesson
-    lessonId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Lesson',
-        required: [true, 'ID bài học (Triều đại) là bắt buộc']
-    },
-    difficulty: {
-        type: Number,
-        min: 1,
-        max: 5,
-        default: 1
-    },
-    location: {
-        type: String,
-        trim: true,
-        default: null
-    }
-}, {
-    timestamps: true
-});
+  content: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  correctAnswer: { type: String, required: true },
+  explanation: { type: String, default: '' },
+  
+  // Liên kết với triều đại/thời kỳ
+  lessonId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson',
+    required: false
+  },
+
+  // Phân loại chế độ chơi
+  type: { 
+    type: String, 
+    enum: ['general', 'survival', 'time-attack', 'territory', 'millionaire'], 
+    default: 'general' 
+  },
+  
+  // Dành riêng cho mode "Mở Mang Bờ Cõi" (Lưu mã cứ điểm hoặc tên cứ điểm)
+  location: { type: String, default: null }, // Ví dụ: 'ChiLang', 'BachDang', 'DienBienPhu'
+  
+  // Độ khó (tùy chọn)
+  difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' }
+}, { timestamps: true });
 
 module.exports = mongoose.model('Question', questionSchema);

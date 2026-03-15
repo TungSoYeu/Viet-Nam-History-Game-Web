@@ -3,8 +3,10 @@ const Question = require('../models/Question');
 const User = require('../models/User');
 const Matching = require('../models/Matching');
 const Challenge = require('../models/Challenge');
+const Chronological = require('../models/Chronological');
+const GuessCharacter = require('../models/GuessCharacter');
+const RevealPicture = require('../models/RevealPicture');
 
-// --- MODE 1 & 2: TRẢ LỜI CÂU HỎI TIÊU CHUẨN ---
 exports.checkAnswer = async (req, res) => {
   const { questionId, userAnswer, userId, mode } = req.body;
   try {
@@ -14,7 +16,6 @@ exports.checkAnswer = async (req, res) => {
     const isCorrect = question.correctAnswer === userAnswer;
     let experienceGain = isCorrect ? 10 : 0;
     
-    // Nếu là Time Attack (Mode 3), thưởng XP cao hơn nếu có Combo (xử lý ở frontend và gửi lên hoặc tính ở đây)
     if (mode === 'timeAttack' && isCorrect) experienceGain = 15;
 
     let updatedUser = null;
@@ -50,12 +51,13 @@ exports.getRandomMatching = async (req, res) => {
         query.lessonId = new mongoose.Types.ObjectId(lessonId);
     }
 
-    const matchings = await Matching.aggregate([
-        { $match: query },
-        { $sample: { size: 1 } }
-    ]);
+    let matchings = await Matching.aggregate([{ $match: query }, { $sample: { size: 1 } }]);
 
-    if (matchings.length === 0) return res.status(404).json({ message: "Chưa có dữ liệu nối chữ cho thời kỳ này" });
+    if (matchings.length === 0) {
+        matchings = await Matching.aggregate([{ $sample: { size: 1 } }]);
+    }
+
+    if (matchings.length === 0) return res.status(200).json(null); // Tránh lỗi 404
     res.json(matchings[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -63,32 +65,19 @@ exports.getRandomMatching = async (req, res) => {
 };
 
 // --- MODE 5: ASYNCHRONOUS PVP ---
-
-// 1. Tạo lời thách đấu (Player 1)
 exports.createPvPChallenge = async (req, res) => {
   const { creatorId, opponentId, lessonId } = req.body;
   try {
-    // Lấy 10 câu hỏi ngẫu nhiên dùng chung
     let query = {};
-    if (lessonId && lessonId !== 'all') {
-        query.lessonId = new mongoose.Types.ObjectId(lessonId);
-    }
+    if (lessonId && lessonId !== 'all') query.lessonId = new mongoose.Types.ObjectId(lessonId);
     
-    const questions = await Question.aggregate([
-        { $match: query },
-        { $sample: { size: 10 } }
-    ]);
-
-    if (questions.length < 5) {
-        return res.status(400).json({ message: "Không đủ câu hỏi (tối thiểu 5) trong thời kỳ này để tạo thách đấu!" });
-    }
-
-    const questionIds = questions.map(q => q._id);
+    const questions = await Question.aggregate([{ $match: query }, { $sample: { size: 10 } }]);
+    if (questions.length < 5) return res.status(400).json({ message: "Không đủ câu hỏi để tạo thách đấu!" });
 
     const challenge = new Challenge({
       creator: creatorId,
-      challenger: opponentId, // Có thể cụ thể hoặc để trống cho global challenge
-      questions: questionIds,
+      challenger: opponentId,
+      questions: questions.map(q => q._id),
       status: 'pending'
     });
 
@@ -99,7 +88,6 @@ exports.createPvPChallenge = async (req, res) => {
   }
 };
 
-// 2. Nộp kết quả (Dùng cho cả P1 và P2)
 exports.submitPvPResult = async (req, res) => {
   const { challengeId, userId, score, time } = req.body;
   try {
@@ -115,20 +103,13 @@ exports.submitPvPResult = async (req, res) => {
       challenge.challengerTime = time;
       challenge.status = 'completed';
       
-      // Tính toán người thắng
-      if (challenge.challengerScore > challenge.creatorScore) {
-        challenge.winner = challenge.challenger;
-      } else if (challenge.challengerScore < challenge.creatorScore) {
-        challenge.winner = challenge.creator;
-      } else {
-        // Hòa điểm thì xét thời gian
-        challenge.winner = challenge.challengerTime < challenge.creatorTime ? challenge.challenger : challenge.creator;
-      }
+      if (challenge.challengerScore > challenge.creatorScore) challenge.winner = challenge.challenger;
+      else if (challenge.challengerScore < challenge.creatorScore) challenge.winner = challenge.creator;
+      else challenge.winner = challenge.challengerTime < challenge.creatorTime ? challenge.challenger : challenge.creator;
 
-      // Thưởng XP cho người thắng
       const winnerUser = await User.findById(challenge.winner);
       if (winnerUser) {
-        winnerUser.experience += 50; // Thưởng lớn cho PvP
+        winnerUser.experience += 50; 
         await winnerUser.save();
       }
     }
@@ -140,30 +121,24 @@ exports.submitPvPResult = async (req, res) => {
   }
 };
 
-// 3. Lấy danh sách thách đấu đang chờ của tôi
 exports.getMyChallenges = async (req, res) => {
-    const { userId } = req.params;
     try {
         const challenges = await Challenge.find({
             $or: [
-                { challenger: userId, status: 'pending' },
-                { challenger: null, creator: { $ne: userId }, status: 'pending' }
+                { challenger: req.params.userId, status: 'pending' },
+                { challenger: null, creator: { $ne: req.params.userId }, status: 'pending' }
             ]
-        })
-        .populate('creator', 'username')
-        .populate('questions'); // Thêm populate questions để đồng bộ câu hỏi
+        }).populate('creator', 'username').populate('questions'); 
         res.json(challenges);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-// 4. Lấy tất cả các thách đấu đang chờ (cho global lobby)
 exports.getPendingChallenges = async (req, res) => {
   try {
     const challenges = await Challenge.find({ status: 'pending' })
-        .populate('creator', 'username')
-        .populate('questions'); 
+        .populate('creator', 'username').populate('questions'); 
     res.json(challenges);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -172,10 +147,9 @@ exports.getPendingChallenges = async (req, res) => {
 
 // --- MODE 6: TERRITORY MAP ---
 exports.getQuestionsByLocation = async (req, res) => {
-  const { location } = req.params;
   try {
     const questions = await Question.aggregate([
-      { $match: { location: location } },
+      { $match: { type: 'territory', location: req.params.location } },
       { $sample: { size: 3 } }
     ]);
     res.json(questions);
@@ -192,11 +166,73 @@ exports.unlockTerritory = async (req, res) => {
 
     if (!user.unlockedTerritories.includes(location)) {
       user.unlockedTerritories.push(location);
-      user.experience += 100; // Thưởng XP khi mở khóa lãnh thổ
+      user.experience += 100;
       await user.save();
     }
     res.json({ success: true, unlockedTerritories: user.unlockedTerritories });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+exports.addExperience = async (req, res) => {
+  const { userId, xp } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "Người dùng không tồn tại" });
+    
+    user.experience += xp;
+    await user.save();
+    res.json({ success: true, experience: user.experience });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ==========================================
+// CÁC HÀM XỬ LÝ 4 MODE CHƠI MỚI (ĐÃ SỬA LỖI 404)
+// ==========================================
+
+exports.getRandomChronological = async (req, res) => {
+    try {
+        const data = await Chronological.aggregate([{ $sample: { size: 1 } }]);
+        // Nếu không có dữ liệu, trả về object rỗng kèm message thay vì 404 để frontend không bị crash
+        if (data.length === 0) return res.status(200).json({ events: [] });
+        res.json(data[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getRandomMillionaire = async (req, res) => {
+    try {
+        const questions = await Question.aggregate([
+            { $match: { type: 'millionaire' } },
+            { $sample: { size: 15 } }
+        ]);
+        if (questions.length === 0) return res.status(200).json([]);
+        res.json(questions);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getRandomGuessCharacter = async (req, res) => {
+    try {
+        const data = await GuessCharacter.aggregate([{ $sample: { size: 1 } }]);
+        if (data.length === 0) return res.status(200).json(null);
+        res.json(data[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getRandomRevealPicture = async (req, res) => {
+    try {
+        const data = await RevealPicture.aggregate([{ $sample: { size: 1 } }]);
+        if (data.length === 0) return res.status(200).json(null);
+        res.json(data[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
