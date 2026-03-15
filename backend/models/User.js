@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema({
   fullName: { type: String, default: '' },
   dateOfBirth: { type: Date, default: null },
   school: { type: String, default: '' },
-  avatar: { type: String, default: 'default_general.png' },
+  province: { type: String, default: '' },
+  city: { type: String, default: '' },
+  avatar: { type: String, default: null },
   // Điểm kinh nghiệm (XP)
   experience: { type: Number, default: 0 },
   // Chuỗi ngày đăng nhập/chơi liên tục

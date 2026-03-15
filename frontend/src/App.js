@@ -17,7 +17,10 @@ import ChangePassword from './pages/ChangePassword';
 import TerritoryMap from './pages/TerritoryMap';
 import AdminDashboard from './pages/AdminDashboard';
 import Leaderboard from './pages/Leaderboard';
-
+import ChronologicalMode from './pages/ChronologicalMode';
+import MillionaireMode from './pages/MillionaireMode';
+import GuessCharacterMode from './pages/GuessCharacterMode';
+import RevealPictureMode from './pages/RevealPictureMode';
 function App() {
   return (
     <Router>
@@ -38,6 +41,10 @@ function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/chronological" element={<ChronologicalMode />} />
+<Route path="/millionaire" element={<MillionaireMode />} />
+<Route path="/guess-character" element={<GuessCharacterMode />} />
+<Route path="/reveal-picture" element={<RevealPictureMode />} />
         </Routes>
       </div>
     </Router>
