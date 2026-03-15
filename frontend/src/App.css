@@ -1,20 +1,117 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap&subset=vietnamese');
 
 :root {
-  --bronze-dark: #4a3728;
-  --bronze-mid: #8b5a2b;
-  --bronze-light: #c49a6c;
-  --paper-bg: #fcf8f1;
+  /* New Color Scheme */
+  --viet-red: #8b1d1d;
+  --viet-gold: #c5a059;
+  --viet-gold-light: #e2c792;
+  --viet-bronze: #5c4033;
+  --viet-paper: #f4ebd0;
+  --viet-silk: #fffaf0;
+
+  /* Previous Logic-based variables */
+  --bronze-dark: #8b1d1d; /* Linked to viet-red */
+  --bronze-mid: #c5a059;  /* Linked to viet-gold */
+  --bronze-light: #e2c792;
+  --paper-bg: #f4ebd0;
+  --app-height: 100dvh;
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  height: var(--app-height);
+  width: 100vw;
+  overflow: hidden; 
   font-family: 'Crimson Text', serif;
   background-color: var(--paper-bg);
-  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+  /* App Proof: Disable browser behaviors */
+  overscroll-behavior-y: contain;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
 }
 
-/* Container limits for iPads/Desktops */
+/* Re-enable selection for inputs only */
+input, textarea {
+  user-select: text !important;
+}
+
+/* Hide scrollbars for a clean app look */
+.app-content::-webkit-scrollbar {
+  display: none;
+}
+.app-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 80px; 
+}
+
+#root, .App {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif !important;
+}
+
+@media (min-width: 768px) {
+  .app-content {
+    padding-bottom: 0;
+  }
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 2px solid #e2e8f0;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+  z-index: 1000;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  flex: 1;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.bottom-nav-item.active {
+  color: var(--viet-red);
+}
+
+.bottom-nav-item .icon-wrapper {
+  margin-bottom: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.bottom-nav-item.active .icon-wrapper {
+  background: var(--viet-paper);
+  color: var(--viet-red);
+}
+
+/* Container limits */
 .responsive-container {
   width: 100%;
   max-width: 1400px;
@@ -31,39 +128,63 @@ body {
 .history-bg {
   min-height: 100vh;
   background-image: 
-    linear-gradient(rgba(252, 248, 241, 0.9), rgba(252, 248, 241, 0.9)),
+    linear-gradient(rgba(244, 235, 208, 0.9), rgba(244, 235, 208, 0.9)),
     url('https://www.transparenttextures.com/patterns/handmade-paper.png');
 }
 
 .historical-title {
   font-family: 'Playfair Display', serif;
   font-weight: 900;
-  color: var(--bronze-dark);
+  color: var(--viet-red);
   text-transform: uppercase;
   letter-spacing: 2px;
-  border-bottom: 3px double var(--bronze-dark);
+  border-bottom: 3px double var(--viet-red);
   padding-bottom: 10px;
-  /* Fluid font size */
   font-size: clamp(1.5rem, 5vw, 3.5rem);
   text-align: center;
 }
 
 .historical-card {
-  background-color: #fffaf0;
-  border: 2px solid var(--bronze-mid);
-  box-shadow: 8px 8px 0px var(--bronze-dark);
+  background-color: var(--viet-silk);
+  border: 2px solid var(--viet-gold);
+  box-shadow: 8px 8px 0px var(--viet-red);
   padding: clamp(1rem, 3vw, 2rem);
   border-radius: 8px;
   transition: box-shadow 0.3s ease;
 }
 
+@media (max-width: 640px) {
+  .historical-card {
+    box-shadow: 4px 4px 0px var(--viet-red);
+  }
+}
+
+/* Custom Scrollbar for scrollable areas */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--viet-paper);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--viet-gold);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--viet-red);
+}
+
 .btn-historical {
-  background-color: var(--bronze-mid);
+  background-color: var(--viet-red);
   color: #fff;
   font-weight: bold;
   padding: 12px 24px;
   border: none;
-  border-bottom: 4px solid var(--bronze-dark);
+  border-bottom: 4px solid #5c1111;
   cursor: pointer;
   transition: all 0.2s;
   text-transform: uppercase;
@@ -73,7 +194,7 @@ body {
 
 .btn-historical:hover {
   transform: translateY(-2px);
-  background-color: #724a23;
+  background-color: #a52323;
 }
 
 .btn-historical:active {
@@ -81,64 +202,23 @@ body {
   border-bottom: 0px;
 }
 
-/* Responsive Helper Classes */
-.hide-mobile {
-  display: none !important;
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-@media (min-width: 768px) {
-  .hide-mobile {
-    display: flex !important;
-  }
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
-.text-fluid-sm {
-  font-size: clamp(0.75rem, 1.5vw, 1rem);
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
 }
 
-.text-fluid-md {
-  font-size: clamp(1rem, 2vw, 1.5rem);
-}
-
-.text-fluid-lg {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-}
-
-/* Map specific tweaks - Slightly reduced for better balance */
-.map-icon {
-  font-size: clamp(0.4rem, 0.8vw, 0.8rem);
-}
-
-.lesson-card {
-  background: #fdf2d5;
-  border: 2px solid #c49a6c;
-  border-radius: 8px;
-  transition: all 0.3s;
-  box-shadow: 4px 4px 15px rgba(0,0,0,0.1);
-}
-
-.lesson-card:hover {
-  background: #f8e4b1;
-  transform: scale(1.03);
-  box-shadow: 6px 6px 20px rgba(139, 90, 43, 0.2);
-}
-
-.vertical-text {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-
-/* Flashcard Animations */
-.perspective-1000 { perspective: 1000px; }
-.transform-style-3d { transform-style: preserve-3d; }
-.backface-hidden { backface-visibility: hidden; }
-.rotate-y-180 { transform: rotateY(180deg); }
-
-@keyframes bounce-in {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.05); }
-  70% { transform: scale(0.9); }
-  100% { transform: scale(1); opacity: 1; }
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
 .animate-bounce-in {
@@ -149,7 +229,28 @@ body {
   animation: fadeIn 0.3s ease forwards;
 }
 
+@keyframes bounce-in {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.lesson-card {
+  background: #fff;
+  border: 2px solid var(--viet-gold);
+  border-radius: 8px;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 15px rgba(0,0,0,0.1);
+}
+
+.lesson-card:hover {
+  background: var(--viet-silk);
+  transform: scale(1.03);
+  box-shadow: 6px 6px 20px rgba(139, 90, 43, 0.2);
 }

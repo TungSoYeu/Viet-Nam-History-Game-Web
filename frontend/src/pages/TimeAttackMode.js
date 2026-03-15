@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
 import Questions from '../components/Questions';
 import PeriodSelector from '../components/PeriodSelector';
 
@@ -153,7 +154,9 @@ export default function TimeAttackMode() {
       {/* Cột phải: Game Play */}
       <div className="flex-1 flex flex-col">
         <div className="flex justify-between items-center mb-8">
-          <button onClick={() => navigate('/modes')} className="btn-historical px-4">Thoát</button>
+          <button onClick={() => navigate('/modes')} className="btn-historical px-4 flex items-center gap-1">
+            <ArrowLeft size={18} /> Thoát
+          </button>
           <div className="flex gap-4">
             <div className="bg-orange-100 px-4 py-2 rounded-lg border border-orange-300">
                <span className="text-sm text-orange-800 font-bold uppercase">Combo:</span>
@@ -179,8 +182,8 @@ export default function TimeAttackMode() {
               ) : (
                 <p className="text-red-600 font-bold">-5 giây nhang!</p>
               )}
-              <button onClick={nextQuestion} className="mt-4 px-12 py-3 bg-amber-700 text-white rounded-lg font-bold hover:bg-amber-800 transition shadow-lg">
-                Kế Tiếp ➔
+              <button onClick={nextQuestion} className="mt-4 px-12 py-3 bg-amber-700 text-white rounded-lg font-bold hover:bg-amber-800 transition shadow-lg flex items-center gap-2 mx-auto justify-center">
+                Kế Tiếp <ChevronRight size={20} />
               </button>
             </div>
           )}

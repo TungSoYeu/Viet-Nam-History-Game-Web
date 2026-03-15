@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Package, Target, Trophy, Lightbulb } from 'lucide-react';
 import PeriodSelector from '../components/PeriodSelector';
 
 export default function MatchingMode() {
@@ -108,14 +109,15 @@ export default function MatchingMode() {
     <div className="p-4 md:p-6 min-h-screen max-w-5xl mx-auto flex flex-col items-center">
       <div className="w-full flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow border-2 border-amber-200">
         <button onClick={() => navigate('/modes')} className="font-bold text-amber-900 hover:text-red-600 transition flex items-center gap-2">
-           <span className="text-2xl"></span> Thoát
+           <ArrowLeft size={20} /> Thoát
         </button>
         <h2 className="text-xl md:text-3xl font-black text-amber-900 uppercase tracking-widest text-center">{game?.title || "Nối Dữ Kiện"}</h2>
         <div className="text-lg md:text-xl font-black text-amber-700 bg-amber-100 px-4 py-2 rounded-lg">Điểm: {score}</div>
       </div>
 
       {/* HIỂN THỊ HƯỚNG DẪN DÀNH RIÊNG CHO ĐIỆN THOẠI */}
-      <div className="mb-6 text-center text-amber-800 font-bold bg-amber-100 p-3 rounded-lg border border-amber-300 w-full animate-fade-in">
+      <div className="mb-6 text-center text-amber-800 font-bold bg-amber-100 p-3 rounded-lg border border-amber-300 w-full animate-fade-in flex items-center justify-center gap-2">
+         <Lightbulb size={20} className="text-amber-600" />
          {selectedLeftItem ? (
             <span className="text-blue-700">👇 Đang chọn: <b>{selectedLeftItem.content}</b>. Hãy chạm vào ô đích phù hợp bên dưới!</span>
          ) : (
@@ -127,7 +129,9 @@ export default function MatchingMode() {
         
         {/* CỘT TRÁI: DANH SÁCH DỮ KIỆN CẦN CHỌN */}
         <div className="flex-1 bg-amber-50 p-4 md:p-6 rounded-xl border-2 border-solid border-amber-300 shadow-inner">
-          <h3 className="text-center font-black mb-6 text-amber-900 uppercase tracking-widest border-b-2 border-amber-200 pb-2">📦 Dữ kiện chờ ghép</h3>
+          <h3 className="text-center font-black mb-6 text-amber-900 uppercase tracking-widest border-b-2 border-amber-200 pb-2 flex items-center justify-center gap-2">
+            <Package size={20} /> Dữ kiện chờ ghép
+          </h3>
           
           <div className="flex flex-col gap-3">
               {leftItems.map((item) => (
@@ -151,7 +155,9 @@ export default function MatchingMode() {
 
         {/* CỘT PHẢI: CÁC Ô ĐÍCH ĐỂ NHẬN DỮ KIỆN */}
         <div className="flex-1 flex flex-col gap-4">
-          <h3 className="text-center font-black mb-2 text-amber-900 uppercase tracking-widest border-b-2 border-amber-200 pb-2">🎯 Điểm đến</h3>
+          <h3 className="text-center font-black mb-2 text-amber-900 uppercase tracking-widest border-b-2 border-amber-200 pb-2 flex items-center justify-center gap-2">
+            <Target size={20} /> Điểm đến
+          </h3>
           
           {rightItems.map((rightBox) => {
               const isMatched = results[rightBox.id];
@@ -189,8 +195,8 @@ export default function MatchingMode() {
 
       {isFinished && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full text-center border-4 border-amber-600 animate-bounce-in">
-            <span className="text-6xl mb-4 block">🏆</span>
+          <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full text-center border-4 border-amber-600 animate-bounce-in flex flex-col items-center">
+            <Trophy size={80} className="text-amber-500 mb-4" />
             <h2 className="text-3xl md:text-4xl font-black text-green-600 mb-2 uppercase">Thông suốt!</h2>
             <p className="text-gray-600 font-bold mb-8 italic">Bạn đã ghi được {score} XP vào sử sách.</p>
             <div className="flex gap-4">

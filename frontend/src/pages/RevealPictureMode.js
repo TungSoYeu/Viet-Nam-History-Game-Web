@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Image as ImageIcon, HelpCircle, Trophy, X, Search, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 export default function RevealPictureMode() {
@@ -95,8 +96,12 @@ export default function RevealPictureMode() {
   return (
     <div className="min-h-screen history-bg p-4 md:p-8 flex flex-col items-center">
       <div className="w-full max-w-4xl flex justify-between items-center mb-6">
-        <button onClick={() => navigate('/modes')} className="btn-historical px-4">🔙 Thoát</button>
-        <h1 className="text-2xl md:text-4xl font-black text-amber-900 uppercase tracking-widest text-center">Lật Mở Tranh Cổ</h1>
+        <button onClick={() => navigate('/modes')} className="btn-historical px-4 flex items-center gap-1">
+          <ArrowLeft size={18} /> Thoát
+        </button>
+        <h1 className="text-2xl md:text-4xl font-black text-amber-900 uppercase tracking-widest text-center flex items-center gap-3">
+          <ImageIcon size={32} /> Lật Mở Tranh Cổ
+        </h1>
         <div className="text-xl font-bold text-amber-700 bg-amber-100 px-4 py-2 rounded-lg border border-amber-300">Thưởng: {score} XP</div>
       </div>
 
@@ -125,7 +130,9 @@ export default function RevealPictureMode() {
 
         {/* VÙNG ĐOÁN TÊN TRANH */}
         <div className="w-full md:w-80 flex flex-col justify-center bg-white p-6 rounded-xl border-2 border-amber-200 shadow-lg">
-          <h3 className="text-xl font-black text-amber-900 uppercase mb-4 text-center border-b-2 border-amber-100 pb-2">Giải Mã Bức Tranh</h3>
+          <h3 className="text-xl font-black text-amber-900 uppercase mb-4 text-center border-b-2 border-amber-100 pb-2 flex items-center justify-center gap-2">
+            <Search size={20} /> Giải Mã
+          </h3>
           <p className="text-sm text-gray-600 mb-6 italic text-center">Nhập tên sự kiện, trận đánh hoặc nhân vật có trong bức tranh này.</p>
           <input 
             type="text" 
@@ -142,10 +149,14 @@ export default function RevealPictureMode() {
       {/* POPUP HỎI ĐÁP ĐỂ MỞ Ô */}
       {selectedTile !== null && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-[#fdf2d5] p-6 md:p-8 rounded-2xl shadow-2xl max-w-md w-full border-4 border-amber-700">
+          <div className="bg-[#fdf2d5] p-6 md:p-8 rounded-2xl shadow-2xl max-w-md w-full border-4 border-amber-700 relative">
             <div className="flex justify-between items-center mb-6 border-b-2 border-amber-300 pb-2">
-              <h3 className="text-xl font-black text-amber-900 uppercase">Thử Thách Mở Ô</h3>
-              <button onClick={() => setSelectedTile(null)} className="text-red-600 font-bold text-xl">✕</button>
+              <h3 className="text-xl font-black text-amber-900 uppercase flex items-center gap-2">
+                <HelpCircle size={24} /> Thử Thách Mở Ô
+              </h3>
+              <button onClick={() => setSelectedTile(null)} className="text-red-600 font-bold p-1 hover:bg-red-50 rounded-lg transition-colors">
+                <X size={24} />
+              </button>
             </div>
             <p className="text-xl font-bold text-gray-800 mb-6 leading-relaxed">
               {tileQuestions[selectedTile].q}

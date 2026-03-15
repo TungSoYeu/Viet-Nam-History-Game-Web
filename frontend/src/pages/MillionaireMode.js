@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GraduationCap, Frown, ArrowLeft, Trophy } from 'lucide-react';
 
 export default function MillionaireMode() {
   const navigate = useNavigate();
@@ -120,8 +121,10 @@ export default function MillionaireMode() {
   if (won || gameOver) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div className="bg-slate-800 p-8 rounded-2xl border-4 border-amber-600 text-center max-w-md w-full animate-bounce-in">
-          <span className="text-6xl mb-4 block">{won ? '🎓' : '😭'}</span>
+        <div className="bg-slate-800 p-8 rounded-2xl border-4 border-amber-600 text-center max-w-md w-full animate-bounce-in flex flex-col items-center">
+          <div className="mb-4">
+            {won ? <GraduationCap size={80} className="text-green-500" /> : <Frown size={80} className="text-red-500" />}
+          </div>
           <h2 className={`text-3xl font-black uppercase mb-2 ${won ? 'text-green-500' : 'text-red-500'}`}>
             {won ? 'Trạng Nguyên Xuất Chúng!' : 'Thi Trượt Khoa Này'}
           </h2>
@@ -145,12 +148,15 @@ export default function MillionaireMode() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4 md:p-8 flex flex-col items-center justify-center">
       <div className="w-full max-w-3xl flex justify-between items-center mb-8">
-        <button onClick={() => { saveXP(score); navigate('/modes'); }} className="text-slate-400 hover:text-white font-bold text-lg">
-          🔙 Từ bỏ (Lấy {score} XP)
+        <button onClick={() => { saveXP(score); navigate('/modes'); }} className="text-slate-400 hover:text-white font-bold text-lg flex items-center gap-2 transition-colors">
+          <ArrowLeft size={20} /> Thoát (Lấy {score} XP)
         </button>
-        <h1 className="text-2xl md:text-4xl font-black text-amber-500 uppercase tracking-widest text-center">
-          Khoa Cử Đình Nguyên
+        <h1 className="text-xl md:text-3xl font-black text-amber-500 uppercase tracking-widest flex items-center gap-3">
+            <GraduationCap size={32} /> Khoa Cử Đình Nguyên
         </h1>
+      </div>
+
+      <div className="w-full max-w-3xl flex justify-between items-center mb-8">
         <div className="bg-slate-800 px-4 py-2 rounded-lg border border-amber-700 font-bold text-amber-400 text-xl">
           {score} XP
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import MapBackground from '../assets/ban-do-viet-nam.jpg'; 
 
 export default function TerritoryMap() {
@@ -233,7 +234,9 @@ export default function TerritoryMap() {
         <div className="fixed bottom-6 right-6 bg-gray-900 text-green-400 p-5 rounded-lg shadow-2xl z-[100] border border-green-500 font-mono text-sm min-w-[250px] animate-fade-in">
           <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
             <p className="font-bold text-white flex items-center gap-2"><span>🎯</span> Tool Lấy Tọa Độ</p>
-            <button onClick={() => setDevCoords(null)} className="text-gray-400 hover:text-red-400 font-bold">✕</button>
+            <button onClick={() => setDevCoords(null)} className="text-gray-400 hover:text-red-400 font-bold transition-colors">
+              <X size={18} />
+            </button>
           </div>
           <div className="bg-black p-3 rounded mb-3">
              <p>top: <span className="text-yellow-300">'{devCoords.top}%'</span>,</p>
