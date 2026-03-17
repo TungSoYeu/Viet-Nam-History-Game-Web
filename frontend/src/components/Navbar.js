@@ -132,17 +132,29 @@ export default function Navbar() {
   if (location.pathname === '/' || location.pathname === '/login') return null;
 
   const handleGoogleSuccess = (credentialResponse) => {
-    fetch('http://localhost:5000/api/google-login', {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert("Bạn cần đăng nhập trước khi thực hiện liên kết!");
+      return;
+    }
+
+    fetch('http://localhost:5000/api/user/link-google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tokenId: credentialResponse.credential })
+      body: JSON.stringify({ 
+        userId,
+        tokenId: credentialResponse.credential 
+      })
     })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) return res.json().then(err => { throw new Error(err.message) });
+      return res.json();
+    })
     .then(data => {
-      setUser(data);
-      alert("Liên kết Google thành công!");
-      // Cập nhật localStorage nếu cần (ví dụ avatar/fullName có thể thay đổi)
-      if (data.avatar) localStorage.setItem('avatar', data.avatar);
+      if (data.success) {
+        setUser(data.user);
+        alert("Liên kết tài khoản Google thành công!");
+      }
     })
     .catch(err => alert("Lỗi liên kết Google: " + err.message));
   };
@@ -441,32 +453,43 @@ export default function Navbar() {
                 </div>
 
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar flex-1">
-                    <div className="flex flex-col">
+                    {isEditing ? (
+                      <div className="flex flex-col">
                         <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Địa chỉ Email</span>
-                        {isEditing ? (
-                          <input 
-                            type="email"
-                            className="text-lg font-bold text-gray-800 border-2 border-amber-100 rounded p-1 outline-none focus:border-amber-500"
-                            value={editData.email}
-                            onChange={(e) => setEditData({...editData, email: e.target.value})}
-                          />
-                        ) : (
+                        <input 
+                          type="email"
+                          className="text-lg font-bold text-gray-800 border-2 border-amber-100 rounded p-2 outline-none focus:border-amber-500"
+                          value={editData.email}
+                          onChange={(e) => setEditData({...editData, email: e.target.value})}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col">
+                        <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Tài khoản & Liên kết</span>
+                        <div className="flex flex-col gap-2">
                           <span className="text-xl font-bold text-gray-800">{user?.email || 'Chưa cập nhật'}</span>
-                        )}
-                    </div>
-
-                    {!user?.googleId && !isEditing && (
-                      <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-sm font-bold text-blue-800">Liên kết Google</p>
-                          <p className="text-[10px] text-blue-600">Đăng nhập nhanh không cần mật mã</p>
-                        </div>
-                        <div className="scale-75 origin-right">
-                          <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={() => alert('Liên kết thất bại')}
-                            shape="pill"
-                          />
+                          
+                          {user?.googleId ? (
+                            <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg border border-green-200 w-fit">
+                              <ShieldCheck size={18} className="fill-green-100" />
+                              <span className="text-xs font-black uppercase tracking-wider">Đã liên kết Google</span>
+                            </div>
+                          ) : (
+                            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-center justify-between mt-2">
+                              <div className="flex-1">
+                                <p className="text-sm font-bold text-blue-800">Chưa liên kết Google</p>
+                                <p className="text-[10px] text-blue-600 italic">Đăng nhập nhanh & bảo mật hơn</p>
+                              </div>
+                              <div className="scale-75 origin-right">
+                                <GoogleLogin
+                                  onSuccess={handleGoogleSuccess}
+                                  onError={() => alert('Liên kết thất bại')}
+                                  text="continue_with"
+                                  shape="pill"
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

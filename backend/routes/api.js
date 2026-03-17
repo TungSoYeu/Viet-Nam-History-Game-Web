@@ -73,14 +73,20 @@ router.post('/google-login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  const { username, password, adminCode, fullName, dateOfBirth, school, province, city } = req.body;
+  const { username, password, email, adminCode, fullName, dateOfBirth, school, province, city } = req.body;
   console.log("Registering user:", username);
   
   if (!username || !password) return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin!" });
 
   try {
-    let existingUser = await User.findOne({ username });
-    if (existingUser) return res.status(400).json({ message: "Tên đăng nhập đã tồn tại!" });
+    let existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+        if (existingUser.username === username) {
+            return res.status(400).json({ message: "Tên đăng nhập đã tồn tại!" });
+        } else {
+            return res.status(400).json({ message: "Email này đã được sử dụng!" });
+        }
+    }
 
     // Phân quyền rõ ràng trước khi lưu vào Database
     let role = 'user';
@@ -96,6 +102,7 @@ router.post('/register', async (req, res) => {
     const user = new User({ 
       username, 
       password, 
+      email: email || undefined,
       role,
       fullName: fullName || '',
       dateOfBirth: dateOfBirth || null,
@@ -119,15 +126,22 @@ router.post('/register', async (req, res) => {
 
 // Đường dẫn đăng nhập
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body; // username can be username or email
   console.log("Login attempt:", username);
   
   if (!username || !password) return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin!" });
 
   try {
-    const user = await User.findOne({ username });
+    // Cho phép đăng nhập bằng cả username hoặc email
+    const user = await User.findOne({ 
+        $or: [
+            { username: username },
+            { email: username }
+        ]
+    });
+
     if (!user) {
-      return res.status(401).json({ message: "Tên đăng nhập không tồn tại!" });
+      return res.status(401).json({ message: "Tài khoản không tồn tại!" });
     }
     
     if (user.password !== password) {
@@ -158,6 +172,37 @@ router.patch('/user/change-password', async (req, res) => {
         res.json({ success: true, message: "Đổi mật khẩu thành công" });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Đường dẫn liên kết Google cho user đã đăng nhập
+router.post('/user/link-google', async (req, res) => {
+    const { userId, tokenId } = req.body;
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: tokenId,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const { sub, email, picture } = payload;
+
+        // Kiểm tra xem GoogleId này đã bị ai khác chiếm chưa
+        const existingGoogleUser = await User.findOne({ googleId: sub });
+        if (existingGoogleUser && existingGoogleUser._id.toString() !== userId) {
+            return res.status(400).json({ message: "Tài khoản Google này đã được liên kết với một người dùng khác!" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "Người dùng không tồn tại" });
+
+        user.googleId = sub;
+        if (!user.email) user.email = email;
+        if (!user.avatar) user.avatar = picture;
+        
+        await user.save();
+        res.json({ success: true, message: "Liên kết Google thành công!", user });
+    } catch (error) {
+        res.status(400).json({ message: "Liên kết Google thất bại", error: error.message });
     }
 });
 

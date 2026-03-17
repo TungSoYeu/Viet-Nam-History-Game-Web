@@ -2,6 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
+function FlashcardItem({ card }) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const parts = card.back.split('💡 Fun Fact:');
+  const mainAnswer = parts[0];
+  const funFact = parts[1];
+
+  return (
+    <div 
+      className={`flashcard-container h-80 perspective-1000 ${isFlipped ? 'flipped' : ''}`}
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <div className="relative w-full h-full transform-style-3d">
+        {/* Front */}
+        <div className="flashcard-front p-8 backface-hidden shadow-xl">
+          <div className="w-12 h-1 bg-amber-800 mb-6 opacity-30"></div>
+          <h3 className="text-xl sm:text-2xl riddle-text text-center font-serif italic">
+            "{card.front}"
+          </h3>
+          <div className="w-12 h-1 bg-amber-800 mt-6 opacity-30"></div>
+          <div className="absolute bottom-4 text-[10px] uppercase tracking-widest text-amber-900 opacity-40 font-bold">
+            Chạm để lật mở bí mật
+          </div>
+        </div>
+        
+        {/* Back */}
+        <div className="flashcard-back p-8 backface-hidden shadow-2xl overflow-y-auto">
+          <div className="text-center mb-4">
+              <span className="text-[10px] uppercase tracking-tighter opacity-60 mb-1 block">Lời giải</span>
+              <h4 className="text-2xl back-answer">{mainAnswer}</h4>
+          </div>
+          
+          {funFact && (
+            <div className="fun-fact-box w-full text-sm leading-relaxed text-amber-100 italic">
+              <span className="font-black text-amber-400 not-italic block mb-1">💡 BẠN CÓ BIẾT?</span>
+              {funFact}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function StudyDetail() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
@@ -65,44 +108,9 @@ export default function StudyDetail() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
             {lesson.flashcards?.length > 0 ? (
-              lesson.flashcards.map((card, idx) => {
-                const parts = card.back.split('💡 Fun Fact:');
-                const mainAnswer = parts[0];
-                const funFact = parts[1];
-
-                return (
-                  <div key={idx} className="flashcard-container h-80 perspective-1000 cursor-pointer">
-                    <div className="relative w-full h-full transform-style-3d">
-                      {/* Front */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-8 flashcard-front rounded-2xl backface-hidden shadow-xl">
-                        <div className="w-12 h-1 bg-amber-800 mb-6 opacity-30"></div>
-                        <h3 className="text-xl sm:text-2xl riddle-text text-center font-serif italic">
-                          "{card.front}"
-                        </h3>
-                        <div className="w-12 h-1 bg-amber-800 mt-6 opacity-30"></div>
-                        <div className="absolute bottom-4 text-[10px] uppercase tracking-widest text-amber-900 opacity-40 font-bold">
-                          Chạm để lật mở bí mật
-                        </div>
-                      </div>
-                      
-                      {/* Back */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-8 flashcard-back rounded-2xl backface-hidden rotate-y-180 shadow-2xl overflow-y-auto">
-                        <div className="text-center mb-4">
-                            <span className="text-[10px] uppercase tracking-tighter opacity-60 mb-1 block">Lời giải</span>
-                            <h4 className="text-2xl back-answer">{mainAnswer}</h4>
-                        </div>
-                        
-                        {funFact && (
-                          <div className="fun-fact-box w-full text-sm leading-relaxed text-amber-100 italic">
-                            <span className="font-black text-amber-400 not-italic block mb-1">💡 BẠN CÓ BIẾT?</span>
-                            {funFact}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+              lesson.flashcards.map((card, idx) => (
+                <FlashcardItem key={idx} card={card} />
+              ))
             ) : (
               <p className="col-span-2 text-center italic text-gray-500 py-12">Chưa có thẻ ghi nhớ cho triều đại này.</p>
             )}

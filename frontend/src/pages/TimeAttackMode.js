@@ -134,59 +134,104 @@ export default function TimeAttackMode() {
   const incenseHeight = (timeLeft / 60) * 100;
 
   return (
-    <div className="p-6 min-h-screen max-w-4xl mx-auto flex gap-8">
-      {/* Cột trái: Nén nhang (Incense burning) */}
-      <div className="w-24 flex flex-col items-center justify-end pb-12 relative">
-        <div className="text-sm font-bold text-amber-900 mb-2 uppercase vertical-text">Nén Nhang Thời Gian</div>
-        <div className="w-6 h-96 bg-gray-200 rounded-full overflow-hidden flex flex-col justify-end border-2 border-amber-900 p-0.5">
+    <div className="p-4 md:p-6 min-h-screen bg-slate-900 text-white relative overflow-hidden flex items-center justify-center">
+      {/* Live Wallpaper / Background Effect */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,165,0,0.1)_0%,transparent_70%)] animate-pulse"></div>
+        {[...Array(20)].map((_, i) => (
           <div 
-            className="w-full bg-gradient-to-t from-red-600 via-orange-500 to-yellow-400 rounded-full transition-all duration-1000 relative"
-            style={{ height: `${Math.min(100, incenseHeight)}%` }}
-          >
-            {/* Đốm lửa đang cháy */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-white animate-pulse shadow-[0_0_15px_rgba(255,165,0,0.8)]"></div>
-          </div>
+            key={i}
+            className="absolute rounded-full bg-amber-500/20 blur-xl animate-float"
+            style={{
+              width: `${Math.random() * 200 + 50}px`,
+              height: `${Math.random() * 200 + 50}px`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${Math.random() * 10 + 10}s`
+            }}
+          ></div>
+        ))}
+        {/* Time Warp Lines */}
+        <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-[150%] h-[150%] border-[40px] border-amber-600/5 rounded-full animate-spin-slow opacity-30"></div>
+            <div className="w-[120%] h-[120%] border-[20px] border-orange-600/5 rounded-full animate-reverse-spin opacity-20"></div>
         </div>
-        <div className="w-12 h-6 bg-amber-800 mt-0 rounded-b-lg shadow-lg"></div>
-        <div className="text-2xl font-bold mt-4 text-red-600">{timeLeft}s</div>
       </div>
 
-      {/* Cột phải: Game Play */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex justify-between items-center mb-8">
-          <button onClick={() => navigate('/modes')} className="btn-historical px-4 flex items-center gap-1">
-            <ArrowLeft size={18} /> Thoát
-          </button>
-          <div className="flex gap-4">
-            <div className="bg-orange-100 px-4 py-2 rounded-lg border border-orange-300">
-               <span className="text-sm text-orange-800 font-bold uppercase">Combo:</span>
-               <span className="text-2xl font-black text-orange-600 ml-2">{combo}</span>
-            </div>
-            <div className="bg-amber-100 px-4 py-2 rounded-lg border border-amber-300">
-               <span className="text-sm text-amber-800 font-bold uppercase">Điểm:</span>
-               <span className="text-2xl font-black text-amber-600 ml-2">{score}</span>
+      <div className="relative z-10 w-full max-w-5xl flex flex-col md:flex-row gap-6 md:gap-12 items-center justify-center">
+        {/* Cột trái: Nén nhang (Incense burning) */}
+        <div className="w-full md:w-32 flex flex-row md:flex-col items-center justify-center gap-4 bg-slate-800/50 p-6 rounded-3xl border-2 border-slate-700 shadow-2xl backdrop-blur-sm">
+          <div className="text-xs md:text-sm font-black text-amber-500 uppercase md:vertical-text tracking-widest text-center">Nén Nhang Thời Gian</div>
+          <div className="w-48 md:w-8 h-8 md:h-96 bg-slate-700 rounded-full overflow-hidden flex flex-row md:flex-col justify-end border-2 border-amber-900/50 p-0.5 relative shadow-inner">
+            <div 
+              className="h-full md:w-full bg-gradient-to-r md:bg-gradient-to-t from-red-600 via-orange-500 to-yellow-400 rounded-full transition-all duration-1000 relative shadow-[0_0_15px_rgba(239,68,68,0.5)]"
+              style={{ 
+                width: window.innerWidth < 768 ? `${Math.min(100, incenseHeight)}%` : '100%',
+                height: window.innerWidth >= 768 ? `${Math.min(100, incenseHeight)}%` : '100%' 
+              }}
+            >
+              {/* Đốm lửa đang cháy */}
+              <div className="absolute top-0 right-0 md:top-0 md:left-0 w-2 md:w-full h-full md:h-2 bg-white animate-pulse shadow-[0_0_20px_rgba(255,255,255,1)] z-10"></div>
             </div>
           </div>
+          <div className="text-3xl md:text-4xl font-black text-red-500 tabular-nums drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">{timeLeft}s</div>
         </div>
 
-        <div className="historical-card flex-1 flex flex-col items-center justify-center text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-10 leading-relaxed italic">"{currentQuestion.content}"</h2>
-          
-          <Questions question={currentQuestion} onAnswer={handleAnswer} feedback={feedback} />
-
-          {feedback && (
-            <div className={`mt-8 p-6 rounded-lg w-full border-2 animate-fade-in ${feedback.correct ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-              <p className="font-bold text-2xl mb-2">{feedback.message}</p>
-              {feedback.correct ? (
-                <p className="text-green-600 font-bold">+3 giây nhang!</p>
-              ) : (
-                <p className="text-red-600 font-bold">-5 giây nhang!</p>
-              )}
-              <button onClick={nextQuestion} className="mt-4 px-12 py-3 bg-amber-700 text-white rounded-lg font-bold hover:bg-amber-800 transition shadow-lg flex items-center gap-2 mx-auto justify-center">
-                Kế Tiếp <ChevronRight size={20} />
-              </button>
+        {/* Cột phải: Game Play */}
+        <div className="flex-1 w-full flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <button onClick={() => navigate('/modes')} className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl font-bold flex items-center gap-2 transition-all border-2 border-slate-700 active:scale-95 shadow-lg">
+              <ArrowLeft size={20} /> Thoát (Lấy {score} XP)
+            </button>
+            <div className="flex gap-4 w-full sm:w-auto">
+              <div className="flex-1 sm:flex-none bg-orange-600/20 px-6 py-3 rounded-2xl border-2 border-orange-500/50 backdrop-blur-sm">
+                 <span className="text-xs text-orange-400 font-black uppercase tracking-widest block mb-1">Combo Thần Tốc</span>
+                 <span className="text-2xl font-black text-orange-500 ml-1">{combo}x</span>
+              </div>
+              <div className="flex-1 sm:flex-none bg-amber-600/20 px-6 py-3 rounded-2xl border-2 border-amber-500/50 backdrop-blur-sm">
+                 <span className="text-xs text-amber-400 font-black uppercase tracking-widest block mb-1">Điểm Tích Lũy</span>
+                 <span className="text-2xl font-black text-amber-500 ml-1">{score} XP</span>
+              </div>
             </div>
-          )}
+          </div>
+
+          <div className="bg-slate-800/80 backdrop-blur-md rounded-3xl p-8 md:p-12 border-4 border-amber-600/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center relative overflow-hidden group">
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-amber-500/5 rounded-full group-hover:scale-150 transition-transform duration-1000"></div>
+            
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-12 leading-relaxed italic z-10 px-4 drop-shadow-lg">
+              "{currentQuestion.content}"
+            </h2>
+            
+            <div className="w-full z-10">
+              <Questions question={currentQuestion} onAnswer={handleAnswer} feedback={feedback} />
+            </div>
+
+            {feedback && (
+              <div className={`mt-10 p-8 rounded-2xl w-full border-4 animate-bounce-in z-20 backdrop-blur-xl ${feedback.correct ? 'bg-green-600/20 border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.2)]' : 'bg-red-600/20 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.2)]'}`}>
+                <p className="font-black text-3xl mb-3 uppercase tracking-wider">{feedback.message}</p>
+                {feedback.correct ? (
+                  <div className="flex flex-col items-center">
+                    <p className="text-green-400 font-black text-xl mb-4 flex items-center gap-2">
+                       <span className="animate-ping">🔥</span> +3 GIÂY LINH NGHIỆM!
+                    </p>
+                    {feedback.explanation && (
+                      <p className="text-slate-300 italic mb-6 leading-relaxed max-w-2xl">
+                        "Sử ký chép rằng: {feedback.explanation}"
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-red-400 font-black text-xl mb-6 flex items-center gap-2">
+                    <span className="animate-shake">⚠️</span> -5 GIÂY TÀN NHANG!
+                  </p>
+                )}
+                <button onClick={nextQuestion} className="px-16 py-4 bg-amber-600 text-white rounded-xl font-black text-xl hover:bg-amber-500 transition-all shadow-[0_10px_20px_rgba(217,119,6,0.3)] flex items-center gap-3 mx-auto justify-center active:scale-95 group">
+                  TIẾP THEO <ChevronRight size={24} className="group-hover:translate-x-2 transition-transform" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
