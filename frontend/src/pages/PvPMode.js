@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PeriodSelector from '../components/PeriodSelector';
 
 export default function PvPMode() {
   const navigate = useNavigate();
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showPeriodSelect, setShowPeriodSelect] = useState(false);
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -20,30 +22,50 @@ export default function PvPMode() {
       });
   };
 
-  const createGlobalChallenge = () => {
+  const createGlobalChallenge = (lessonId) => {
     fetch('http://localhost:5000/api/pvp/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ creatorId: userId })
+      body: JSON.stringify({ creatorId: userId, lessonId })
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) return res.json().then(err => { throw new Error(err.message) });
+        return res.json();
+    })
     .then(data => {
       // Chuyển đến màn hình đấu (P1 đấu trước)
       navigate('/pvp/battle', { state: { challengeId: data.challengeId, questions: data.questions } });
+    })
+    .catch(err => {
+        alert(err.message);
+        setShowPeriodSelect(false);
     });
   };
 
   const acceptChallenge = (challenge) => {
-    // Lấy thông tin câu hỏi của challenge đó (cần API hoặc gửi kèm)
-    // Giả sử API trả về câu hỏi khi fetch danh sách hoặc có API lấy chi tiết
-    fetch(`http://localhost:5000/api/questions/all`) // Fallback lấy ngẫu nhiên nếu chưa có detail API
-      .then(res => res.json())
-      .then(allQs => {
-        // Trong thực tế, challenge.questions chứa ID, cần fetch đúng 10 ID đó
-        // Ở đây demo: lấy 10 câu đầu
-        navigate('/pvp/battle', { state: { challengeId: challenge._id, questions: allQs.slice(0, 10) } });
+    // Sử dụng trực tiếp danh sách câu hỏi đã được populate từ backend
+    if (challenge.questions && challenge.questions.length > 0) {
+      navigate('/pvp/battle', { 
+        state: { 
+          challengeId: challenge._id, 
+          questions: challenge.questions 
+        } 
       });
+    } else {
+      alert("Không tìm thấy dữ liệu câu hỏi cho trận đấu này!");
+    }
   };
+
+  if (showPeriodSelect) {
+      return (
+          <PeriodSelector 
+            title="Thiết Lập Chiến Trường"
+            description="Chọn thời kỳ lịch sử để làm đề bài cho cuộc đấu trí này."
+            onSelect={(id) => createGlobalChallenge(id)}
+            onBack={() => setShowPeriodSelect(false)}
+          />
+      );
+  }
 
   return (
     <div className="p-8 min-h-screen flex flex-col items-center">
@@ -55,7 +77,7 @@ export default function PvPMode() {
            <div className="text-6xl mb-6">⚔️</div>
            <h2 className="text-2xl font-bold mb-4 text-purple-900">Hạ Chiến Thư</h2>
            <p className="text-center text-gray-600 mb-8 italic">Thiết lập một trận đấu 10 câu hỏi và chờ đối thủ nghênh chiến.</p>
-           <button onClick={createGlobalChallenge} className="btn-historical bg-purple-800 w-full py-4">
+           <button onClick={() => setShowPeriodSelect(true)} className="btn-historical bg-purple-800 w-full py-4">
               Gửi Thư Thách Đấu
            </button>
         </div>

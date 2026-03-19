@@ -1,34 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Trophy, AlertCircle, Swords, ArrowLeft, ChevronRight } from 'lucide-react';
 import Questions from '../components/Questions';
 import Lives from '../components/Lives';
+import PeriodSelector from '../components/PeriodSelector';
 
 export default function SurvivalMode() {
   const navigate = useNavigate();
+  const [selectedPeriod, setSelectedPeriod] = useState(null); // 'all' or lessonId
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(5);
   const [feedback, setFeedback] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isVictory, setIsVictory] = useState(false);
+  const [isFailed, setIsFailed] = useState(false);
 
   useEffect(() => {
-    // Lấy tất cả câu hỏi ngẫu nhiên cho chế độ sinh tồn
-    fetch(`http://localhost:5000/api/questions/all`)
-      .then(res => {
-          if (!res.ok) throw new Error("Chưa có API /all");
-          return res.json();
-      })
+    if (!selectedPeriod) return;
+
+    setLoading(true);
+    const endpoint = selectedPeriod === 'all' 
+        ? '/api/questions/all' 
+        : `/api/questions/${selectedPeriod}`;
+
+    fetch(`http://localhost:5000${endpoint}`)
+      .then(res => res.json())
       .then(data => {
-        setQuestions(data.sort(() => Math.random() - 0.5));
+        // Shuffle and take only 10 questions for Challenge Mode
+        const sampledQuestions = data
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 10);
+        setQuestions(sampledQuestions);
         setLoading(false);
       })
       .catch(err => {
         console.error("Lỗi khi tải câu hỏi:", err);
-        // Fallback: Nếu backend chưa có route /all, có thể báo lỗi hoặc fetch đại 1 lesson
         setLoading(false);
       });
-  }, []);
+  }, [selectedPeriod]);
 
   const handleAnswer = (userAnswer) => {
     const question = questions[currentIndex];
@@ -49,7 +59,8 @@ export default function SurvivalMode() {
       if (data.correct) {
         setScore(prev => prev + data.experienceGain);
       } else {
-        setLives(prev => Math.max(0, prev - 1));
+        // Strict Rule: One mistake = Failure
+        setIsFailed(true);
       }
     })
     .catch(err => console.error("Lỗi khi gửi đáp án:", err));
@@ -60,10 +71,52 @@ export default function SurvivalMode() {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      alert(`Đại thắng! Bạn đã vượt qua tất cả thử thách với ${score} điểm!`);
-      navigate('/modes');
+      setIsVictory(true);
     }
   };
+
+  if (!selectedPeriod) {
+    return (
+      <PeriodSelector 
+        title="Chinh Phục Sử Việt"
+        description="Vượt qua 10 câu hỏi hiểm hóc của một thời kỳ để được vinh danh. Lưu ý: Sai 1 câu là phải chơi lại từ đầu!"
+        onSelect={(id) => setSelectedPeriod(id)}
+        onBack={() => navigate('/modes')}
+      />
+    );
+  }
+
+  if (isVictory) {
+      return (
+        <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-green-50">
+          <div className="text-green-600 mb-6">
+            <Trophy size={96} />
+          </div>
+          <h2 className="text-5xl font-black text-green-700 mb-4 uppercase">Chinh Phục Thành Công!</h2>
+          <p className="text-2xl mb-8 text-green-900 font-bold">Bạn đã vượt qua 10 thử thách lịch sử với số điểm tuyệt đối!</p>
+          <div className="flex gap-4">
+              <button onClick={() => window.location.reload()} className="btn-historical bg-green-700 hover:bg-green-800">Tiếp Tục Ải Khác</button>
+              <button onClick={() => navigate('/modes')} className="btn-historical bg-gray-600">Về Sa Bàn</button>
+          </div>
+        </div>
+      );
+  }
+
+  if (isFailed) {
+    return (
+      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-red-50">
+        <div className="text-red-600 mb-6">
+          <AlertCircle size={96} />
+        </div>
+        <h2 className="text-5xl font-black text-red-700 mb-4 uppercase">Thử Thách Thất Bại</h2>
+        <p className="text-2xl mb-8 text-red-900 italic">"Chưa đủ kiến thức để vượt ải. Hãy quay lại dùi mài sử học!"</p>
+        <div className="flex gap-4">
+            <button onClick={() => window.location.reload()} className="btn-historical bg-red-700 hover:bg-red-800">Thử Lại Ngay</button>
+            <button onClick={() => navigate('/timeline')} className="btn-historical bg-amber-700 hover:bg-amber-800">Vào Học Thuật</button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) return <div className="p-8 text-center text-amber-900 font-bold">Đang dàn trận...</div>;
   if (questions.length === 0) return (
@@ -73,31 +126,25 @@ export default function SurvivalMode() {
     </div>
   );
 
-  if (lives <= 0) {
-    return (
-      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-4xl font-bold text-red-600 mb-4">Sử Sách Đã Khép</h2>
-        <p className="text-xl mb-8">Bạn đã anh dũng hy sinh. Hãy tu dưỡng thêm để quay lại!</p>
-        <button onClick={() => navigate('/modes')} className="btn-historical">Rút Quân về Sa Bàn</button>
-      </div>
-    );
-  }
-
   const currentQuestion = questions[currentIndex];
 
   return (
     <div className="p-6 min-h-screen max-w-2xl mx-auto flex flex-col">
       <div className="flex justify-between items-center mb-12">
-        <button onClick={() => navigate('/modes')} className="text-deep-bronze font-bold">Thoát</button>
-        <div className="text-red-600 font-bold text-xl flex items-center gap-2">
-            🔥 SINH TỒN
+        <button onClick={() => navigate('/modes')} className="text-deep-bronze font-bold flex items-center gap-1 hover:text-red-700 transition-colors">
+          <ArrowLeft size={20} /> Thoát
+        </button>
+        <div className="text-red-600 font-bold text-xl flex items-center gap-2 uppercase tracking-tighter">
+            <Swords size={24} /> CHINH PHỤC (10/10)
         </div>
-        <Lives count={lives} />
+        <div className="text-amber-800 font-black">
+            {currentIndex + 1} / 10
+        </div>
       </div>
 
       <div className="historical-card flex-1 flex flex-col items-center justify-center text-center">
         <div className="mb-8 p-4 border-b-2 border-amber-100 w-full flex justify-between">
-          <span className="text-amber-800 font-bold uppercase text-sm">Câu số {currentIndex + 1}</span>
+          <span className="text-amber-800 font-bold uppercase text-sm">Thử thách thứ {currentIndex + 1}</span>
           <span className="text-amber-800 font-bold uppercase text-sm">Điểm: {score}</span>
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-10 italic">"{currentQuestion.content}"</h2>
@@ -105,9 +152,14 @@ export default function SurvivalMode() {
         <Questions question={currentQuestion} onAnswer={handleAnswer} feedback={feedback} />
 
         {feedback && (
-          <div className={`mt-8 p-6 rounded-lg w-full border-2 ${feedback.correct ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+          <div className={`mt-8 p-6 rounded-lg w-full border-2 ${feedback.correct ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
             <p className="font-bold text-xl mb-2">{feedback.message}</p>
-            <button onClick={nextQuestion} className="px-8 py-3 bg-amber-700 text-white rounded-lg font-bold">Kế Tiếp ➔</button>
+            {feedback.explanation && (
+                <p className="mb-4 italic text-sm text-gray-600">"{feedback.explanation}"</p>
+            )}
+            <button onClick={nextQuestion} className="px-8 py-3 bg-amber-700 text-white rounded-lg font-bold flex items-center gap-2 mx-auto hover:bg-amber-800 transition-colors">
+              Kế Tiếp <ChevronRight size={20} />
+            </button>
           </div>
         )}
       </div>

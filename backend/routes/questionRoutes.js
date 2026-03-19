@@ -5,11 +5,14 @@ const {
     getQuestions,
     getRandomQuestions,
     updateQuestion,
-    deleteQuestion
+    deleteQuestion,
+    getQuestionsByRegion
 } = require('../controllers/questionController');
 
 // Đặt /random trước /:id để tránh bị lầm tưởng "random" là một ":id"
 router.get('/random', getRandomQuestions);
+
+router.get('/territory/:region', getQuestionsByRegion);
 
 router.route('/')
     .get(getQuestions)
