@@ -321,7 +321,9 @@ export default function AdminDashboard() {
                                     <textarea 
                                         type="text" 
                                         placeholder="Mặt sau (Đáp án + Thông tin bổ sung...)" 
-                                        className="w-full bg-slate-800 text-white p-3 rounded-lg border border-slate-700"                                    onChange={e => {
+                                        className="w-full bg-slate-800 text-white p-3 rounded-lg border border-slate-700"
+                                        value={fc.back}
+                                        onChange={e => {
                                             const n = [...lFlashcards]; n[i].back = e.target.value; setLFlashcards(n);
                                         }}
                                     />

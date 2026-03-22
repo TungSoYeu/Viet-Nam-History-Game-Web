@@ -20,19 +20,30 @@ const createAdmins = async () => {
                 console.log(`⚠️  Tài khoản ${adminData.username} đã tồn tại. Đang cập nhật quyền Admin...`);
                 existingUser.role = 'admin';
                 existingUser.experience = 9999;
+                
+                // Tránh lỗi duplicate key từ MongoDB cho những email rỗng cũ
+                if (existingUser.email && existingUser.email.trim() === '') {
+                    existingUser.email = undefined;
+                }
+                if (!existingUser.email) existingUser.email = undefined;
+
                 await existingUser.save();
                 console.log(`✅ Cập nhật ${adminData.username} thành công!`);
             } else {
                 const newAdmin = new User(adminData);
-                await newAdmin.save();
-                console.log(`✅ Đã tạo mới tài khoản Admin: ${adminData.username}`);
+                try {
+                    await newAdmin.save();
+                    console.log(`✅ Đã tạo mới tài khoản Admin: ${adminData.username}`);
+                } catch (saveErr) {
+                    console.error(`❌ Lỗi khi lưu ${adminData.username}:`, saveErr.message);
+                }
             }
         }
 
-        console.log("✨ Đã hoàn tất việc tạo 3 tài khoản Admin!");
+        console.log("✨ Đã hoàn tất việc xử lý 3 tài khoản Admin!");
         process.exit(0);
     } catch (err) {
-        console.error("❌ Lỗi: ", err);
+        console.error("❌ Lỗi Tổng quát: ", err);
         process.exit(1);
     }
 };

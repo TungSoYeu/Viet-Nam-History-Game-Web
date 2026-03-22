@@ -157,17 +157,17 @@ export default function Login() {
 
             {isRegister && (
               <>
-                <input type="email" placeholder="Địa chỉ Email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} required />
+                <input type="email" placeholder="Địa chỉ Email (Không bắt buộc)" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} />
                 <input type="text" placeholder="Họ và tên" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} required />
                 <input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} required />
                 <div className="space-y-2">
                   <select onChange={handleProvinceChange} required className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }}>
-                    <option value="">-- Tỉnh/Thành phố --</option>
-                    {provinces.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}
+                    <option value="" style={{ color: 'black' }}>-- Tỉnh/Thành phố --</option>
+                    {provinces.map(p => <option key={p.code} value={p.code} style={{ color: 'black' }}>{p.name}</option>)}
                   </select>
                   <select onChange={handleDistrictChange} disabled={!selectedProvince} required className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }}>
-                    <option value="">-- Quận/Huyện --</option>
-                    {districts.map(d => <option key={d.code} value={d.code}>{d.name}</option>)}
+                    <option value="" style={{ color: 'black' }}>-- Quận/Huyện --</option>
+                    {districts.map(d => <option key={d.code} value={d.code} style={{ color: 'black' }}>{d.name}</option>)}
                   </select>
                   <input type="text" placeholder="Tên trường học" value={schoolName} onChange={e => setSchoolName(e.target.value)} disabled={!selectedDistrict} required className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} />
                 </div>
