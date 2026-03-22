@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Questions from '../components/Questions';
+import API_BASE_URL from '../config/api';
 
 export default function GamePlay() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function GamePlay() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/questions/${lessonId}`)
+    fetch(`${API_BASE_URL}/api/questions/${lessonId}`)
       .then(res => res.json())
       .then(data => {
         setQuestions(data.sort(() => Math.random() - 0.5));
@@ -29,7 +30,7 @@ export default function GamePlay() {
     const question = questions[currentIndex];
     const userId = localStorage.getItem('userId');
 
-    fetch('http://localhost:5000/api/submit-answer', {
+    fetch(`${API_BASE_URL}/api/submit-answer`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

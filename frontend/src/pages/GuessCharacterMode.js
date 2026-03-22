@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, UserSearch, PlusCircle, Trophy, CheckCircle, XCircle } from 'lucide-react';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 export default function GuessCharacterMode() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function GuessCharacterMode() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/guess-character/random');
+        const res = await axios.get(`${API_BASE_URL}/api/guess-character/random`);
         setCharacterData(res.data);
         setLoading(false);
       } catch (err) {
@@ -32,7 +33,7 @@ export default function GuessCharacterMode() {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
     try {
-      await axios.post('http://localhost:5000/api/user/add-xp', { userId, xp: xpGained });
+      await axios.post(`${API_BASE_URL}/api/user/add-xp`, { userId, xp: xpGained });
     } catch (err) {
       console.error("Error saving XP:", err);
     }

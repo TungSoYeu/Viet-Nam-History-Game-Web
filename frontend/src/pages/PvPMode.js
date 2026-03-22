@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PeriodSelector from '../components/PeriodSelector';
+import API_BASE_URL from '../config/api';
 
 export default function PvPMode() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function PvPMode() {
   }, []);
 
   const loadChallenges = () => {
-    fetch(`http://localhost:5000/api/pvp/challenges/${userId}`)
+    fetch(`${API_BASE_URL}/api/pvp/challenges/${userId}`)
       .then(res => res.json())
       .then(data => {
         setChallenges(data);
@@ -23,7 +24,7 @@ export default function PvPMode() {
   };
 
   const createGlobalChallenge = (lessonId) => {
-    fetch('http://localhost:5000/api/pvp/create', {
+    fetch(`${API_BASE_URL}/api/pvp/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ creatorId: userId, lessonId })
