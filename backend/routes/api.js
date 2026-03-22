@@ -87,7 +87,14 @@ router.post('/register', async (req, res) => {
   if (!username || !password) return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin!" });
 
   try {
-    let existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    const safeEmail = email && email.trim() !== '' ? email.trim() : undefined;
+
+    const orConditions = [{ username }];
+    if (safeEmail) {
+        orConditions.push({ email: safeEmail });
+    }
+
+    let existingUser = await User.findOne({ $or: orConditions });
     if (existingUser) {
         if (existingUser.username === username) {
             return res.status(400).json({ message: "Tên đăng nhập đã tồn tại!" });
@@ -98,8 +105,8 @@ router.post('/register', async (req, res) => {
 
     // Phân quyền rõ ràng trước khi lưu vào Database
     let role = 'user';
-    if (adminCode) {
-        if (adminCode === ADMIN_SECRET_CODE) {
+    if (adminCode && adminCode.trim() !== '') {
+        if (adminCode.trim() === ADMIN_SECRET_CODE) {
             role = 'admin';
         } else {
             return res.status(400).json({ message: "Mã Quản trị viên không hợp lệ!" });
@@ -110,7 +117,7 @@ router.post('/register', async (req, res) => {
     const user = new User({ 
       username, 
       password, 
-      email: email || undefined,
+      email: safeEmail,
       role,
       fullName: fullName || '',
       dateOfBirth: dateOfBirth || null,
@@ -128,7 +135,7 @@ router.post('/register', async (req, res) => {
     res.json({ success: true, message: "Đăng ký thành công!", role });
   } catch (err) {
     console.error("Registration error:", err);
-    res.status(500).json({ message: "Lỗi khi đăng ký", error: err.message });
+    res.status(500).json({ message: "Lỗi đăng ký", error: err.message || "Unknown error" });
   }
 });
 
