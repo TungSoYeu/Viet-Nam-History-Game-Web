@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Frown, ArrowLeft, Trophy } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 
 export default function MillionaireMode() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function MillionaireMode() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/millionaire/random')
+    fetch(`${API_BASE_URL}/api/millionaire/random`)
       .then(res => {
           if (!res.ok) throw new Error("Mất kết nối với máy chủ API!");
           return res.json();
@@ -29,7 +30,8 @@ export default function MillionaireMode() {
                 // Phòng trường hợp Schema của bạn dùng 'question' thay vì 'content'
                 question: q.content || q.question || "Câu hỏi bị lỗi định dạng",
                 options: Array.isArray(q.options) ? q.options : ["A", "B", "C", "D"],
-                answer: Array.isArray(q.options) ? q.options.indexOf(q.correctAnswer) : 0
+                answer: Array.isArray(q.options) ? q.options.indexOf(q.correctAnswer) : 0,
+                correctAnswer: q.correctAnswer
             }));
             setQuestions(formatted);
         } else {
@@ -45,7 +47,7 @@ export default function MillionaireMode() {
   const saveXP = (xpGained) => {
     const userId = localStorage.getItem('userId');
     if (userId) {
-      fetch('http://localhost:5000/api/user/add-xp', {
+      fetch(`${API_BASE_URL}/api/user/add-xp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, xp: xpGained })
@@ -55,7 +57,19 @@ export default function MillionaireMode() {
 
   const handleAnswer = (selectedIndex) => {
     // Thêm dấu ? để chống sập nếu questions[currentQ] bị undefined
-    const isCorrect = selectedIndex === questions[currentQ]?.answer;
+    const q = questions[currentQ];
+    if (!q) return;
+
+    let isCorrect = selectedIndex === q.answer;
+    
+    // Phép thử string dự phòng cực mạnh (nếu có khoảng trắng thừa ở DB làm mất index)
+    if (!isCorrect && q.options && q.correctAnswer) {
+       const userStr = String(q.options[selectedIndex] || "").toLowerCase().trim();
+       const correctStr = String(q.correctAnswer || "").toLowerCase().trim();
+       if (userStr === correctStr) {
+           isCorrect = true;
+       }
+    }
 
     if (isCorrect) {
       const newScore = score + (currentQ + 1) * 10;

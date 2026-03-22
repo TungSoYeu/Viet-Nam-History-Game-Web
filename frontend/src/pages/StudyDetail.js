@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import API_BASE_URL from '../config/api';
 
 function FlashcardItem({ card }) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const parts = card.back.split('💡 Fun Fact:');
+  // Tách text nếu có "BẠN CÓ BIẾT?" để hiển thị đẹp hơn
+  const parts = card.back.split('BẠN CÓ BIẾT:');
   const mainAnswer = parts[0];
   const funFact = parts[1];
 
@@ -34,9 +36,9 @@ function FlashcardItem({ card }) {
           </div>
           
           {funFact && (
-            <div className="fun-fact-box w-full text-sm leading-relaxed text-amber-100 italic">
-              <span className="font-black text-amber-400 not-italic block mb-1">💡 BẠN CÓ BIẾT?</span>
-              {funFact}
+            <div className="mt-6 pt-6 border-t border-slate-700/50">
+              <span className="font-black text-amber-400 not-italic block mb-1">BẠN CÓ BIẾT?</span>
+              <p className="text-slate-300 italic text-lg leading-relaxed">{funFact.trim()}</p>
             </div>
           )}
         </div>
@@ -53,7 +55,7 @@ export default function StudyDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/lessons`)
+    fetch(`${API_BASE_URL}/api/lessons`)
       .then(res => res.json())
       .then(data => {
         const current = data.find(l => l._id === lessonId);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, ArrowDown, Trophy, History } from 'lucide-react';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 export default function ChronologicalMode() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function ChronologicalMode() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/chronological/random');
+        const res = await axios.get(`${API_BASE_URL}/api/chronological/random`);
         // Trộn ngẫu nhiên các sự kiện để người chơi sắp xếp
         const shuffled = [...res.data.events].sort(() => Math.random() - 0.5);
         setEvents(shuffled);
@@ -31,7 +32,7 @@ export default function ChronologicalMode() {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
     try {
-      await axios.post('http://localhost:5000/api/user/add-xp', { userId, xp: xpGained });
+      await axios.post(`${API_BASE_URL}/api/user/add-xp`, { userId, xp: xpGained });
     } catch (err) {
       console.error("Error saving XP:", err);
     }

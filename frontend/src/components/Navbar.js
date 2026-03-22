@@ -28,6 +28,7 @@ import {
   UserSearch,
   Image as ImageIcon
 } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export default function Navbar() {
 
   const getAvatarUrl = (avatarPath) => {
     if (!avatarPath) return DEFAULT_AVATAR;
-    if (avatarPath.startsWith('/uploads')) return `http://localhost:5000${avatarPath}`;
+    if (avatarPath.startsWith('/uploads')) return `${API_BASE_URL}${avatarPath}`;
     if (avatarPath.startsWith('http')) return avatarPath;
     return DEFAULT_AVATAR;
   };
@@ -115,7 +116,7 @@ export default function Navbar() {
 
     const userId = localStorage.getItem('userId');
     if (userId) {
-      fetch(`http://localhost:5000/api/user/${userId}`)
+      fetch(`${API_BASE_URL}/api/user/${userId}`)
         .then(res => res.json())
         .then(data => {
             setUser(data);
@@ -138,7 +139,7 @@ export default function Navbar() {
       return;
     }
 
-    fetch('http://localhost:5000/api/user/link-google', {
+    fetch(`${API_BASE_URL}/api/user/link-google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -210,7 +211,7 @@ export default function Navbar() {
     formData.append('avatar', selectedFile);
 
     try {
-      const res = await fetch('http://localhost:5000/api/user/update-avatar', {
+      const res = await fetch(`${API_BASE_URL}/api/user/update-avatar`, {
         method: 'PATCH',
         body: formData
       });
@@ -260,7 +261,7 @@ export default function Navbar() {
     };
 
     try {
-      const res = await fetch('http://localhost:5000/api/user/update-info', {
+      const res = await fetch(`${API_BASE_URL}/api/user/update-info`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -298,38 +299,38 @@ export default function Navbar() {
   return (
     <>
       {/* TOP NAV - Visible only on Desktop/Tablet */}
-      <nav ref={navRef} className="bg-amber-900 text-amber-50 shadow-2xl border-b-4 border-amber-700 sticky top-0 z-[100] h-20">
+      <nav ref={navRef} className="text-amber-50 sticky top-0 z-[100] h-20 transition-all" style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full">
             
             <div className="flex items-center gap-8">
               <Link to="/modes" className="flex items-center gap-2 group">
                 <ScrollText size={32} className="group-hover:rotate-12 transition-transform text-amber-400" />
-                <span className="font-black text-xl tracking-tighter uppercase">Sử Việt</span>
+                <span className="font-black text-xl tracking-tighter uppercase" style={{ background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Sử Việt</span>
               </Link>
 
               {/* Desktop Menu */}
-              <div className="hidden md:flex items-baseline space-x-4">
-                <Link to="/timeline" className={`px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-2 ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-800 border-b-2 border-amber-400' : ''}`}>
+              <div className="hidden md:flex items-baseline space-x-1">
+                <Link to="/timeline" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
                   <Castle size={18} /> Học Thuật
                 </Link>
                 
                 <div className="relative">
-                  <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className="px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-2">
+                  <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${showModes || location.pathname === '/modes' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
                     <Swords size={18} /> Thách Đấu <ChevronDown size={14} className={`transition-transform ${showModes ? 'rotate-180' : ''}`} />
                   </button>
                   {showModes && (
-                    <div className="absolute left-0 mt-2 w-64 bg-amber-50 rounded-xl shadow-2xl border-2 border-amber-900 py-2 animate-fade-in overflow-hidden">
+                    <div className="absolute left-0 mt-2 w-64 rounded-xl shadow-2xl py-2 animate-fade-in overflow-hidden" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }}>
                       {modes.map((mode, idx) => (
-                        <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-amber-900 hover:bg-amber-200 font-bold transition">
-                          <span className="text-amber-700">{mode.icon}</span> {mode.name}
+                        <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white font-bold transition">
+                          <span className="text-amber-500">{mode.icon}</span> {mode.name}
                         </Link>
                       ))}
                     </div>
                   )}
                 </div>
 
-                <Link to="/leaderboard" className={`px-4 py-2 rounded-md font-bold text-sm uppercase hover:bg-amber-800 transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-800 border-b-2 border-amber-400' : ''}`}>
+                <Link to="/leaderboard" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
                   <Trophy size={18} /> Phong Thần
                 </Link>
               </div>
@@ -342,12 +343,13 @@ export default function Navbar() {
                    setShowUserMenu(!showUserMenu);
                    setShowModes(false);
                  }}
-                 className="flex items-center gap-2 md:gap-4 bg-amber-950 px-3 md:px-4 py-2 rounded-full border border-amber-700 shadow-inner cursor-pointer hover:bg-black transition"
+                 className="flex items-center gap-2 md:gap-4 px-3 md:px-4 py-2 rounded-full cursor-pointer transition border"
+                 style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', hover: { background: 'rgba(255,255,255,0.1)' } }}
                >
                   <img 
                     src={getAvatarUrl(user?.avatar)} 
                     alt="Avatar"
-                    className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-amber-500 object-cover"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-amber-500/50 object-cover"
                   />
                   <div className="hidden sm:flex flex-col items-start">
                      <span className="text-[10px] opacity-60 font-bold uppercase tracking-tighter">Danh tướng</span>
@@ -361,22 +363,22 @@ export default function Navbar() {
                </div>
 
                {showUserMenu && (
-                 <div className="absolute right-0 top-14 w-56 bg-white border-2 border-amber-900 rounded-lg shadow-xl py-2 z-50 animate-fade-in overflow-hidden text-sm">
+                 <div className="absolute right-0 top-14 w-56 rounded-xl shadow-2xl py-2 z-50 animate-fade-in overflow-hidden text-sm" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }}>
                     <button 
                       onClick={() => { setShowProfile(true); setShowUserMenu(false); }}
-                      className="w-full text-left px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b flex items-center gap-2"
+                      className="w-full text-left px-4 py-3 text-white font-bold hover:bg-white/10 flex items-center gap-3 border-b border-white/10 transition"
                     >
-                      <User size={16} /> Thông Tin Cá Nhân
+                      <User size={16} className="text-amber-500" /> Thông Tin Cá Nhân
                     </button>
                     {role === 'admin' && (
-                      <Link to="/admin" onClick={() => setShowUserMenu(false)} className="flex px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b items-center gap-2">
-                        <Settings size={16} /> Bảng Điều Khiển
+                      <Link to="/admin" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                        <Settings size={16} className="text-amber-500" /> Bảng Điều Khiển
                       </Link>
                     )}
-                    <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="flex px-4 py-2 text-amber-900 font-bold hover:bg-amber-50 border-b items-center gap-2">
-                      <Key size={16} /> Đổi Mật Khẩu
+                    <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                      <Key size={16} className="text-amber-500" /> Đổi Mật Khẩu
                     </Link>
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-700 font-bold hover:bg-red-50 flex items-center gap-2">
+                    <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-red-400 font-bold hover:bg-red-500/10 flex items-center gap-3 transition">
                       <LogOut size={16} /> Đăng Xuất
                     </button>
                  </div>
@@ -417,17 +419,17 @@ export default function Navbar() {
 
       {/* Shared Modals */}
       {showProfile && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[200] p-4">
-            <div className="historical-card w-full max-w-md bg-white relative animate-bounce-in max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 flex items-center justify-center z-[200] p-4" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)' }}>
+            <div className="w-full max-w-md rounded-3xl relative animate-bounce-in max-h-[90vh] flex flex-col" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
                 <button 
                     onClick={() => setShowProfile(false)}
-                    className="absolute top-2 right-2 md:top-4 md:right-4 p-2 text-amber-900 hover:text-red-700 transition-colors z-[210]"
+                    className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[210]"
                     aria-label="Close"
                 >
-                    <X size={28} />
+                    <X size={24} />
                 </button>
                 
-                <div className="text-center mb-6 border-b-2 border-amber-100 pb-4 shrink-0">
+                <div className="text-center mb-6 pt-8 pb-4 shrink-0 border-b border-white/10">
                     <div className="relative inline-block group mb-4">
                         <img 
                             src={previewUrl || getAvatarUrl(user?.avatar)} 
@@ -443,31 +445,32 @@ export default function Navbar() {
                         <button 
                             onClick={handleUploadAvatar}
                             disabled={uploading}
-                            className={`block mx-auto mb-4 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${uploading ? 'bg-gray-400' : 'bg-green-700 hover:bg-green-800'} text-white transition`}
+                            className={`block mx-auto mb-4 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest ${uploading ? 'bg-gray-600' : 'bg-green-600 hover:bg-green-500'} text-white transition`}
                         >
                             {uploading ? 'Đang tải...' : 'Xác nhận tải lên'}
                         </button>
                     )}
-                    <h2 className="text-3xl font-black text-amber-900 uppercase">Hồ Sơ Danh Tướng</h2>
-                    <p className="text-amber-700 italic font-bold">@{username}</p>
+                    <h2 className="text-2xl font-black text-white uppercase mt-4">Hồ Sơ Danh Tướng</h2>
+                    <p className="text-amber-500 italic font-bold tracking-wider">@{username}</p>
                 </div>
 
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar flex-1">
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto px-8 custom-scrollbar flex-1 pb-4">
                     {isEditing ? (
                       <div className="flex flex-col">
-                        <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Địa chỉ Email</span>
+                        <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Địa chỉ Email</span>
                         <input 
                           type="email"
-                          className="text-lg font-bold text-gray-800 border-2 border-amber-100 rounded p-2 outline-none focus:border-amber-500"
+                          className="text-base font-bold text-white rounded-xl p-3 outline-none transition-all"
+                          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                           value={editData.email}
                           onChange={(e) => setEditData({...editData, email: e.target.value})}
                         />
                       </div>
                     ) : (
                       <div className="flex flex-col">
-                        <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Tài khoản & Liên kết</span>
+                        <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Tài khoản & Liên kết</span>
                         <div className="flex flex-col gap-2">
-                          <span className="text-xl font-bold text-gray-800">{user?.email || 'Chưa cập nhật'}</span>
+                          <span className="text-lg font-bold text-white">{user?.email || 'Chưa cập nhật'}</span>
                           
                           {user?.googleId ? (
                             <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg border border-green-200 w-fit">
@@ -495,44 +498,46 @@ export default function Navbar() {
                     )}
 
                     <div className="flex flex-col">
-                        <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Họ và Tên</span>
+                        <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Họ và Tên</span>
                         {isEditing ? (
                           <input 
-                            className="text-lg font-bold text-gray-800 border-2 border-amber-100 rounded p-1 outline-none focus:border-amber-500"
+                            className="text-base font-bold text-white rounded-xl p-3 outline-none transition-all"
+                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                             value={editData.fullName}
                             onChange={(e) => setEditData({...editData, fullName: e.target.value})}
                           />
                         ) : (
-                          <span className="text-xl font-bold text-gray-800">{user?.fullName || 'Chưa cập nhật'}</span>
+                          <span className="text-lg font-bold text-white">{user?.fullName || 'Chưa cập nhật'}</span>
                         )}
                     </div>
 
                     <div className="flex justify-between gap-4">
                         <div className="flex flex-col flex-1">
-                            <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Ngày sinh</span>
+                            <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Ngày sinh</span>
                             {isEditing ? (
                               <input 
                                 type="date"
-                                className="text-lg font-bold text-gray-800 border-2 border-amber-100 rounded p-1 outline-none focus:border-amber-500"
+                                className="text-base font-bold text-white rounded-xl p-3 outline-none transition-all"
+                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', colorScheme: 'dark' }}
                                 value={editData.dateOfBirth}
                                 onChange={(e) => setEditData({...editData, dateOfBirth: e.target.value})}
                               />
                             ) : (
-                              <span className="text-lg font-bold text-gray-800">
+                              <span className="text-base font-bold text-white">
                                   {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}
                               </span>
                             )}
                         </div>
                         <div className="flex flex-col flex-1">
-                            <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Vai trò</span>
-                            <span className={`text-lg font-black uppercase ${role === 'admin' ? 'text-red-600' : 'text-blue-600'}`}>
+                            <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Vai trò</span>
+                            <span className={`text-base font-black uppercase ${role === 'admin' ? 'text-red-400' : 'text-blue-400'}`}>
                                 {role === 'admin' ? 'Quản trị viên' : 'Người chơi'}
                             </span>
                         </div>
                     </div>
 
                     <div className="flex flex-col">
-                        <span className="text-xs uppercase text-gray-400 font-black tracking-widest mb-1">Thông tin trường học</span>
+                        <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Thông tin trường học</span>
                         {isEditing ? (
                           <div className="space-y-3 bg-amber-50 p-3 rounded-lg border border-amber-200">
                              <select 
@@ -568,32 +573,30 @@ export default function Navbar() {
                              />
                           </div>
                         ) : (
-                          <span className="text-xl font-bold text-gray-800 italic">{user?.school || 'Chưa cập nhật'}</span>
+                          <span className="text-lg font-bold text-white italic">{user?.school || 'Chưa cập nhật'}</span>
                         )}
                     </div>
 
                     {!isEditing && (
-                      <div className="bg-amber-50 p-6 rounded-xl border border-amber-200 mt-4">
-                          <div className="flex flex-col items-center">
-                              <span className="text-sm font-bold text-amber-800 uppercase tracking-widest mb-2">Tổng điểm tích lũy</span>
-                              <span className="text-4xl font-black text-amber-900">{user?.experience || 0} XP</span>
-                          </div>
+                      <div className="p-6 rounded-2xl border mt-4 text-center" style={{ background: 'rgba(212,160,83,0.1)', borderColor: 'rgba(212,160,83,0.2)' }}>
+                          <span className="text-xs font-bold uppercase tracking-widest mb-2 block text-amber-300">Tổng điểm tích lũy</span>
+                          <span className="text-4xl font-black text-amber-500 drop-shadow-md">{user?.experience || 0} XP</span>
                       </div>
                     )}
                 </div>
 
-                <div className="flex gap-2 mt-8">
+                <div className="flex gap-3 p-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
                   {isEditing ? (
                     <>
                       <button 
                           onClick={handleUpdateInfo}
-                          className="btn-historical flex-1 py-4 bg-green-700 text-white"
+                          className="btn-primary flex-1 py-4 text-sm font-bold bg-green-600 hover:bg-green-500 text-white rounded-xl transition"
                       >
                           Lưu thông tin
                       </button>
                       <button 
                           onClick={() => setIsEditing(false)}
-                          className="btn-historical flex-1 py-4 bg-gray-500 text-white"
+                          className="btn-primary flex-1 py-4 text-sm font-bold bg-gray-600 hover:bg-gray-500 text-white rounded-xl transition"
                       >
                           Hủy
                       </button>
@@ -602,13 +605,13 @@ export default function Navbar() {
                     <>
                       <button 
                           onClick={() => setIsEditing(true)}
-                          className="btn-historical flex-1 py-4 bg-amber-700 text-white"
+                          className="btn-primary flex-1 py-4 text-sm font-bold rounded-xl transition"
                       >
                           Chỉnh sửa
                       </button>
                       <button 
                           onClick={() => setShowProfile(false)}
-                          className="btn-historical flex-1 py-4 bg-amber-900 text-white"
+                          className="btn-primary flex-1 py-4 text-sm font-bold bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
                       >
                           Đóng
                       </button>

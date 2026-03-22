@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, Medal, Crown, Star, ArrowLeft, MapPin, User } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 
 export default function Leaderboard() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/leaderboard')
+    fetch(`${API_BASE_URL}/api/leaderboard`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -88,7 +89,7 @@ export default function Leaderboard() {
       <div className="w-full max-w-4xl flex items-end justify-center gap-2 sm:gap-6 mb-16 px-2">
         {podiumData.map((user, idx) => {
           const styles = getPodiumStyles(idx);
-          const userAvatar = user.avatar ? (user.avatar.startsWith('/') ? `http://localhost:5000${user.avatar}` : user.avatar) : null;
+          const userAvatar = user.avatar ? (user.avatar.startsWith('/') ? `${API_BASE_URL}${user.avatar}` : user.avatar) : null;
 
           return (
             <div key={user._id} className={`${styles.order} flex flex-col items-center w-full max-w-[200px] animate-fade-in-up`} style={{ animationDelay: `${idx * 150}ms` }}>
@@ -136,7 +137,7 @@ export default function Leaderboard() {
             runnerUpData.map((user, idx) => {
               const rank = idx + 4;
               const isTop5 = rank === 4 || rank === 5;
-              const userAvatar = user.avatar ? (user.avatar.startsWith('/') ? `http://localhost:5000${user.avatar}` : user.avatar) : null;
+              const userAvatar = user.avatar ? (user.avatar.startsWith('/') ? `${API_BASE_URL}${user.avatar}` : user.avatar) : null;
 
               return (
                 <div 

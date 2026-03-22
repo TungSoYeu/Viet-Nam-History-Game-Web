@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Zap } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 
 export default function PeriodSelector({ onSelect, onBack, title, description }) {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/lessons')
+    fetch(`${API_BASE_URL}/api/lessons`)
       .then(res => res.json())
       .then(data => {
         setLessons(data);
@@ -17,45 +19,69 @@ export default function PeriodSelector({ onSelect, onBack, title, description })
       });
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-amber-900 font-bold">Đang tải danh sách triều đại...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="text-center">
+        <div className="w-12 h-12 rounded-full border-4 border-t-amber-400 border-r-transparent border-b-transparent border-l-transparent animate-spin mx-auto mb-4"></div>
+        <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Đang tải danh sách triều đại...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-amber-50">
-      <div className="max-w-4xl w-full text-center">
-        <h1 className="historical-title text-4xl mb-4">{title || "Chọn Thời Kỳ Tu Luyện"}</h1>
-        <p className="mb-8 text-gray-700 italic">{description || "Chọn một triều đại cụ thể hoặc thử thách bản thân với kiến thức tổng hợp."}</p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-          {/* Option: Advanced / All Periods */}
+    <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="max-w-3xl w-full">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(212,160,83,0.7)' }}>⚔️ Chọn Thời Kỳ</p>
+          <h1 className="text-2xl sm:text-3xl font-black mb-2" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            {title || "Chọn Thời Kỳ Tu Luyện"}
+          </h1>
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {description || "Chọn một triều đại hoặc thử thách bản thân với kiến thức tổng hợp."}
+          </p>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 stagger-children">
+          {/* All Periods - Featured Card */}
           <div 
             onClick={() => onSelect('all')}
-            className="p-6 rounded-xl border-4 border-red-800 bg-red-100 shadow-xl cursor-pointer transform transition hover:-translate-y-2 hover:bg-red-200 flex flex-col items-center justify-center text-center"
+            className="p-5 rounded-2xl cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col items-center justify-center text-center animate-fade-in-up opacity-0"
+            style={{ background: 'linear-gradient(135deg, rgba(185,28,28,0.2), rgba(239,68,68,0.1))', border: '1.5px solid rgba(239,68,68,0.25)', animationFillMode: 'forwards' }}
           >
-            <span className="text-4xl mb-2">🔥</span>
-            <h3 className="text-xl font-black text-red-900 uppercase">Nâng Cao</h3>
-            <p className="text-sm text-red-800 font-bold">Tổng hợp mọi thời kỳ</p>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'linear-gradient(135deg, #dc2626, #ef4444)' }}>
+              <Zap size={24} className="text-white" />
+            </div>
+            <h3 className="text-base font-black uppercase text-white">Nâng Cao</h3>
+            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Tổng hợp mọi thời kỳ</p>
           </div>
 
           {/* Individual Lessons */}
-          {lessons.map((lesson) => (
+          {lessons.map((lesson, idx) => (
             <div 
               key={lesson._id}
               onClick={() => onSelect(lesson._id)}
-              className="p-6 rounded-xl border-2 border-amber-800 bg-white shadow-md cursor-pointer transform transition hover:-translate-y-1 hover:bg-amber-50 flex flex-col items-center justify-center text-center"
+              className="p-5 rounded-2xl cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col items-center justify-center text-center animate-fade-in-up opacity-0"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', animationDelay: `${(idx + 1) * 0.05}s`, animationFillMode: 'forwards' }}
             >
               <span className="text-3xl mb-2">📜</span>
-              <h3 className="text-lg font-bold text-amber-900">{lesson.title}</h3>
-              <p className="text-xs text-amber-800 line-clamp-2">{lesson.description}</p>
+              <h3 className="text-sm font-bold text-white leading-tight">{lesson.title}</h3>
+              <p className="text-[11px] mt-1 line-clamp-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{lesson.description}</p>
             </div>
           ))}
         </div>
 
-        <button 
+        {/* Back Button */}
+        <div className="text-center">
+          <button 
             onClick={onBack}
-            className="px-8 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition"
-        >
-            Quay lại Sa Bàn
-        </button>
+            className="px-8 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 mx-auto"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
+          >
+            <ArrowLeft size={16} /> Quay lại
+          </button>
+        </div>
       </div>
     </div>
   );

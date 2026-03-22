@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function AdminDashboard() {
   const [qCorrect, setQCorrect] = useState('');
   const [qLesson, setQLesson] = useState('');
   const [qExplanation, setQExplanation] = useState('');
-  const [qDifficulty, setQDifficulty] = useState(1);
+  const [qDifficulty, setQDifficulty] = useState('easy');
   const [qType, setQType] = useState('general');
   const [qLocation, setQLocation] = useState('');
 
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
   }, [navigate, activeTab]);
 
   const fetchLessons = () => {
-    fetch('http://localhost:5000/api/lessons')
+    fetch(`${API_BASE_URL}/api/lessons`)
       .then(res => res.json())
       .then(data => setLessons(data));
   };
@@ -68,12 +69,12 @@ export default function AdminDashboard() {
   const fetchListData = () => {
     let url = '';
     switch(activeTab) {
-        case 'question': url = 'http://localhost:5000/api/questions/all'; break;
-        case 'matching': url = 'http://localhost:5000/api/matching/all'; break;
-        case 'chrono': url = 'http://localhost:5000/api/chronological/all'; break; // Giả định có route này
-        case 'character': url = 'http://localhost:5000/api/guess-character/all'; break;
-        case 'reveal': url = 'http://localhost:5000/api/reveal-picture/all'; break;
-        case 'lesson': url = 'http://localhost:5000/api/lessons'; break;
+        case 'question': url = `${API_BASE_URL}/api/questions/all`; break;
+        case 'matching': url = `${API_BASE_URL}/api/matching/all`; break;
+        case 'chrono': url = `${API_BASE_URL}/api/chronological/all`; break; // Giả định có route này
+        case 'character': url = `${API_BASE_URL}/api/guess-character/all`; break;
+        case 'reveal': url = `${API_BASE_URL}/api/reveal-picture/all`; break;
+        case 'lesson': url = `${API_BASE_URL}/api/lessons`; break;
         default: return;
     }
     fetch(url)
@@ -97,7 +98,7 @@ export default function AdminDashboard() {
     setLoading(true);
     const userId = localStorage.getItem('userId');
     
-    let url = `http://localhost:5000/api/admin/${type}`;
+    let url = `${API_BASE_URL}/api/admin/${type}`;
     if (editId) url += `/${editId}`;
 
     let body = {};
@@ -153,7 +154,7 @@ export default function AdminDashboard() {
     const userId = localStorage.getItem('userId');
     const modelMap = { question: 'questions', lesson: 'lessons', matching: 'matching', chrono: 'chronological', character: 'guess-character', reveal: 'reveal-picture' };
     
-    fetch(`http://localhost:5000/api/admin/${modelMap[activeTab]}/${id}`, {
+    fetch(`${API_BASE_URL}/api/admin/${modelMap[activeTab]}/${id}`, {
         method: 'DELETE',
         headers: { 'user-id': userId }
     })
@@ -318,10 +319,9 @@ export default function AdminDashboard() {
                                         }}
                                     />
                                     <textarea 
-                                        className="w-full p-1 text-sm border" 
-                                        placeholder="Mặt sau (Đáp án + 💡 Fun Fact:...)" 
-                                        value={fc.back} 
-                                        onChange={e => {
+                                        type="text" 
+                                        placeholder="Mặt sau (Đáp án + Thông tin bổ sung...)" 
+                                        className="w-full bg-slate-800 text-white p-3 rounded-lg border border-slate-700"                                    onChange={e => {
                                             const n = [...lFlashcards]; n[i].back = e.target.value; setLFlashcards(n);
                                         }}
                                     />
