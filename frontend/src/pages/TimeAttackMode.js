@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import Questions from '../components/Questions';
 import PeriodSelector from '../components/PeriodSelector';
+import API_BASE_URL from '../config/api';
 
 export default function TimeAttackMode() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function TimeAttackMode() {
         ? '/api/questions/all' 
         : `/api/questions/${selectedPeriod}`;
 
-    fetch(`http://localhost:5000${endpoint}`)
+    fetch(`${API_BASE_URL}${endpoint}`)
       .then(res => res.json())
       .then(data => {
         // Shuffle and take only 10 questions for Time Attack Mode
@@ -57,11 +58,24 @@ export default function TimeAttackMode() {
     return () => clearInterval(timer);
   }, [loading, isGameOver, timeLeft, selectedPeriod]);
 
+  // Save accumulated score as XP when game ends
+  useEffect(() => {
+    if (!isGameOver || score <= 0) return;
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      fetch(`${API_BASE_URL}/api/user/add-xp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, xp: score })
+      }).catch(err => console.error("Error saving XP:", err));
+    }
+  }, [isGameOver, score]);
+
   const handleAnswer = (userAnswer) => {
     const question = questions[currentIndex];
     const userId = localStorage.getItem('userId');
 
-    fetch('http://localhost:5000/api/submit-answer', {
+    fetch(`${API_BASE_URL}/api/submit-answer`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

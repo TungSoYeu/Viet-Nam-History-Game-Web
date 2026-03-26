@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Questions from '../components/Questions';
+import API_BASE_URL from '../config/api';
 
 export default function PvPBattle() {
   const navigate = useNavigate();
@@ -16,7 +17,11 @@ export default function PvPBattle() {
 
   const handleAnswer = (userAnswer) => {
     const question = questions[currentIndex];
-    const isCorrect = question.correctAnswer === userAnswer;
+    if (!question) return;
+
+    const userStr = String(userAnswer || "").toLowerCase().trim();
+    const correctStr = String(question.correctAnswer || "").toLowerCase().trim();
+    const isCorrect = userStr === correctStr;
     
     setFeedback({
       correct: isCorrect,
@@ -42,7 +47,7 @@ export default function PvPBattle() {
     const totalTime = Math.floor((endTime - startTime) / 1000);
     const userId = localStorage.getItem('userId');
 
-    fetch('http://localhost:5000/api/pvp/submit', {
+    fetch(`${API_BASE_URL}/api/pvp/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

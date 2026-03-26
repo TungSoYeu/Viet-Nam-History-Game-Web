@@ -10,23 +10,44 @@ const RevealPicture = require('../models/RevealPicture');
 exports.checkAnswer = async (req, res) => {
   const { questionId, userAnswer, userId, mode } = req.body;
   try {
+    if (!questionId || !mongoose.Types.ObjectId.isValid(questionId)) {
+      return res.status(400).json({ message: "ID câu hỏi không hợp lệ!" });
+    }
+
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ message: "Không tìm thấy câu hỏi!" });
 
-    const isCorrect = question.correctAnswer === userAnswer;
+    const correctAns = String(question.correctAnswer || "").toLowerCase().trim();
+    const userAns = String(userAnswer || "").toLowerCase().trim();
+    const isCorrect = correctAns === userAns;
+
+    console.log("=== CHECK ANSWER DEBUG ===");
+    console.log("Question ID: ", questionId);
+    console.log("String DB (Raw): ", question.correctAnswer);
+    console.log("String received (Raw): ", userAnswer);
+    console.log("Cleaned DB: ", correctAns, " (Length: ", correctAns.length, ")");
+    console.log("Cleaned User: ", userAns, " (Length: ", userAns.length, ")");
+    console.log("Result isCorrect: ", isCorrect);
+    console.log("==========================");
+
     let experienceGain = isCorrect ? 10 : 0;
     
     if (mode === 'timeAttack' && isCorrect) experienceGain = 15;
 
     let updatedUser = null;
-    if (userId) {
-      const user = await User.findById(userId);
-      if (user) {
-        if (isCorrect) {
-          user.experience += experienceGain;
+    if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+      try {
+        const user = await User.findById(userId);
+        if (user) {
+          if (isCorrect) {
+            user.experience += experienceGain;
+          }
+          await user.save();
+          updatedUser = user;
         }
-        await user.save();
-        updatedUser = user;
+      } catch (saveErr) {
+        console.error("Error saving user XP:", saveErr);
+        // We don't want to throw 500 just because XP saving failed.
       }
     }
 
@@ -38,7 +59,8 @@ exports.checkAnswer = async (req, res) => {
       user: updatedUser
     });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi hệ thống", error: err });
+    console.error("CRASH IN CHECKANSWER:", err);
+    res.status(500).json({ message: "Lỗi hệ thống", error: err.message });
   }
 };
 

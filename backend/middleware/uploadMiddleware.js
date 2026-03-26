@@ -1,25 +1,9 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 
-// Create upload directory if it doesn't exist
-const uploadDir = 'uploads/avatars';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Set storage engine
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function(req, file, cb) {
-        // Filename: userId-timestamp.ext
-        const ext = path.extname(file.originalname);
-        const userId = req.body.userId || 'temp'; // Usually comes from body or auth middleware
-        cb(null, `avatar-${userId}-${Date.now()}${ext}`);
-    }
-});
+// Use memory storage for Vercel (serverless has no persistent filesystem)
+// The file buffer will be uploaded to Vercel Blob in the route handler
+const storage = multer.memoryStorage();
 
 // Check file type
 function checkFileType(file, cb) {

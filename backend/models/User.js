@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -15,6 +16,7 @@ const userSchema = new mongoose.Schema({
   experience: { type: Number, default: 0 },
   // Chuỗi ngày đăng nhập/chơi liên tục
   streak: { type: Number, default: 0 },
+  lastLoginDate: { type: Date, default: null },
   // Các triều đại đã mở khóa (Mode 1)
   unlockedDynasties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
   // Danh hiệu/Huy hiệu đạt được
@@ -26,4 +28,18 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin'], default: 'user' }
 }, { timestamps: true });
 
+// Hash password before saving
+userSchema.pre('save', async function() {
+  if (!this.isModified('password') || !this.password) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Method to compare password for login
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) return false;
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
 module.exports = mongoose.model('User', userSchema);
+

@@ -1,53 +1,78 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap&subset=vietnamese');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap&subset=vietnamese');
 
+/* ============================
+   1. DESIGN TOKENS
+   ============================ */
 :root {
-  /* New Color Scheme */
-  --viet-red: #8b1d1d;
-  --viet-gold: #c5a059;
-  --viet-gold-light: #e2c792;
-  --viet-bronze: #5c4033;
-  --viet-paper: #f4ebd0;
-  --viet-silk: #fffaf0;
+  /* Primary Palette - Vietnamese Heritage */
+  --viet-red: #b91c1c;
+  --viet-red-dark: #7f1d1d;
+  --viet-red-glow: rgba(185, 28, 28, 0.3);
+  --viet-gold: #d4a053;
+  --viet-gold-light: #f0d48a;
+  --viet-gold-glow: rgba(212, 160, 83, 0.3);
+  --viet-bronze: #78350f;
 
-  /* Previous Logic-based variables */
-  --bronze-dark: #8b1d1d; /* Linked to viet-red */
-  --bronze-mid: #c5a059;  /* Linked to viet-gold */
-  --bronze-light: #e2c792;
-  --paper-bg: #f4ebd0;
+  /* Background System */
+  --bg-cream: #fdf8ef;
+  --bg-warm: #f9f1e1;
+  --bg-dark: #1a1a2e;
+  --bg-dark-card: #16213e;
+  --bg-dark-surface: #0f3460;
+
+  /* Glass Effect */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #b91c1c 0%, #d4a053 100%);
+  --gradient-gold: linear-gradient(135deg, #d4a053 0%, #f0d48a 50%, #d4a053 100%);
+  --gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  --gradient-warm: linear-gradient(180deg, #fdf8ef 0%, #f9f1e1 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+  --shadow-glow-red: 0 0 30px rgba(185, 28, 28, 0.2);
+  --shadow-glow-gold: 0 0 30px rgba(212, 160, 83, 0.25);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* App */
   --app-height: 100dvh;
+  --nav-height: 72px;
 }
 
+/* ============================
+   2. BASE STYLES
+   ============================ */
 html, body {
   margin: 0;
   padding: 0;
   height: var(--app-height);
   width: 100vw;
-  overflow: hidden; 
-  font-family: 'Crimson Text', serif;
-  background-color: var(--paper-bg);
-  /* App Proof: Disable browser behaviors */
+  overflow: hidden;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background-color: var(--bg-cream);
   overscroll-behavior-y: contain;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Re-enable selection for inputs only */
-input, textarea {
+input, textarea, select {
   user-select: text !important;
-}
-
-/* Hide scrollbars for a clean app look */
-.app-content::-webkit-scrollbar {
-  display: none;
-}
-.app-content {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 80px; 
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 #root, .App {
@@ -60,25 +85,277 @@ input, textarea {
   font-family: 'Playfair Display', serif !important;
 }
 
-@media (min-width: 768px) {
-  .app-content {
-    padding-bottom: 0;
-  }
+/* ============================
+   3. LAYOUT
+   ============================ */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--nav-height) + 16px);
+  scroll-behavior: smooth;
 }
 
+.app-content::-webkit-scrollbar { display: none; }
+.app-content { scrollbar-width: none; -ms-overflow-style: none; }
+
+@media (min-width: 768px) {
+  .app-content { padding-bottom: 0; }
+}
+
+.responsive-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .responsive-container { padding: 0 24px; }
+}
+
+/* ============================
+   4. BACKGROUNDS
+   ============================ */
+.history-bg {
+  min-height: 100vh;
+  background: var(--gradient-warm);
+  position: relative;
+}
+
+.history-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, var(--viet-gold-glow) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--viet-red-glow) 0%, transparent 50%);
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.game-bg {
+  min-height: 100vh;
+  background: var(--gradient-dark);
+  position: relative;
+}
+
+.game-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 10%, rgba(185, 28, 28, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 70% 90%, rgba(212, 160, 83, 0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* ============================
+   5. TYPOGRAPHY
+   ============================ */
+.historical-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.section-title {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: var(--viet-red-dark);
+  letter-spacing: -0.01em;
+}
+
+/* ============================
+   6. GLASS CARDS
+   ============================ */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.glass-card:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.historical-card {
+  background: white;
+  border: 1px solid rgba(212, 160, 83, 0.25);
+  box-shadow: var(--shadow-md);
+  padding: clamp(16px, 3vw, 24px);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.historical-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+/* Dark Card (for game screens) */
+.dark-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================
+   7. BUTTONS
+   ============================ */
+.btn-primary {
+  background: var(--gradient-hero);
+  color: white;
+  font-weight: 700;
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 16px var(--viet-red-glow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.btn-primary:hover::after {
+  transform: translateX(100%);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--viet-red-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn-historical {
+  background: var(--viet-red);
+  color: #fff;
+  font-weight: 700;
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.25s;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px var(--viet-red-glow);
+}
+
+.btn-historical:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--viet-red-glow);
+}
+
+.btn-historical:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn-gold {
+  background: var(--gradient-gold);
+  color: var(--viet-bronze);
+  font-weight: 700;
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--viet-gold-glow);
+  transition: all 0.3s;
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--viet-gold-glow);
+}
+
+/* Game Answer Button */
+.answer-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.answer-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(4px);
+}
+
+.answer-btn:active {
+  transform: scale(0.98);
+}
+
+.answer-btn.correct {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #86efac;
+}
+
+.answer-btn.wrong {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+/* ============================
+   8. BOTTOM NAVIGATION
+   ============================ */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 75px;
-  background: white;
+  height: var(--nav-height);
+  background: rgba(15, 23, 42, 0.85); /* Dark blue/slate glass */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-top: 2px solid #e2e8f0;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
   z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .bottom-nav-item {
@@ -86,120 +363,216 @@ input, textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.4);
   font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
+  font-weight: 700;
   flex: 1;
   text-decoration: none;
   transition: all 0.3s;
+  padding: 8px 0;
+  gap: 4px;
+  position: relative;
 }
 
 .bottom-nav-item.active {
-  color: var(--viet-red);
+  color: var(--viet-gold-light);
 }
 
 .bottom-nav-item .icon-wrapper {
-  margin-bottom: 2px;
-  padding: 6px;
-  border-radius: 12px;
+  padding: 8px;
+  border-radius: var(--radius-md);
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bottom-nav-item.active .icon-wrapper {
-  background: var(--viet-paper);
-  color: var(--viet-red);
+  background: linear-gradient(135deg, rgba(212, 160, 83, 0.15), rgba(240, 212, 138, 0.15));
+  color: var(--viet-gold-light);
+  box-shadow: 0 4px 12px rgba(212, 160, 83, 0.2);
 }
 
-/* Container limits */
-.responsive-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-@media (min-width: 768px) {
-  .responsive-container {
-    padding: 0 2rem;
-  }
-}
-
-.history-bg {
-  min-height: 100vh;
-  background-image: 
-    linear-gradient(rgba(244, 235, 208, 0.9), rgba(244, 235, 208, 0.9)),
-    url('https://www.transparenttextures.com/patterns/handmade-paper.png');
-}
-
-.historical-title {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900;
-  color: var(--viet-red);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  border-bottom: 3px double var(--viet-red);
-  padding-bottom: 10px;
-  font-size: clamp(1.5rem, 5vw, 3.5rem);
-  text-align: center;
-}
-
-.historical-card {
-  background-color: var(--viet-silk);
-  border: 2px solid var(--viet-gold);
-  box-shadow: 8px 8px 0px var(--viet-red);
-  padding: clamp(1rem, 3vw, 2rem);
-  border-radius: 8px;
-  transition: box-shadow 0.3s ease;
-}
-
-@media (max-width: 640px) {
-  .historical-card {
-    box-shadow: 4px 4px 0px var(--viet-red);
-  }
-}
-
-/* Custom Scrollbar for scrollable areas */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--viet-paper);
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--viet-gold);
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+/* Active indicator dot */
+.bottom-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
   background: var(--viet-red);
 }
 
-.btn-historical {
-  background-color: var(--viet-red);
-  color: #fff;
-  font-weight: bold;
-  padding: 12px 24px;
-  border: none;
-  border-bottom: 4px solid #5c1111;
+/* ============================
+   9. FORM INPUTS
+   ============================ */
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #1f2937;
+  transition: all 0.25s;
+  outline: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.input-field:focus {
+  border-color: var(--viet-gold);
+  box-shadow: 0 0 0 3px var(--viet-gold-glow);
+  background: white;
+}
+
+.input-field::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--viet-red-dark);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+/* ============================
+   10. LESSON & MODE CARDS
+   ============================ */
+.lesson-card {
+  background: white;
+  border: 1px solid rgba(212, 160, 83, 0.2);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.lesson-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--viet-gold);
+}
+
+.lesson-card:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.mode-card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-xl);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
   cursor: pointer;
-  transition: all 0.2s;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: clamp(0.875rem, 2vw, 1.1rem);
 }
 
-.btn-historical:hover {
-  transform: translateY(-2px);
-  background-color: #a52323;
+.mode-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-6px);
 }
 
-.btn-historical:active {
-  transform: translateY(2px);
-  border-bottom: 0px;
+.mode-card:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.mode-card .mode-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  opacity: 0.1;
+  transition: opacity 0.3s;
+}
+
+.mode-card:hover .mode-gradient {
+  opacity: 0.18;
+}
+
+/* ============================
+   11. PROGRESS BARS
+   ============================ */
+.progress-bar {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--gradient-hero);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 30px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+  animation: shimmer 2s infinite;
+}
+
+/* ============================
+   12. ANIMATIONS
+   ============================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--viet-red-glow); }
+  50% { box-shadow: 0 0 20px 4px var(--viet-red-glow); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes spin-slow {
@@ -207,122 +580,202 @@ input, textarea {
   to { transform: rotate(360deg); }
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
-.animate-spin-slow {
-  animation: spin-slow 20s linear infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-bounce-in {
-  animation: bounce-in 0.5s ease forwards;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease forwards;
-}
-
-@keyframes bounce-in {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.05); }
-  70% { transform: scale(0.9); }
+@keyframes confetti-pop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.animate-fade-in { animation: fadeIn 0.5s ease forwards; }
+.animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+.animate-fade-in-scale { animation: fadeInScale 0.4s ease forwards; }
+.animate-slide-right { animation: slideInRight 0.5s ease forwards; }
+.animate-slide-left { animation: slideInLeft 0.5s ease forwards; }
+.animate-bounce-in { animation: bounceIn 0.5s ease forwards; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 20s linear infinite; }
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-shake { animation: shake 0.5s ease forwards; }
+.animate-confetti { animation: confetti-pop 0.5s ease forwards; }
+
+/* Staggered children animation */
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
+
+/* ============================
+   13. SCROLLBAR STYLES
+   ============================ */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--viet-gold);
+  border-radius: var(--radius-full);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--viet-red);
 }
 
-.lesson-card {
-  background: #fff;
-  border: 2px solid var(--viet-gold);
-  border-radius: 8px;
-  transition: all 0.3s;
-  box-shadow: 4px 4px 15px rgba(0,0,0,0.1);
-}
-
-.lesson-card:hover {
-  background: var(--viet-silk);
-  transform: scale(1.03);
-  box-shadow: 6px 6px 20px rgba(139, 90, 43, 0.2);
-}
-
-/* Flashcard styles (Quizlet-like) */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
+/* ============================
+   14. FLASHCARD STYLES
+   ============================ */
+.perspective-1000 { perspective: 1000px; }
 .transform-style-3d {
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
-
 .backface-hidden {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-
-.flashcard-container.flipped .transform-style-3d {
-  transform: rotateY(180deg);
-}
+.rotate-y-180 { transform: rotateY(180deg); }
+.flashcard-container.flipped .transform-style-3d { transform: rotateY(180deg); }
 
 .flashcard-front, .flashcard-back {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
 }
 
 .flashcard-front {
-  background-color: var(--viet-silk);
-  border: 2px solid var(--viet-gold);
+  background: white;
+  border: 1.5px solid rgba(212, 160, 83, 0.3);
   color: var(--viet-red);
   z-index: 2;
+  box-shadow: var(--shadow-md);
 }
 
 .flashcard-back {
-  background-color: var(--viet-red);
-  color: var(--viet-silk);
+  background: var(--gradient-hero);
+  color: white;
   transform: rotateY(180deg);
   z-index: 1;
+  box-shadow: var(--shadow-lg);
 }
 
-.flashcard-container {
-  cursor: pointer;
-  user-select: none;
-}
+.flashcard-container { cursor: pointer; user-select: none; }
 
 .back-answer {
   font-family: 'Playfair Display', serif;
   font-weight: 900;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .fun-fact-box {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
   padding: 1rem;
-  border-radius: 0.5rem;
-  border-left: 4px solid var(--viet-gold);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--viet-gold);
   margin-top: 1rem;
 }
 
+/* ============================
+   15. GAME-SPECIFIC STYLES
+   ============================ */
+/* Score badge */
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.score-badge.gold {
+  background: linear-gradient(135deg, rgba(212, 160, 83, 0.15), rgba(240, 212, 138, 0.15));
+  color: var(--viet-gold);
+  border: 1px solid rgba(212, 160, 83, 0.2);
+}
+
+.score-badge.red {
+  background: linear-gradient(135deg, rgba(185, 28, 28, 0.1), rgba(239, 68, 68, 0.1));
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+/* Timer ring */
+.timer-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Victory / Defeat overlays */
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.3s ease;
+}
+
+.result-overlay.victory {
+  background: radial-gradient(circle, rgba(212, 160, 83, 0.15) 0%, rgba(26, 26, 46, 0.95) 70%);
+}
+
+.result-overlay.defeat {
+  background: radial-gradient(circle, rgba(185, 28, 28, 0.1) 0%, rgba(26, 26, 46, 0.95) 70%);
+}
+
+/* ============================
+   16. UTILITIES
+   ============================ */
+.text-gradient {
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  background-origin: padding-box;
+}
+
+.no-tap-highlight {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Safe area padding for iOS */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0);
+}

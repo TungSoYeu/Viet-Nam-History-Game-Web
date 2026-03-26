@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
+import { AuthGuard, AdminGuard } from './components/RouteGuards';
 
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
@@ -37,23 +38,23 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/modes" element={<ModeSelection />} />
-              <Route path="/timeline" element={<Timeline />} />
-              <Route path="/study/:lessonId" element={<StudyDetail />} />
-              <Route path="/play/:lessonId" element={<GamePlay />} />
-              <Route path="/survival" element={<SurvivalMode />} />
-              <Route path="/time-attack" element={<TimeAttackMode />} />
-              <Route path="/matching" element={<MatchingMode />} />
-              <Route path="/pvp" element={<PvPMode />} />
-              <Route path="/pvp/battle" element={<PvPBattle />} />
-              <Route path="/territory-map" element={<TerritoryMap />} />
-              <Route path="/change-password" element={<ChangePassword />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/chronological" element={<ChronologicalMode />} />
-              <Route path="/millionaire" element={<MillionaireMode />} />
-              <Route path="/guess-character" element={<GuessCharacterMode />} />
-              <Route path="/reveal-picture" element={<RevealPictureMode />} />
+              <Route path="/modes" element={<AuthGuard><ModeSelection /></AuthGuard>} />
+              <Route path="/timeline" element={<AuthGuard><Timeline /></AuthGuard>} />
+              <Route path="/study/:lessonId" element={<AuthGuard><StudyDetail /></AuthGuard>} />
+              <Route path="/play/:lessonId" element={<AuthGuard><GamePlay /></AuthGuard>} />
+              <Route path="/survival" element={<AuthGuard><SurvivalMode /></AuthGuard>} />
+              <Route path="/time-attack" element={<AuthGuard><TimeAttackMode /></AuthGuard>} />
+              <Route path="/matching" element={<AuthGuard><MatchingMode /></AuthGuard>} />
+              <Route path="/pvp" element={<AuthGuard><PvPMode /></AuthGuard>} />
+              <Route path="/pvp/battle" element={<AuthGuard><PvPBattle /></AuthGuard>} />
+              <Route path="/territory-map" element={<AuthGuard><TerritoryMap /></AuthGuard>} />
+              <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
+              <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              <Route path="/leaderboard" element={<AuthGuard><Leaderboard /></AuthGuard>} />
+              <Route path="/chronological" element={<AuthGuard><ChronologicalMode /></AuthGuard>} />
+              <Route path="/millionaire" element={<AuthGuard><MillionaireMode /></AuthGuard>} />
+              <Route path="/guess-character" element={<AuthGuard><GuessCharacterMode /></AuthGuard>} />
+              <Route path="/reveal-picture" element={<AuthGuard><RevealPictureMode /></AuthGuard>} />
             </Routes>
           </main>        </div>
       </Router>

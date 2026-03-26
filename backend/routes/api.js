@@ -1,7 +1,11 @@
 // backend/routes/api.js
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const gameController = require('../controller/gameController');
+const { put } = require('@vercel/blob');
+const fs = require('fs');
+const path = require('path');
 
 const Lesson = require('../models/Lesson');
 const Question = require('../models/Question');
@@ -13,8 +17,8 @@ const RevealPicture = require('../models/RevealPicture');
 const { isAdmin } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
-// Mã bí mật để tạo tài khoản Admin (Bạn có thể đổi mã này thành bất kỳ chuỗi nào)
-const ADMIN_SECRET_CODE = "HISTORY_ADMIN_2024"; 
+// Mã bí mật để tạo tài khoản Admin (lấy từ biến môi trường)
+const ADMIN_SECRET_CODE = process.env.ADMIN_SECRET_CODE || 'HISTORY_ADMIN_2024';
 
 // Đường dẫn đăng ký người chơi mới & Admin
 const { OAuth2Client } = require('google-auth-library');
@@ -59,12 +63,19 @@ router.post('/google-login', async (req, res) => {
             await user.save();
         }
 
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
         res.json({
             _id: user._id,
             username: user.username,
             role: user.role,
             fullName: user.fullName,
-            avatar: user.avatar
+            avatar: user.avatar,
+            token
         });
     } catch (error) {
         console.error("Google Login Error:", error);
@@ -79,7 +90,14 @@ router.post('/register', async (req, res) => {
   if (!username || !password) return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin!" });
 
   try {
-    let existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    const safeEmail = email && email.trim() !== '' ? email.trim() : undefined;
+
+    const orConditions = [{ username }];
+    if (safeEmail) {
+        orConditions.push({ email: safeEmail });
+    }
+
+    let existingUser = await User.findOne({ $or: orConditions });
     if (existingUser) {
         if (existingUser.username === username) {
             return res.status(400).json({ message: "Tên đăng nhập đã tồn tại!" });
@@ -90,8 +108,8 @@ router.post('/register', async (req, res) => {
 
     // Phân quyền rõ ràng trước khi lưu vào Database
     let role = 'user';
-    if (adminCode) {
-        if (adminCode === ADMIN_SECRET_CODE) {
+    if (adminCode && adminCode.trim() !== '') {
+        if (adminCode.trim() === ADMIN_SECRET_CODE) {
             role = 'admin';
         } else {
             return res.status(400).json({ message: "Mã Quản trị viên không hợp lệ!" });
@@ -102,7 +120,7 @@ router.post('/register', async (req, res) => {
     const user = new User({ 
       username, 
       password, 
-      email: email || undefined,
+      email: safeEmail,
       role,
       fullName: fullName || '',
       dateOfBirth: dateOfBirth || null,
@@ -120,7 +138,7 @@ router.post('/register', async (req, res) => {
     res.json({ success: true, message: "Đăng ký thành công!", role });
   } catch (err) {
     console.error("Registration error:", err);
-    res.status(500).json({ message: "Lỗi khi đăng ký", error: err.message });
+    res.status(500).json({ message: "Lỗi đăng ký", error: err.message || "Unknown error" });
   }
 });
 
@@ -144,12 +162,18 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: "Tài khoản không tồn tại!" });
     }
     
-    if (user.password !== password) {
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       return res.status(401).json({ message: "Mật khẩu không chính xác!" });
     }
 
     console.log("Login successful:", user.username);
-    res.json(user);
+    const token = jwt.sign(
+        { userId: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+    res.json({ ...user.toObject(), token });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Lỗi khi đăng nhập", error: err.message });
@@ -163,7 +187,8 @@ router.patch('/user/change-password', async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: "Người dùng không tồn tại" });
         
-        if (user.password !== oldPassword) {
+        const isMatch = await user.comparePassword(oldPassword);
+        if (!isMatch) {
             return res.status(400).json({ message: "Mật khẩu cũ không chính xác" });
         }
         
@@ -219,7 +244,32 @@ router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) =>
     }
 
     try {
-        const avatarPath = `/uploads/avatars/${req.file.filename}`;
+        let avatarPath;
+        const ext = req.file.originalname.split('.').pop();
+        const filename = `avatar-${userId}-${Date.now()}.${ext}`;
+
+        // If running on Vercel or having token, use Vercel Blob
+        if (process.env.VERCEL || process.env.BLOB_READ_WRITE_TOKEN) {
+            const blob = await put(
+                `avatars/${filename}`,
+                req.file.buffer,
+                {
+                    access: 'public',
+                    contentType: req.file.mimetype,
+                }
+            );
+            avatarPath = blob.url; // Full public URL from Vercel Blob
+        } else {
+            // Local fallback
+            const uploadDir = path.join(__dirname, '..', 'uploads', 'avatars');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const localPath = path.join(uploadDir, filename);
+            fs.writeFileSync(localPath, req.file.buffer);
+            avatarPath = `/uploads/avatars/${filename}`;
+        }
+        
         const user = await User.findByIdAndUpdate(
             userId, 
             { avatar: avatarPath }, 
@@ -230,6 +280,7 @@ router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) =>
 
         res.json({ success: true, message: "Cập nhật ảnh đại diện thành công!", user });
     } catch (err) {
+        console.error("Avatar upload error:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -328,7 +379,6 @@ router.put('/admin/matching/:id', isAdmin, async (req, res) => {
 
 router.post('/admin/chronological', isAdmin, async (req, res) => {
     try {
-        const Chronological = require('../models/Chronological');
         const chrono = new Chronological(req.body);
         await chrono.save();
         res.json({ success: true, chrono });
@@ -339,7 +389,6 @@ router.post('/admin/chronological', isAdmin, async (req, res) => {
 
 router.put('/admin/chronological/:id', isAdmin, async (req, res) => {
     try {
-        const Chronological = require('../models/Chronological');
         const chrono = await Chronological.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json({ success: true, chrono });
     } catch (err) {
@@ -349,7 +398,6 @@ router.put('/admin/chronological/:id', isAdmin, async (req, res) => {
 
 router.post('/admin/guess-character', isAdmin, async (req, res) => {
     try {
-        const GuessCharacter = require('../models/GuessCharacter');
         const character = new GuessCharacter(req.body);
         await character.save();
         res.json({ success: true, character });
@@ -360,7 +408,6 @@ router.post('/admin/guess-character', isAdmin, async (req, res) => {
 
 router.put('/admin/guess-character/:id', isAdmin, async (req, res) => {
     try {
-        const GuessCharacter = require('../models/GuessCharacter');
         const character = await GuessCharacter.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json({ success: true, character });
     } catch (err) {
@@ -370,7 +417,6 @@ router.put('/admin/guess-character/:id', isAdmin, async (req, res) => {
 
 router.post('/admin/reveal-picture', isAdmin, async (req, res) => {
     try {
-        const RevealPicture = require('../models/RevealPicture');
         const reveal = new RevealPicture(req.body);
         await reveal.save();
         res.json({ success: true, reveal });
@@ -381,7 +427,6 @@ router.post('/admin/reveal-picture', isAdmin, async (req, res) => {
 
 router.put('/admin/reveal-picture/:id', isAdmin, async (req, res) => {
     try {
-        const RevealPicture = require('../models/RevealPicture');
         const reveal = await RevealPicture.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json({ success: true, reveal });
     } catch (err) {

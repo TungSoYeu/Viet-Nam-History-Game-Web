@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import MapBackground from '../assets/ban-do-viet-nam.jpg'; 
+import API_BASE_URL from '../config/api';
 
 export default function TerritoryMap() {
   const navigate = useNavigate();
@@ -27,10 +28,9 @@ export default function TerritoryMap() {
   const [questions, setQuestions] = useState([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [devCoords, setDevCoords] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/leaderboard')
+    fetch(`${API_BASE_URL}/api/leaderboard`)
       .then(res => res.json())
       .then(data => {
         const currentUser = data.find(u => u._id === userId);
@@ -49,7 +49,7 @@ export default function TerritoryMap() {
   };
 
   const startConquest = () => {
-    fetch(`http://localhost:5000/api/territory/questions/${selectedRegion.id}`)
+    fetch(`${API_BASE_URL}/api/territory/questions/${selectedRegion.id}`)
       .then(res => res.json())
       .then(data => {
         if (!data || data.length === 0) {
@@ -66,7 +66,12 @@ export default function TerritoryMap() {
 
   const handleAnswer = (selectedOption) => {
     const currentQ = questions[currentQIndex];
-    if (selectedOption === currentQ.correctAnswer) {
+    if (!currentQ) return;
+    
+    const userStr = String(selectedOption || "").toLowerCase().trim();
+    const correctStr = String(currentQ.correctAnswer || "").toLowerCase().trim();
+
+    if (userStr === correctStr) {
       if (currentQIndex + 1 < questions.length) {
         setCurrentQIndex(currentQIndex + 1);
       } else {
@@ -80,7 +85,7 @@ export default function TerritoryMap() {
   };
 
   const handleUnlock = () => {
-    fetch('http://localhost:5000/api/territory/unlock', {
+    fetch(`${API_BASE_URL}/api/territory/unlock`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, location: selectedRegion.id })
@@ -96,20 +101,7 @@ export default function TerritoryMap() {
     });
   };
 
-  const handleGetCoordinates = (e) => {
-    const rect = e.target.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setDevCoords({ top: y.toFixed(2), left: x.toFixed(2) });
-  };
 
-  const copyToClipboard = () => {
-    if (devCoords) {
-      const codeStr = `top: '${devCoords.top}%', left: '${devCoords.left}%'`;
-      navigator.clipboard.writeText(codeStr);
-      alert('Đã copy: ' + codeStr);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-amber-50 flex flex-col items-center relative">
@@ -129,17 +121,8 @@ export default function TerritoryMap() {
                       src={MapBackground} 
                       alt="Bản đồ Việt Nam" 
                       // Đảm bảo ảnh giữ đúng tỉ lệ gốc
-                      className="max-w-full max-h-[75vh] w-auto h-auto block opacity-95 cursor-crosshair rounded-lg shadow-inner"
-                      onClick={handleGetCoordinates}
+                      className="max-w-full max-h-[75vh] w-auto h-auto block opacity-95 rounded-lg shadow-inner"
                   />
-
-                  {/* Chấm đỏ của Tool đo tọa độ */}
-                  {devCoords && (
-                    <div 
-                      className="absolute w-4 h-4 bg-red-600 rounded-full border-2 border-white transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none shadow-lg animate-pulse"
-                      style={{ top: `${devCoords.top}%`, left: `${devCoords.left}%` }}
-                    />
-                  )}
 
                   {/* Render Khiên/Cờ */}
                   {regions.map(region => {
@@ -186,7 +169,6 @@ export default function TerritoryMap() {
                   </div>
                 ) : (
                   <div className="text-gray-400 italic">
-                    <span className="text-6xl block mb-6 opacity-50">☝️</span>
                     <p className="mb-2 font-bold text-lg text-amber-800">Chọn Cứ Điểm</p>
                     <p className="text-sm">Nhấn vào một chiếc khiên trên bản đồ để bắt đầu cuộc chinh phạt của bạn.</p>
                   </div>
@@ -229,27 +211,7 @@ export default function TerritoryMap() {
         </div>
       </div>
 
-      {/* PANEL TOOL ĐO TỌA ĐỘ TRÔI NỔI */}
-      {devCoords && (
-        <div className="fixed bottom-6 right-6 bg-gray-900 text-green-400 p-5 rounded-lg shadow-2xl z-[100] border border-green-500 font-mono text-sm min-w-[250px] animate-fade-in">
-          <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
-            <p className="font-bold text-white flex items-center gap-2"><span>🎯</span> Tool Lấy Tọa Độ</p>
-            <button onClick={() => setDevCoords(null)} className="text-gray-400 hover:text-red-400 font-bold transition-colors">
-              <X size={18} />
-            </button>
-          </div>
-          <div className="bg-black p-3 rounded mb-3">
-             <p>top: <span className="text-yellow-300">'{devCoords.top}%'</span>,</p>
-             <p>left: <span className="text-yellow-300">'{devCoords.left}%'</span></p>
-          </div>
-          <button
-            onClick={copyToClipboard}
-            className="w-full bg-green-700 hover:bg-green-600 text-white font-bold py-2 rounded transition-colors"
-          >
-            📋 Copy Code Này
-          </button>
-        </div>
-      )}
+
 
     </div>
   );
