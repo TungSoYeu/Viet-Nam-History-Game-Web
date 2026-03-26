@@ -3,6 +3,9 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const gameController = require('../controller/gameController');
+const { put } = require('@vercel/blob');
+const fs = require('fs');
+const path = require('path');
 
 const Lesson = require('../models/Lesson');
 const Question = require('../models/Question');
@@ -241,7 +244,32 @@ router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) =>
     }
 
     try {
-        const avatarPath = `/uploads/avatars/${req.file.filename}`;
+        let avatarPath;
+        const ext = req.file.originalname.split('.').pop();
+        const filename = `avatar-${userId}-${Date.now()}.${ext}`;
+
+        // If running on Vercel or having token, use Vercel Blob
+        if (process.env.VERCEL || process.env.BLOB_READ_WRITE_TOKEN) {
+            const blob = await put(
+                `avatars/${filename}`,
+                req.file.buffer,
+                {
+                    access: 'public',
+                    contentType: req.file.mimetype,
+                }
+            );
+            avatarPath = blob.url; // Full public URL from Vercel Blob
+        } else {
+            // Local fallback
+            const uploadDir = path.join(__dirname, '..', 'uploads', 'avatars');
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const localPath = path.join(uploadDir, filename);
+            fs.writeFileSync(localPath, req.file.buffer);
+            avatarPath = `/uploads/avatars/${filename}`;
+        }
+        
         const user = await User.findByIdAndUpdate(
             userId, 
             { avatar: avatarPath }, 
@@ -252,6 +280,7 @@ router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) =>
 
         res.json({ success: true, message: "Cập nhật ảnh đại diện thành công!", user });
     } catch (err) {
+        console.error("Avatar upload error:", err);
         res.status(500).json({ error: err.message });
     }
 });

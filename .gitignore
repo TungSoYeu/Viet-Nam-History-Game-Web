@@ -33,3 +33,5 @@ yarn-error.log*
 # Capacitor build artifacts
 frontend/android/
 frontend/ios/
+# Vercel
+Vercel_Deployment_Guide.md
