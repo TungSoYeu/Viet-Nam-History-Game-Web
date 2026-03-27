@@ -9,10 +9,23 @@ if (!process.env.VERCEL) {
     dotenv.config({ override: true });
 }
 
-// Connect to database
-connectDB().catch(err => console.error("Không thể kết nối DB ngay từ đầu:", err));
-
+// Connect to database is now handled by middleware
 const app = express();
+
+// Middleware: Yêu cầu kết nối DB trước khi xử lý request (Rất quan trọng cho Vercel Serverless)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error("Lỗi kết nối CSDL trong middleware:", err.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Lỗi Server Internal: Không thể kết nối đến Cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình MONGO_URI trên Vercel và Whitelist IP trên MongoDB Atlas.",
+            error: err.message
+        });
+    }
+});
 
 // CORS Configuration
 const corsOptions = {
