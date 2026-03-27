@@ -1,0 +1,23 @@
+{
+  "name": "project-game-nckh-root",
+  "version": "1.0.0",
+  "description": "Root package.json specifically for Vercel Serverless deployment",
+  "scripts": {
+    "postinstall": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build"
+  },
+  "dependencies": {
+    "@vercel/blob": "^0.27.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "google-auth-library": "^10.6.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.4",
+    "multer": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
