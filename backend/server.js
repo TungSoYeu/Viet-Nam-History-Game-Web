@@ -10,7 +10,7 @@ if (!process.env.VERCEL) {
 }
 
 // Connect to database
-connectDB();
+connectDB().catch(err => console.error("Không thể kết nối DB ngay từ đầu:", err));
 
 const app = express();
 

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-// Cache the connection for serverless environments (Vercel)
-// Prevents creating a new connection on every function invocation
 let cachedConnection = null;
 
 const connectDB = async () => {
@@ -15,8 +13,9 @@ const connectDB = async () => {
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
         return conn;
     } catch (error) {
-        console.error(`❌ Error: ${error.message}`);
-        process.exit(1);
+        console.error(`❌ Lỗi kết nối MongoDB: ${error.message}`);
+        // Xóa process.exit(1) và thay bằng throw
+        throw error; 
     }
 };
 
