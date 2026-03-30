@@ -1,17 +1,17 @@
-# 🏯 Hành Trình Lịch Sử (Viet Nam History Game)
+#  Hành Trình Lịch Sử (Viet Nam History Game)
 
 **Hành Trình Lịch Sử** (Vietnam History Game) is a comprehensive, gamified full-stack web application designed to make learning Vietnamese history engaging, interactive, and competitive. The platform combines rich educational resources (Wikis, Flashcards) with a wide variety of game mechanics (PvP, Map Unlocking, Survival, and Puzzles) to motivate students to learn and retain historical knowledge.
 
 ---
 
-## 🚀 Features & Game Modes
+##  Features & Game Modes
 
-### 📚 Học Tập (Learning)
+###  Học Tập (Learning)
 
 - **Thư Viện Triều Đại (Timeline/Library):** Learn about different dynasties and eras through detailed Markdown-supported wiki pages.
 - **Thẻ Ghi Nhớ (Flashcards):** Interactive flip-cards for quick memorization of key historical figures, dates, and events.
 
-### 🎮 Chế Độ Chơi (Game Modes)
+###  Chế Độ Chơi (Game Modes)
 
 1.  **Mở Mang Bờ Cõi (Territory Map):** A strategic mode featuring a map of Vietnam. Players answer location-specific questions (e.g., Dien Bien Phu, Bach Dang) to conquer and unlock territories, earning massive XP bonuses.
 2.  **Thách Đấu (PvP Asynchronous):** Players create 10-question challenges and send them to opponents. Both play the exact same set of questions, and the system automatically determines the winner based on score and completion time.
@@ -24,14 +24,14 @@
     - **Đoán Nhân Vật (Guess Character):** Deduce the historical figure using text-based clues and aliases.
     - **Lật Mảnh Ghép (Reveal Picture):** Answer questions to slowly reveal a hidden historical image, then guess the picture.
 
-### 🏆 Gamification & User Progression
+###  Gamification & User Progression
 
 - **Experience Points (XP):** Earn XP for playing games, answering correctly, and winning PvP matches.
 - **Leaderboard:** Compete globally with other students for the top spot based on accumulated XP.
 - **Streaks:** Encourages daily logins and continuous learning.
 - **Authentication:** Supports standard username/password registration and **Google OAuth 2.0** One-Tap login.
 
-### 🛡️ Hệ Thống Quản Trị (Admin CMS)
+###  Hệ Thống Quản Trị (Admin CMS)
 
 A built-in secure dashboard (`/admin`) allowing administrators to dynamically perform CRUD operations on:
 
@@ -41,7 +41,7 @@ A built-in secure dashboard (`/admin`) allowing administrators to dynamically pe
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 **Frontend:**
 
@@ -60,7 +60,7 @@ A built-in secure dashboard (`/admin`) allowing administrators to dynamically pe
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```text
 Project-game-NCKH/
@@ -86,7 +86,7 @@ Project-game-NCKH/
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
@@ -145,7 +145,7 @@ npm start
 
 ---
 
-## 🔑 Default Admin Access
+##  Default Admin Access
 
 If you ran the `create_admins.js` script, you can log in to the admin panel with:
 
@@ -156,6 +156,6 @@ Alternatively, you can register a new account on the Login page and enter your `
 
 ---
 
-## 📝 License & Contact
+##  License & Contact
 
 This project is developed as an educational research initiative (Nghiên Cứu Khoa Học - NCKH) to preserve and promote Vietnamese History through modern web technology.
