@@ -1,6 +1,6 @@
-#  Hành Trình Lịch Sử (Viet Nam History Game)
+#  Danh Nhân Đất Việt (Viet Nam History Game)
 
-**Hành Trình Lịch Sử** (Vietnam History Game) is a comprehensive, gamified full-stack web application designed to make learning Vietnamese history engaging, interactive, and competitive. The platform combines rich educational resources (Wikis, Flashcards) with a wide variety of game mechanics (PvP, Map Unlocking, Survival, and Puzzles) to motivate students to learn and retain historical knowledge.
+**Danh Nhân Đất Việt** (Vietnam History Game) is a comprehensive, gamified full-stack web application designed to make learning Vietnamese history engaging, interactive, and competitive. The platform combines rich educational resources (Wikis, Flashcards) with a wide variety of game mechanics (PvP, Map Unlocking, Survival, and Puzzles) to motivate students to learn and retain historical knowledge.
 
 ---
 
