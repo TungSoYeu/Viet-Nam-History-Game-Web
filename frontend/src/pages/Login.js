@@ -136,7 +136,7 @@ export default function Login() {
         <div className="text-center mb-6">
           <span className="text-5xl">🏯</span>
           <h1 className="text-2xl sm:text-3xl font-black mt-3" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {isRegister ? "Ghi Danh Sử Sách" : "Hành Trình Lịch Sử"}
+            {isRegister ? "Ghi Danh Sử Sách" : "Danh Nhân Đất Việt"}
           </h1>
           <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
             {isRegister ? "Tạo tài khoản mới" : "Đăng nhập để tiếp tục"}
