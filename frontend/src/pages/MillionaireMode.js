@@ -161,13 +161,18 @@ export default function MillionaireMode() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4 md:p-8 flex flex-col items-center justify-center">
-      <div className="w-full max-w-3xl flex justify-between items-center mb-8">
-        <button onClick={() => { saveXP(score); navigate('/modes'); }} className="text-slate-400 hover:text-white font-bold text-lg flex items-center gap-2 transition-colors">
-          <ArrowLeft size={20} /> Thoát (Lấy {score} XP)
-        </button>
-        <h1 className="text-xl md:text-3xl font-black text-amber-500 uppercase tracking-widest flex items-center gap-3">
-            <GraduationCap size={32} /> Khoa Cử Đình Nguyên
+      <div className="w-full max-w-3xl grid grid-cols-[1fr_auto_1fr] items-center gap-3 mb-6 sm:mb-8">
+        <div className="flex justify-start">
+          <button onClick={() => { saveXP(score); navigate('/modes'); }} className="text-slate-400 hover:text-white font-bold text-sm flex items-center gap-2 transition-colors shrink-0">
+            <ArrowLeft size={18} /> <span className="hidden sm:inline">Nhận {score} XP</span><span className="sm:hidden">Thoát</span>
+          </button>
+        </div>
+        <h1 className="text-sm sm:text-xl md:text-3xl font-black text-amber-500 uppercase tracking-widest flex items-center justify-center gap-2 text-center">
+            <GraduationCap size={24} className="shrink-0 hidden sm:block" /> Khoa Cử Đình Nguyên
         </h1>
+        <div className="flex justify-end text-right font-bold text-slate-400 text-xs sm:text-sm">
+          Câu {currentQ + 1}/15
+        </div>
       </div>
 
       <div className="w-full max-w-3xl flex justify-between items-center mb-8">
@@ -176,9 +181,9 @@ export default function MillionaireMode() {
         </div>
       </div>
 
-      <div className="w-full max-w-3xl mb-8 flex justify-center gap-4">
-        <button onClick={useFiftyFifty} disabled={!lifelines.fiftyFifty} className={`px-6 py-3 rounded-full font-black text-lg border-2 ${lifelines.fiftyFifty ? 'bg-blue-600 border-blue-400 hover:bg-blue-700' : 'bg-slate-700 border-slate-600 text-slate-500 line-through'}`}>50:50</button>
-        <button onClick={useSkip} disabled={!lifelines.skip} className={`px-6 py-3 rounded-full font-black text-lg border-2 ${lifelines.skip ? 'bg-green-600 border-green-400 hover:bg-green-700' : 'bg-slate-700 border-slate-600 text-slate-500 line-through'}`}>Bỏ Qua</button>
+      <div className="w-full max-w-3xl mb-6 sm:mb-8 flex flex-wrap justify-center gap-3 sm:gap-4">
+        <button onClick={useFiftyFifty} disabled={!lifelines.fiftyFifty} className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-black text-sm sm:text-lg border-2 ${lifelines.fiftyFifty ? 'bg-blue-600 border-blue-400 hover:bg-blue-700' : 'bg-slate-700 border-slate-600 text-slate-500 line-through'}`}>50:50</button>
+        <button onClick={useSkip} disabled={!lifelines.skip} className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-black text-sm sm:text-lg border-2 ${lifelines.skip ? 'bg-green-600 border-green-400 hover:bg-green-700' : 'bg-slate-700 border-slate-600 text-slate-500 line-through'}`}>Bỏ Qua</button>
       </div>
 
       <div className="w-full max-w-3xl bg-slate-800 rounded-3xl p-6 md:p-10 border-4 border-amber-600 shadow-[0_0_30px_rgba(217,119,6,0.3)] relative">

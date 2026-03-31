@@ -142,50 +142,64 @@ const seedData = async () => {
     const questions = [
       // Hai Bà Trưng
       { content: "Sự kiện được coi là khởi nghĩa độc lập đầu tiên sau thời kỳ Bắc thuộc do ai lãnh đạo?", options: ["Lý Bí", "Bà Triệu", "Hai Bà Trưng", "Ngô Quyền"], correctAnswer: "Hai Bà Trưng", explanation: "Hai Bà Trưng phất cờ khởi nghĩa vào năm 40 tại Hát Môn.", lessonId: lesson1Id },
-      { content: "Ai là tên thái thú tàn bạo của nhà Hán mà Hai Bà Trưng đã đánh đuổi?", options: ["Mã Viện", "Tiêu Tư", "Hoằng Tháo", "Tô Định"], correctAnswer: "Tô Định", explanation: "Tô Định làm Thái thú cai trị Giao Chỉ rất tàn ác khiến nhân dân lầm than.", lessonId: lesson1Id, type: "territory", location: "Hát Môn" },
+      { content: "Ai là tên thái thú tàn bạo của nhà Hán mà Hai Bà Trưng đã đánh đuổi?", options: ["Mã Viện", "Tiêu Tư", "Hoằng Tháo", "Tô Định"], correctAnswer: "Tô Định", explanation: "Tô Định làm Thái thú cai trị Giao Chỉ rất tàn ác.", lessonId: lesson1Id, type: "territory", location: "HatMon" },
 
       // Bà Triệu
-      { content: "Câu nói: 'Tôi muốn cưỡi cơn gió mạnh, đạp luồng sóng dữ, chém cá kình ở biển Đông' là của ai?", options: ["Trưng Nữ Vương", "Bà Triệu", "Bùi Thị Xuân", "Nguyễn Thị Minh Khai"], correctAnswer: "Bà Triệu", explanation: "Bà Triệu Thị Trinh đã dõng dạc nói câu này từ chối kiếp làm tì thiếp cho người Ngô.", lessonId: lesson1Id, type: "millionaire" },
-      { content: "Cuộc khởi nghĩa của Bà Triệu (248) nổ ra để chống lại thế lực phương Bắc nào?", options: ["Đông Ngô", "Đông Hán", "Nhà Lương", "Nhà Tùy"], correctAnswer: "Đông Ngô", explanation: "Đương thời nước ta bị nhà Đông Ngô (thời Tam Quốc) đô hộ.", lessonId: lesson1Id, difficulty: "hard" },
+      { content: "Câu nói: 'Tôi muốn cưỡi cơn gió mạnh, đạp luồng sóng dữ, chém cá kình ở biển Đông' là của ai?", options: ["Trưng Nữ Vương", "Bà Triệu", "Bùi Thị Xuân", "Nguyễn Thị Minh Khai"], correctAnswer: "Bà Triệu", explanation: "Bà Triệu Thị Trinh đã dõng dạc nói câu này từ chối kiếp làm tì thiếp.", lessonId: lesson1Id, type: "millionaire" },
+      { content: "Cuộc khởi nghĩa của Bà Triệu (248) nổ ra ở địa danh thuộc tỉnh nào hiện nay?", options: ["Hà Nội", "Ninh Bình", "Thanh Hóa", "Hải Phòng"], correctAnswer: "Thanh Hóa", explanation: "Bà khởi nghĩa ở ngàn Nưa, thuộc tỉnh Thanh Hóa ngày nay.", lessonId: lesson1Id, type: "territory", location: "NganNua" },
 
       // Lý Bí
-      { content: "Lý Bí sau khi đánh đuổi giặc Lương, thành lập nước Vạn Xuân đã xưng là gì?", options: ["Lý Thái Tổ", "Vạn Xuân Vương", "Lý Nam Đế", "Lý Thái Tông"], correctAnswer: "Lý Nam Đế", explanation: "Lý Bí lên ngôi năm 544, xưng là Lý Nam Đế như một vị Hoàng đế độc lập.", lessonId: lesson1Id, difficulty: "medium" },
+      { content: "Lý Bí sau khi đánh đuổi giặc Lương, lập nước Vạn Xuân đã xưng là gì?", options: ["Lý Thái Tổ", "Vạn Xuân Vương", "Lý Nam Đế", "Lý Thái Tông"], correctAnswer: "Lý Nam Đế", explanation: "Lý Bí lên ngôi năm 544, xưng là Lý Nam Đế.", lessonId: lesson1Id, difficulty: "medium" },
 
       // Ngô Quyền
-      { content: "Điều gì tạo nên sự đột phá trong chiến thuật của Ngô Quyền trên sông Bạch Đằng năm 938?", options: ["Sử dụng hỏa công", "Cắm cọc nhọn bọc sắt dưới lòng sông", "Sử dụng súng thần công", "Đánh úp ban đêm"], correctAnswer: "Cắm cọc nhọn bọc sắt dưới lòng sông", explanation: "Cọc gỗ bọc sắt và lợi dụng thủy triều lên xuống là phát kiến quân sự tuyệt vời.", lessonId: lesson1Id, type: "survival" },
-      { content: "Quân giặc nào nhận thất bại cay đắng và chấm dứt luôn 1000 năm Bắc thuộc tại trận Bạch Đằng 938?", options: ["Quân Tống", "Quân Nam Hán", "Quân Mông Nguyên", "Quân Lương"], correctAnswer: "Quân Nam Hán", explanation: "Lưu Hoằng Tháo chỉ huy quân Nam Hán đã chết trận, Nam Hán từ đó bỏ mộng xâm lược nước ta.", lessonId: lesson1Id },
+      { content: "Điều gì tạo nên sự đột phá trong chiến thuật của Ngô Quyền năm 938?", options: ["Sử dụng hỏa công", "Cắm cọc nhọn bọc sắt dưới lòng sông", "Sử dụng súng thần công", "Đánh úp ban đêm"], correctAnswer: "Cắm cọc nhọn bọc sắt dưới lòng sông", explanation: "Chiến thuật cọc gỗ trên sông Bạch Đằng là đặc sản quân sự của Ngô Quyền.", lessonId: lesson1Id, type: "survival" },
+      { content: "Lưu Hoằng Tháo - chủ tướng quân Nam Hán đã chết trận tại dòng sông nào?", options: ["Sông Hồng", "Sông Cầu", "Sông Bạch Đằng", "Sông Lô"], correctAnswer: "Sông Bạch Đằng", explanation: "Thất bại thảm hại tại Bạch Đằng khiến nhà Nam Hán bỏ mộng xâm lược nước ta.", lessonId: lesson1Id, type: "territory", location: "BachDang" },
 
       // Lê Hoàn
-      { content: "Vị vua nào từng nhậm chức Thập đạo tướng quân của nhà Đinh trước khi lên ngôi hoàng đế chống Tống?", options: ["Ngô Quyền", "Lê Lợi", "Lý Công Uẩn", "Lê Hoàn"], correctAnswer: "Lê Hoàn", explanation: "Lê Hoàn được Thái hậu Dương Vân Nga trao áo long cổn khi Tống chuẩn bị xâm phạm Đại Cồ Việt.", lessonId: lesson1Id, type: "time-attack" },
+      { content: "Vị vua nào từng nhậm chức Thập đạo tướng quân của nhà Đinh trước khi lên ngôi hoàng đế chống Tống?", options: ["Ngô Quyền", "Lê Lợi", "Lý Công Uẩn", "Lê Hoàn"], correctAnswer: "Lê Hoàn", explanation: "Lê Hoàn được Thái hậu Dương Vân Nga trao áo long cổn khi Tống chuẩn bị xâm lược.", lessonId: lesson1Id, type: "time-attack" },
+      { content: "Đạo quân Tống xâm lược nước ta thời Tiền Lê (981) bị đánh bại chủ yếu tại đâu?", options: ["Bạch Đằng - Chi Lăng", "Phòng tuyến Như Nguyệt", "Cửa Tòa", "Sông Cầu"], correctAnswer: "Bạch Đằng - Chi Lăng", explanation: "Trận Bạch Đằng (thuỷ) và Chi Lăng (bộ) đập tan âm mưu xâm lược của nhà Tống.", lessonId: lesson1Id, type: "territory", location: "ChiLang" },
 
       // Lý Thường Kiệt
-      { content: "Sông Như Nguyệt (nơi Lý Thường Kiệt chặn đứng quân Tống) ngày nay là sông nào?", options: ["Sông Cầu", "Sông Hồng", "Sông Bạch Đằng", "Sông Mã"], correctAnswer: "Sông Cầu", explanation: "Sông Như Nguyệt chính là đoạn chảy qua tỉnh Bắc Ninh ngày nay của sông Cầu.", lessonId: lesson1Id, difficulty: "hard" },
-      { content: "Bài thơ 'Nam quốc sơn hà' của Lý Thường Kiệt thường được ví von với danh hiệu gì?", options: ["Tuyệt tác văn học thời Lý", "Bản Tuyên ngôn độc lập đầu tiên", "Lời hịch tướng sĩ", "Chiếu dời đô"], correctAnswer: "Bản Tuyên ngôn độc lập đầu tiên", explanation: "Khẳng định chủ quyền với hai câu mở đầu lừng lẫy về sông núi nước Nam.", lessonId: lesson1Id, type: "millionaire" },
+      { content: "Sông Như Nguyệt (nơi Lý Thường Kiệt chặn đứng quân Tống) ngày nay là sông nào?", options: ["Sông Cầu", "Sông Hồng", "Sông Bạch Đằng", "Sông Mã"], correctAnswer: "Sông Cầu", explanation: "Sông Như Nguyệt chính là sông Cầu (Bắc Ninh ngày nay).", lessonId: lesson1Id, difficulty: "hard" },
+      { content: "Lý Thường Kiệt từng mang quân đánh châu Khâm, châu Ung của Tống để bảo vệ kinh đô nào?", options: ["Hoa Lư", "Thăng Long", "Phú Xuân", "Cổ Loa"], correctAnswer: "Thăng Long", explanation: "Bảo vệ kinh đô Thăng Long và cõi bờ biên giới phía Bắc.", lessonId: lesson1Id, type: "territory", location: "ThangLong" },
 
       // Trần Hưng Đạo
-      { content: "Tác phẩm quân sự nổi tiếng nào được Trần Hưng Đạo soạn ra nhằm răn dạy, khích lệ tướng sĩ?", options: ["Binh thư yếu lược", "Vạn Kiếp tông bí truyền thư", "Hịch tướng sĩ", "Đại Việt sử ký"], correctAnswer: "Hịch tướng sĩ", explanation: "Hịch Tướng Sĩ nêu cao trách nhiệm quân công và tình yêu đất nước trước họa xâm lăng.", lessonId: lesson1Id },
-      { content: "Trần Hưng Đạo đã lãnh đạo chiến đấu chiến thắng quân xâm lược nào?", options: ["Quân Tống và Nguyên", "Ba lần chống quân Mông-Nguyên", "Quân Minh", "Quân Thanh"], correctAnswer: "Ba lần chống quân Mông-Nguyên", explanation: "Dù chỉ làm Tổng chỉ huy (Quốc công tiết chế) trong 2 lần sau, nhưng công lao của ông đại diện cho cả 3 lần kháng Nguyên Mông.", lessonId: lesson1Id, type: "general" },
+      { content: "Tác phẩm quân sự nổi tiếng nào được Trần Hưng Đạo soạn ra nhằm răn dạy, khích lệ tướng sĩ?", options: ["Vạn Kiếp tông bí truyền thư", "Binh thư yếu lược", "Hịch tướng sĩ", "Đại Việt sử ký"], correctAnswer: "Hịch tướng sĩ", explanation: "Hịch Tướng Sĩ nêu cao trách nhiệm và tình yêu đất nước trước họa xâm lăng.", lessonId: lesson1Id },
+      { content: "Trần Hưng Đạo đã lãnh đạo chiến đấu chiến thắng quân xâm lược nào 3 lần?", options: ["Quân Tống và Nguyên", "Quân Mông-Nguyên", "Quân Minh", "Quân Thanh"], correctAnswer: "Quân Mông-Nguyên", explanation: "Nhà Trần với sự chỉ huy trực tiếp của ông ở 2 lần sau đã 3 lần đánh bại giặc Mông-Nguyên hùng mạnh.", lessonId: lesson1Id, type: "general" },
 
       // Lê Lợi & Nguyễn Trãi
       { content: "Căn cứ địa chính của cuộc khởi nghĩa Lam Sơn thời kỳ đầu là ở ngọn núi / rừng nào?", options: ["Chí Linh", "Lam Sơn", "Lam Kinh", "Ngàn Nưa"], correctAnswer: "Lam Sơn", explanation: "Khởi nghĩa bắt đầu ở đất Lam Sơn, Thanh Hóa (1418).", lessonId: lesson1Id, type: "territory", location: "LamSon" },
       { content: "Chiến thuật 'Tâm công', viết thư dụ hàng hàng chục vạn quân Minh là do ai chủ trì đề xuất?", options: ["Trần Hưng Đạo", "Lý Thường Kiệt", "Nguyễn Trãi", "Lê Lợi"], correctAnswer: "Nguyễn Trãi", explanation: "Nguyễn Trãi dùng ngòi bút làm vũ khí, đánh gục ý chí quân địch không cần đổ máu.", lessonId: lesson1Id, type: "time-attack" },
 
       // Trương Định
-      { content: "Nhân dân Nam Kỳ chống Pháp suy tôn danh hiệu gì cho Trương Định?", options: ["Đại Nguyên Soái", "Bình Tây Đại Nguyên Soái", "Bình Nam Đại Nguyên Soái", "Thiên Hộ Diệu"], correctAnswer: "Bình Tây Đại Nguyên Soái", explanation: "Ông quyết tâm ở lại đánh 'Tây' mặc cho chiếu chỉ của triều đình Huế ép bãi binh.", lessonId: lesson2Id, type: "millionaire" },
+      { content: "Nhân dân Nam Kỳ chống Pháp suy tôn danh hiệu 'Bình Tây Đại Nguyên Soái' cho người anh hùng nào ở Gò Công?", options: ["Nguyễn Trung Trực", "Trương Định", "Thiên Hộ Diệu", "Thủ Khoa Huân"], correctAnswer: "Trương Định", explanation: "Mặc lệnh bãi binh của triều đình, Trương Định ở lại cùng nhân dân kháng Pháp tại Gia Định, Gò Công.", lessonId: lesson2Id, type: "territory", location: "GiaDinh" },
 
       // Nguyễn Trung Trực
-      { content: "Ông đã tạo nên chiến công lẫy lừng khi đốt cháy chiếc tàu chiến L'Espérance (Hy Vọng) của Pháp trên dòng sông nào?", options: ["Sông Tiền", "Sông Bạch Đằng", "Sông Cửu Long", "Sông Vàm Cỏ Đông (Nhật Tảo)"], correctAnswer: "Sông Vàm Cỏ Đông (Nhật Tảo)", explanation: "Chiến công tháng 12/1861 đã làm chấn động lực lượng Pháp ở Nam Kỳ.", lessonId: lesson2Id },
-      { content: "Câu nói khẳng định ý chí quật cường: 'Bao giờ Tây nhổ hết cỏ nước Nam...' là của danh nhân nào?", options: ["Nguyễn Đình Chiểu", "Trương Định", "Hoàng Hoa Thám", "Nguyễn Trung Trực"], correctAnswer: "Nguyễn Trung Trực", explanation: "Ông thét lên sự phẫn nộ với Pháp trước giờ thọ hình ở Rạch Giá.", lessonId: lesson2Id, difficulty: "medium" },
+      { content: "Chiến công hiển hách đốt cháy tàu chiến L'Espérance của Pháp (1861) diễn ra trên dòng sông nào?", options: ["Sông Tiền", "Sông Hậu", "Sông Sài Gòn", "Vàm Cỏ Đông (Nhật Tảo)"], correctAnswer: "Vàm Cỏ Đông (Nhật Tảo)", explanation: "Chiến thắng trên sông Vàm Cỏ Đông (vàm sông Nhật Tảo) làm chấn động quân Pháp.", lessonId: lesson2Id, type: "territory", location: "VamCoDong" },
+      { content: "Cuộc khởi nghĩa của Nguyễn Trung Trực cuối cùng bị chặn đứng, và ông bị xử chém tại đâu năm 1868?", options: ["Gò Công", "Rạch Giá", "Tân An", "Biên Hòa"], correctAnswer: "Rạch Giá", explanation: "Nguyễn Trung Trực hiến mình cứu nhân dân và bị giặc Pháp hành hình tại Rạch Giá (Kiên Giang).", lessonId: lesson2Id, type: "territory", location: "RachGia" },
 
       // Phan Đình Phùng
-      { content: "Khởi nghĩa nào do Phan Đình Phùng lãnh đạo có quy mô thời gian dài nhất và có tính tổ chức nhất trong phong trào Cần Vương?", options: ["Khởi nghĩa Bãi Sậy", "Khởi nghĩa Yên Thế", "Khởi nghĩa Hương Khê", "Khởi nghĩa Ba Đình"], correctAnswer: "Khởi nghĩa Hương Khê", explanation: "Kéo dài khoảng 10 năm, căn cứ trải rộng khắp 4 tỉnh Thanh Hóa, Nghệ An, Hà Tĩnh, Quảng Bình.", lessonId: lesson2Id, type: "survival" },
-      { content: "Ai là tướng đắc lực của Phan Đình Phùng người đã chế tạo súng trường theo kiểu Pháp?", options: ["Cao Thắng", "Hoàng Hoa Thám", "Trương Vĩnh Ký", "Đinh Công Tráng"], correctAnswer: "Cao Thắng", explanation: "Cao Thắng rất giỏi vũ khí, tổ chức xưởng đúc súng theo mẫu tiểu liên 1874 của Pháp.", lessonId: lesson2Id, type: "time-attack" },
+      { content: "Khởi nghĩa Hương Khê do Phan Đình Phùng lãnh đạo là đỉnh cao phong trào Cần Vương, đã diễn ra tại tỉnh nào?", options: ["Thanh Hóa", "Nghệ An", "Hà Tĩnh", "Quảng Bình"], correctAnswer: "Hà Tĩnh", explanation: "Trung tâm chỉ huy đặt tại Hương Khê, Hà Tĩnh, địa bàn mở rộng khắp 4 tỉnh miền Trung.", lessonId: lesson2Id, type: "territory", location: "HuongKhe" },
+      { content: "Ai là vị tướng đắc lực của Phan Đình Phùng đã chế tạo thành công súng trường kiểu Pháp?", options: ["Cao Thắng", "Đinh Công Tráng", "Nguyễn Thiện Thuật", "Hoàng Hoa Thám"], correctAnswer: "Cao Thắng", explanation: "Cao Thắng rất tài giỏi trong tổ chức sản xuất vũ khí, đúc súng kiểu 1874 của thực dân Pháp.", lessonId: lesson2Id, type: "time-attack" },
 
       // Hoàng Hoa Thám
-      { content: "Hoàng Hoa Thám còn được nhân dân kính trọng gọi bằng danh xưng nào?", options: ["Bình Tây Đại Nguyên Soái", "Đức Thánh Trần", "Hùm thiêng Yên Thế", "Lãnh binh Thăng"], correctAnswer: "Hùm thiêng Yên Thế", explanation: "Cuộc đấu tranh của Hoàng Hoa Thám (Đề Thám) ở vùng Yên Thế là đáng sợ nhất với quân Pháp suốt 30 năm.", lessonId: lesson2Id }
+      { content: "Hoàng Hoa Thám (Hùm thiêng Yên Thế) đã duy trì cuộc khởi nghĩa nông dân chống Pháp kéo dài bao lâu?", options: ["Khoảng 10 năm", "Khoảng 15 năm", "Gần 30 năm", "Hơn 50 năm"], correctAnswer: "Gần 30 năm", explanation: "Khởi nghĩa Yên Thế kéo dài từ 1884 đến 1913, lớn nhất trong lịch sử thời đó.", lessonId: lesson2Id },
+      { content: "Căn cứ địa khởi nghĩa Yên Thế nằm ở vùng rừng núi của tỉnh nào?", options: ["Bắc Giang", "Thái Nguyên", "Lạng Sơn", "Cao Bằng"], correctAnswer: "Bắc Giang", explanation: "Địa bàn hiểm trở của Yên Thế Thượng và Phồn Xương, Bắc Giang.", lessonId: lesson2Id, type: "territory", location: "YenThe" },
     ];
-    await Question.insertMany(questions);
-    console.log("✅ Đã tạo Questions (Tổng hợp các mode chơi).");
+    
+    // Tích hợp dữ liệu Ai Là Triệu Phú
+    const millionaireRaw = require('./millionaire_data');
+    const enrichedMillionaire = millionaireRaw.map(mq => ({
+      content: mq.content,
+      options: mq.options,
+      correctAnswer: mq.correctAnswer,
+      type: mq.type,
+      lessonId: mq.period === 1 ? lesson1Id : lesson2Id
+    }));
+    
+    const allQuestions = [...questions, ...enrichedMillionaire];
+    await Question.insertMany(allQuestions);
+    console.log(`✅ Đã tạo ${allQuestions.length} Questions (Bao gồm các mode thường và Ai Là Triệu Phú).`);
 
     // 3. MATCHING
     const matchings = [
@@ -211,6 +225,18 @@ const seedData = async () => {
           { left: "Trương Định", right: "Bình Tây Đại Nguyên Soái" },
           { left: "Trần Hưng Đạo", right: "Hịch Tướng Sĩ" },
           { left: "Hoàng Hoa Thám", right: "Hùm thiêng Yên Thế" }
+        ]
+      },
+      {
+        title: "Nhân vật và Kẻ thù của họ",
+        type: "Custom",
+        difficulty: 2,
+        pairs: [
+          { left: "Lê Lợi", right: "Chống quân Minh" },
+          { left: "Bà Triệu", right: "Chống quân Đông Ngô" },
+          { left: "Lê Hoàn", right: "Chống quân Tống" },
+          { left: "Ngô Quyền", right: "Chống quân Nam Hán" },
+          { left: "Trần Hưng Đạo", right: "Chống quân Mông Nguyên" }
         ]
       }
     ];
@@ -252,6 +278,66 @@ const seedData = async () => {
           "Ông chủ trương dùng chiến lược 'tâm công' không đánh mà thắng.",
           "Tên tuổi gắn liền với vụ án Lệ Chi Viên oan nghiệt.",
           "Người chấp bút bản 'Bình Ngô đại cáo'."
+        ],
+        difficulty: "medium"
+      },
+      {
+        name: "Trần Hưng Đạo",
+        aliases: ["Trần Quốc Tuấn", "Quốc công tiết chế", "Đức Thánh Trần"],
+        clues: [
+          "Quê quán tại hương Tức Mặc, phủ Thiên Trường.",
+          "Ông được phong tước Hưng Đạo đại vương.",
+          "Ba lần cùng triều đình nhà Trần gian nan chống giặc phương Bắc.",
+          "Tác giả của tác phẩm Binh thư yếu lược và Vạn Kiếp tông bí truyền thư.",
+          "Tác giả bài Hịch kêu gọi lòng yêu nước của tướng sĩ thiết tha, sâu sắc."
+        ],
+        difficulty: "easy"
+      },
+      {
+        name: "Ngô Quyền",
+        aliases: ["Tiền Ngô Vương"],
+        clues: [
+          "Ông người thôn Đường Lâm, Ba Vì ngày nay.",
+          "Con rể của Dương Đình Nghệ.",
+          "Mang quân từ Châu Ái ra Bắc để tiêu diệt phản tặc Kiều Công Tiễn.",
+          "Bố trí bãi cọc nhọn bọc sắt dưới cửa sông Bạch Đằng.",
+          "Chấm dứt 1000 năm Bắc Thuộc, mở ra kỷ nguyên độc lập lâu dài."
+        ],
+        difficulty: "easy"
+      },
+      {
+        name: "Lý Thường Kiệt",
+        aliases: ["Việt Quốc công"],
+        clues: [
+          "Ông là tướng lĩnh tài ba bậc nhất triều đại nhà Lý.",
+          "Tiến hành chiến lược chủ động tấn công 'Tiên phát chế nhân'.",
+          "Chỉ huy đánh tàn phá các thành Ung Châu, Khâm Châu, Liêm Châu.",
+          "Xây dựng phòng tuyến kiên cố bên bờ nam sông Như Nguyệt.",
+          "Đọc bài thơ 'Nam quốc sơn hà' giữa đêm khuya để khích lệ tướng sĩ."
+        ],
+        difficulty: "medium"
+      },
+      {
+        name: "Trương Định",
+        aliases: ["Trương Công Định", "Bình Tây Đại Nguyên Soái"],
+        clues: [
+          "Ông quê ở Quảng Ngãi, nhưng theo cha lập nghiệp ở vùng đất Nam Kỳ.",
+          "Ban đầu ông theo nghề nông, lập đồn điền lớn ở Gò Công.",
+          "Ông tự chiêu mộ nghĩa binh chống lại Pháp ngay khi chúng xâm lược.",
+          "Bị triều đình Huế ép bãi binh nhưng ông kháng lệnh cứu nước.",
+          "Được nhân dân suy tôn làm Bình Tây Đại Nguyên Soái."
+        ],
+        difficulty: "medium"
+      },
+      {
+        name: "Nguyễn Trung Trực",
+        aliases: ["Nguyễn Văn Lịch", "Quản Chơn"],
+        clues: [
+          "Sinh ra ở xóm Nghề, thôn Bình Nhựt, phủ Tân An (nay thuộc Long An).",
+          "Ông có biệt tài bơi ngao du dưới nước, thường lãnh đạo nghĩa quân thuỷ chiến.",
+          "Chỉ huy quân cảm tử thiêu lụi tàu chiến L'Espérance (Hy Vọng).",
+          "Bị bắt và hy sinh oanh liệt ở tuổi 30 tại mảnh đất Rạch Giá (Kiên Giang).",
+          "Nổi tiếng với câu nói: Bao giờ Tây nhổ hết cỏ nước Nam..."
         ],
         difficulty: "medium"
       }
@@ -323,6 +409,38 @@ const seedData = async () => {
           { q: "Hiệu của Nguyễn Trãi là gì?", a: "Ức Trai" },
           { q: "Khởi nghĩa Lam Sơn đánh đuổi quân xâm lược của triều đại nào?", a: "Nhà Minh" },
           { q: "Tổ chức nào công nhận Nguyễn Trãi là Danh nhân văn hóa thế giới năm 1980?", a: "UNESCO" }
+        ]
+      },
+      {
+        imageUrl: "/assets/images/ngo_quyen.png",
+        answer: "Ngô Quyền",
+        difficulty: "medium",
+        questions: [
+          { q: "Quê hương của ông ở vùng đất nào (nay thuộc Hà Nội)?", a: "Đường Lâm" },
+          { q: "Ông là con rể của vị tướng nào?", a: "Dương Đình Nghệ" },
+          { q: "Ông đã lãnh đạo nhân dân đánh bại quân nào năm 938?", a: "Nam Hán" },
+          { q: "Trận chiến lịch sử của ông diễn ra trên sông nào?", a: "Bạch Đằng" },
+          { q: "Ông đã giết tên phản tặc nào để báo thù cho bố vợ?", a: "Kiều Công Tiễn" },
+          { q: "Chiến thuật nổi tiếng của ông ở cửa sông là cắm thứ gì?", a: "Cọc nhọn" },
+          { q: "Chủ tướng giặc Nam Hán tử trận dưới tay ông là ai?", a: "Hoằng Tháo" },
+          { q: "Ông lên ngôi xưng vương vào năm nào?", a: "939" },
+          { q: "Chiến thắng Bạch Đằng của ông đã chấm dứt hơn 1000 năm thời kỳ gì?", a: "Bắc thuộc" }
+        ]
+      },
+      {
+        imageUrl: "/assets/images/nguyen_trung_truc.png",
+        answer: "Nguyễn Trung Trực",
+        difficulty: "hard",
+        questions: [
+          { q: "Tên thật của vị anh hùng Nguyễn Trung Trực là gì?", a: "Nguyễn Văn Lịch" },
+          { q: "Ông đã chỉ huy nghĩa quân đốt cháy tàu chiến nào của Pháp?", a: "Hy Vọng (L'Espérance)" },
+          { q: "Trận đốt tàu Pháp của ông diễn ra trên ngã ba sông nào?", a: "Nhật Tảo" },
+          { q: "Ông và nghĩa quân đã tập kích đánh chiếm đồn nào năm 1868?", a: "Kiên Giang" },
+          { q: "Ông xuất thân từ gia đình làm nghề gì ở xóm Nghề?", a: "Chài lưới" },
+          { q: "Ông hy sinh oanh liệt năm 1868 tại đâu?", a: "Rạch Giá" },
+          { q: "Thực dân Pháp từng nể phục ông là vị tướng tài ba của chiến thuật gì?", a: "Thuỷ chiến" },
+          { q: "Câu nói: 'Bao giờ Tây nhổ hết... nước Nam mới hết người Nam đánh Tây' (Thiếu từ gì?)", a: "Cỏ" },
+          { q: "Để cứu nhân dân và mẹ già trước sự tàn độc của giặc, ông đã làm gì?", a: "Nộp mình" }
         ]
       }
     ];

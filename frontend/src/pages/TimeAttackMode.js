@@ -121,24 +121,32 @@ export default function TimeAttackMode() {
     );
   }
 
-  if (loading) return <div className="p-8 text-center text-blue-900 font-bold">Đang mồi lửa nén nhang...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}><div className="text-xl font-bold text-amber-400 animate-pulse">Đang mồi lửa nén nhang...</div></div>;
 
   if (questions.length === 0) {
     return (
-      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
-        <p className="text-red-800 mb-4 font-bold">Chưa có dữ liệu câu hỏi cho thử thách này!</p>
-        <button onClick={() => navigate('/modes')} className="btn-historical">Quay lại Sa Bàn</button>
+      <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+        <p className="text-red-400 mb-4 font-bold">Chưa có dữ liệu câu hỏi cho thử thách này!</p>
+        <button onClick={() => navigate('/modes')} className="btn-primary px-6 py-3 text-sm">Quay lại Sa Bàn</button>
       </div>
     );
   }
 
   if (isGameOver || timeLeft <= 0) {
     return (
-      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-4xl font-bold text-red-700 mb-4">NHANG ĐÃ TÀN!</h2>
-        <p className="text-2xl mb-2 font-bold">Điểm số đạt được: {score}</p>
-        <p className="text-lg mb-8 italic">Vận tốc lật mở sử sách thật đáng nể!</p>
-        <button onClick={() => navigate('/modes')} className="btn-historical">Quay lại Sa Bàn</button>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(239,68,68,0.08) 0%, #1a1a2e 70%)' }}>
+        <div className="animate-shake mb-6">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto" style={{ background: 'rgba(239,68,68,0.15)', border: '2px solid rgba(239,68,68,0.3)' }}>
+            <span className="text-4xl">🕯️</span>
+          </div>
+        </div>
+        <h2 className="text-2xl sm:text-4xl font-black mb-3 uppercase text-center" style={{ background: 'linear-gradient(135deg, #fca5a5, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>NHANG ĐÃ TÀN!</h2>
+        <p className="text-lg sm:text-2xl mb-2 font-bold text-white text-center">Điểm số: <span className="text-amber-400">{score} XP</span></p>
+        <p className="text-sm sm:text-base mb-8 italic text-center" style={{ color: 'rgba(255,255,255,0.5)' }}>Vận tốc lật mở sử sách thật đáng nể!</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button onClick={() => window.location.reload()} className="px-8 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-[1.02]" style={{ background: 'linear-gradient(135deg, #dc2626, #ef4444)' }}>🔄 Châm Nhang Lại</button>
+          <button onClick={() => navigate('/modes')} className="px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02]" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>← Về Sa Bàn</button>
+        </div>
       </div>
     );
   }

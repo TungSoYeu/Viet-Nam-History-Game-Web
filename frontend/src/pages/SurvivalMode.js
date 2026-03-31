@@ -146,15 +146,19 @@ export default function SurvivalMode() {
     <div className="min-h-screen flex flex-col p-4 sm:p-6" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className="flex justify-between items-center mb-6">
-          <button onClick={() => navigate('/modes')} className="text-sm font-semibold flex items-center gap-1 transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            <ArrowLeft size={18} /> Thoát
-          </button>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
-            <Swords size={16} className="text-red-400" />
-            <span className="text-xs font-bold text-red-400 uppercase">10/10</span>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center mb-6">
+          <div className="flex justify-start">
+            <button onClick={() => navigate('/modes')} className="text-sm font-semibold flex items-center gap-1 transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <ArrowLeft size={18} /> <span className="hidden sm:inline">Thoát</span>
+            </button>
           </div>
-          <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>{currentIndex + 1} / 10</span>
+          <div className="flex justify-center flex-col sm:flex-row items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <Swords size={16} className="text-red-400 hidden sm:block" />
+            <span className="text-xs font-bold text-red-400 uppercase text-center">Tử Chiến</span>
+          </div>
+          <div className="flex justify-end">
+            <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>{currentIndex + 1}/10</span>
+          </div>
         </div>
 
         {/* Progress Bar */}
