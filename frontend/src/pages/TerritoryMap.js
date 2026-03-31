@@ -10,17 +10,17 @@ export default function TerritoryMap() {
   
   // DỮ LIỆU TỌA ĐỘ
   const regions = [
-    { id: 'DienBienPhu', name: 'Điện Biên Phủ', top: '13.55%', left: '20.18%' },
+    { id: 'HatMon', name: 'Hát Môn', top: '16.50%', left: '35.50%' },
     { id: 'ChiLang', name: 'Ải Chi Lăng', top: '13.36%', left: '41.75%' },
     { id: 'ThangLong', name: 'Thăng Long', top: '17.74%', left: '37.12%' },
+    { id: 'YenThe', name: 'Yên Thế', top: '15.36%', left: '40.75%' },
     { id: 'BachDang', name: 'Sông Bạch Đằng', top: '19.04%', left: '44.87%' },
     { id: 'LamSon', name: 'Lam Sơn', top: '25.66%', left: '35.00%' },
-    { id: 'PhuXuan', name: 'Phú Xuân', top: '48.73%', left: '48.50%' },
-    { id: 'DaNang', name: 'Đà Nẵng', top: '75.81%', left: '49.00%' },
-    { id: 'ThiNai', name: 'Thị Nại', top: '63.16%', left: '57.87%' },
-    { id: 'GiaDinh', name: 'Gia Định', top: '85.00%', left: '43.00%' },
-    { id: 'RachGam', name: 'Rạch Gầm', top: '87.16%', left: '39.87%' },
-    { id: 'ConDao', name: 'Côn Đảo', top: '98.52%', left: '38.87%' }
+    { id: 'NganNua', name: 'Ngàn Nưa', top: '27.50%', left: '34.00%' },
+    { id: 'HuongKhe', name: 'Hương Khê', top: '32.16%', left: '39.87%' },
+    { id: 'VamCoDong', name: 'Vàm Cỏ Đông', top: '84.50%', left: '41.50%' },
+    { id: 'GiaDinh', name: 'Gò Công (Gia Định)', top: '85.00%', left: '43.00%' },
+    { id: 'RachGia', name: 'Rạch Giá', top: '89.00%', left: '35.00%' }
   ];
 
   const [unlockedTerritories, setUnlockedTerritories] = useState([]);
@@ -101,26 +101,22 @@ export default function TerritoryMap() {
     });
   };
 
-
-
   return (
-    <div className="min-h-screen bg-amber-50 flex flex-col items-center relative">
+    <div className="min-h-screen flex flex-col items-center relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       <div className="responsive-container py-8 w-full max-w-7xl px-4">
-        <h1 className="text-4xl font-black text-amber-900 mb-8 text-center uppercase tracking-widest">🗺️ Sa Bàn Lãnh Thổ</h1>
+        <h1 className="text-4xl font-black mb-8 text-center uppercase tracking-widest" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>🗺️ Sa Bàn Lãnh Thổ</h1>
         
         {!isPlaying ? (
           <div className="flex flex-col lg:flex-row w-full gap-8 items-start">
             
             {/* CỘT TRÁI: BẢN ĐỒ */}
-            <div className="w-full lg:w-2/3 bg-blue-50 border-2 border-amber-800 rounded-2xl shadow-xl flex justify-center items-center p-2 sm:p-4 bg-opacity-50">
+            <div className="w-full lg:w-2/3 rounded-2xl shadow-xl flex justify-center items-center p-2 sm:p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
               
-              {/* ĐÃ SỬA LỖI Ở ĐÂY: Dùng inline-block để cái div này ôm khít rịt vào bức ảnh */}
               <div className="relative inline-block leading-none">
                   
                   <img 
                       src={MapBackground} 
                       alt="Bản đồ Việt Nam" 
-                      // Đảm bảo ảnh giữ đúng tỉ lệ gốc
                       className="max-w-full max-h-[75vh] w-auto h-auto block opacity-95 rounded-lg shadow-inner"
                   />
 
@@ -142,7 +138,7 @@ export default function TerritoryMap() {
                         <div className={`text-xl sm:text-2xl filter drop-shadow-lg ${!isUnlocked && !isSelected && 'animate-bounce'}`}>
                             {isUnlocked ? '🚩' : isSelected ? '⚔️' : '🛡️'}
                         </div>
-                        <div className="absolute top-full mt-1 bg-amber-900 text-white text-[10px] sm:text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity font-bold border border-amber-500 z-50">
+                        <div className="absolute top-full mt-1 text-white text-[10px] sm:text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity font-bold z-50" style={{ background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(212,160,83,0.5)' }}>
                             {region.name}
                         </div>
                       </div>
@@ -154,22 +150,22 @@ export default function TerritoryMap() {
 
             {/* CỘT PHẢI: THÔNG TIN CHIẾN DỊCH */}
             <div className="w-full lg:w-1/3 lg:sticky lg:top-8">
-               <div className="bg-white border-2 border-amber-300 rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center min-h-[300px]">
+               <div className="rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center min-h-[300px]" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {selectedRegion ? (
                   <div className="animate-fade-in w-full">
-                    <h2 className="text-2xl font-black text-amber-900 mb-4 border-b-2 border-amber-200 pb-2 uppercase">
+                    <h2 className="text-2xl font-black mb-4 pb-2 uppercase" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       Chiến dịch: {selectedRegion.name}
                     </h2>
-                    <p className="text-gray-600 mb-8 italic leading-relaxed">
+                    <p className="mb-8 italic leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
                       "Hào khí ngút trời, quân ta đã sẵn sàng chiếm lĩnh cứ điểm này. Hãy dùng trí tuệ để dẫn lối!"
                     </p>
-                    <button onClick={startConquest} className="w-full py-4 text-xl bg-red-800 hover:bg-red-900 text-white font-bold rounded-lg shadow-md transition-colors">
+                    <button onClick={startConquest} className="w-full py-4 text-xl text-white font-bold rounded-lg shadow-md transition-colors" style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}>
                       ⚔️ Xuất Quân
                     </button>
                   </div>
                 ) : (
-                  <div className="text-gray-400 italic">
-                    <p className="mb-2 font-bold text-lg text-amber-800">Chọn Cứ Điểm</p>
+                  <div style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    <p className="mb-2 font-bold text-lg" style={{ color: 'rgba(212,160,83,0.8)' }}>Chọn Cứ Điểm</p>
                     <p className="text-sm">Nhấn vào một chiếc khiên trên bản đồ để bắt đầu cuộc chinh phạt của bạn.</p>
                   </div>
                 )}
@@ -179,12 +175,12 @@ export default function TerritoryMap() {
         ) : (
           /* GIAO DIỆN TRẢ LỜI CÂU HỎI */
           <div className="max-w-3xl mx-auto mt-4 w-full">
-            <div className="bg-white p-8 rounded-xl shadow-2xl border-t-8 border-red-800">
-              <div className="mb-8 text-xs font-black text-amber-700 flex justify-between uppercase tracking-widest border-b border-amber-100 pb-4">
+            <div className="p-8 rounded-xl shadow-2xl" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)', borderTop: '4px solid rgba(220,38,38,0.8)' }}>
+              <div className="mb-8 text-xs font-black flex justify-between uppercase tracking-widest pb-4" style={{ color: 'rgba(212,160,83,0.8)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 <span>📍 {selectedRegion.name}</span>
                 <span>Thử thách: {currentQIndex + 1} / {questions.length}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black mb-10 text-gray-800 leading-snug text-center italic">
+              <h2 className="text-2xl sm:text-3xl font-black mb-10 text-white leading-snug text-center italic">
                 "{questions[currentQIndex].content}"
               </h2>
               
@@ -193,9 +189,12 @@ export default function TerritoryMap() {
                   <button 
                     key={idx} 
                     onClick={() => handleAnswer(opt)}
-                    className="p-5 bg-white border-2 border-amber-200 rounded-xl hover:border-amber-600 hover:bg-amber-50 font-bold text-left transition-all text-lg active:scale-95 shadow-sm hover:shadow-md"
+                    className="p-5 rounded-xl font-bold text-left transition-all text-lg text-white active:scale-95 shadow-sm hover:shadow-md"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    onMouseEnter={(e) => { e.target.style.background = 'rgba(212,160,83,0.15)'; e.target.style.borderColor = 'rgba(212,160,83,0.5)'; }}
+                    onMouseLeave={(e) => { e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                   >
-                    <span className="text-amber-700 mr-4 font-black">{String.fromCharCode(65 + idx)}.</span>
+                    <span className="text-amber-500 mr-4 font-black">{String.fromCharCode(65 + idx)}.</span>
                     {opt}
                   </button>
                 ))}
@@ -205,14 +204,11 @@ export default function TerritoryMap() {
         )}
         
         <div className="w-full flex justify-center mt-12">
-          <button onClick={() => navigate('/modes')} className="text-amber-900 font-bold uppercase tracking-widest hover:text-red-800 transition-colors flex items-center gap-2">
+          <button onClick={() => navigate('/modes')} className="font-bold uppercase tracking-widest flex items-center gap-2 transition-colors" style={{ color: 'rgba(212,160,83,0.7)' }}>
             « Quay lại sảnh chính
           </button>
         </div>
       </div>
-
-
-
     </div>
   );
 }

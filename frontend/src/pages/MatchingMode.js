@@ -119,12 +119,16 @@ export default function MatchingMode() {
   return (
     <div className="min-h-screen p-4 md:p-6" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       <div className="max-w-6xl mx-auto flex flex-col items-center">
-        <div className="w-full flex justify-between items-center mb-8 p-4 rounded-2xl shadow-xl border" style={{ background: '#16213e', borderColor: 'rgba(255,255,255,0.08)' }}>
-          <button onClick={() => navigate('/modes')} className="btn-primary px-4 py-2 text-sm flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition">
-             <ArrowLeft size={20} /> Thoát
-          </button>
-          <h2 className="text-xl md:text-3xl font-black uppercase tracking-widest text-center text-transparent bg-clip-text drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ backgroundImage: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)' }}>{game?.title || "Nối Dữ Kiện"}</h2>
-          <div className="text-lg md:text-xl font-black text-amber-400 px-4 py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>Điểm: {score}</div>
+        <div className="w-full grid grid-cols-[1fr_auto_1fr] items-center mb-8 p-4 rounded-2xl shadow-xl border gap-2" style={{ background: '#16213e', borderColor: 'rgba(255,255,255,0.08)' }}>
+          <div className="flex justify-start">
+            <button onClick={() => navigate('/modes')} className="btn-primary px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm flex items-center gap-1 md:gap-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition">
+               <ArrowLeft size={18} /> <span className="hidden sm:inline">Thoát</span>
+            </button>
+          </div>
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-black uppercase tracking-widest text-center text-transparent bg-clip-text drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ backgroundImage: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)' }}>{game?.title || "Nối Dữ Kiện"}</h2>
+          <div className="flex justify-end">
+            <div className="text-sm md:text-xl font-black text-amber-400 px-3 py-1.5 md:px-4 md:py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>Điểm: {score}</div>
+          </div>
         </div>
 
         {/* HIỂN THỊ HƯỚNG DẪN DÀNH RIÊNG CHO ĐIỆN THOẠI */}

@@ -301,43 +301,44 @@ export default function Navbar() {
       {/* TOP NAV - Visible only on Desktop/Tablet */}
       <nav ref={navRef} className="text-amber-50 sticky top-0 z-[100] h-20 transition-all" style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-          <div className="flex items-center justify-between h-full">
+          <div className="flex items-center justify-between h-full relative">
             
-            <div className="flex items-center gap-8">
-              <Link to="/modes" className="flex items-center gap-2 group">
-                <ScrollText size={32} className="group-hover:rotate-12 transition-transform text-amber-400" />
-                <span className="font-black text-xl tracking-tighter uppercase" style={{ background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Sử Việt</span>
+            {/* Left: Logo */}
+            <div className="flex items-center flex-1">
+              <Link to="/modes" className="flex items-center gap-2 group shrink-0">
+                <ScrollText size={28} className="group-hover:rotate-12 transition-transform text-amber-400" />
+                <span className="font-black text-lg lg:text-xl tracking-tighter uppercase hidden md:inline" style={{ background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Danh Nhân Đất Việt</span>
               </Link>
-
-              {/* Desktop Menu */}
-              <div className="hidden md:flex items-baseline space-x-1">
-                <Link to="/timeline" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
-                  <Castle size={18} /> Học Thuật
-                </Link>
-                
-                <div className="relative">
-                  <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${showModes || location.pathname === '/modes' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
-                    <Swords size={18} /> Thách Đấu <ChevronDown size={14} className={`transition-transform ${showModes ? 'rotate-180' : ''}`} />
-                  </button>
-                  {showModes && (
-                    <div className="absolute left-0 mt-2 w-64 rounded-xl shadow-2xl py-2 animate-fade-in overflow-hidden" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      {modes.map((mode, idx) => (
-                        <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white font-bold transition">
-                          <span className="text-amber-500">{mode.icon}</span> {mode.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <Link to="/leaderboard" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
-                  <Trophy size={18} /> Phong Thần
-                </Link>
-              </div>
             </div>
 
-            {/* Profile/XP Section */}
-            <div className="flex items-center gap-4 relative">
+            {/* Center: Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <Link to="/timeline" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                <Castle size={18} /> Học Thuật
+              </Link>
+              
+              <div className="relative">
+                <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${showModes || location.pathname === '/modes' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                  <Swords size={18} /> Thách Đấu <ChevronDown size={14} className={`transition-transform ${showModes ? 'rotate-180' : ''}`} />
+                </button>
+                {showModes && (
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl shadow-2xl py-2 animate-fade-in overflow-hidden" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    {modes.map((mode, idx) => (
+                      <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white font-bold transition">
+                        <span className="text-amber-500">{mode.icon}</span> {mode.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Link to="/leaderboard" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                <Trophy size={18} /> Phong Thần
+              </Link>
+            </div>
+
+            {/* Right: Profile/XP Section */}
+            <div className="flex items-center justify-end flex-1 gap-4 relative">
                <div 
                  onClick={() => {
                    setShowUserMenu(!showUserMenu);

@@ -121,14 +121,18 @@ export default function RevealPictureMode() {
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
-      <div className="w-full max-w-4xl flex justify-between items-center mb-6">
-        <button onClick={() => navigate('/modes')} className="btn-primary px-4 py-2 text-sm flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition">
-          <ArrowLeft size={18} /> Thoát
-        </button>
-        <h1 className="text-2xl md:text-3xl font-black uppercase tracking-widest text-center flex items-center gap-3 drop-shadow-md text-white" style={{ background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          <ImageIcon size={32} className="text-amber-500" /> Lật Mở Tranh Cổ
+      <div className="w-full max-w-4xl grid grid-cols-[1fr_auto_1fr] items-center mb-6 gap-2">
+        <div className="flex justify-start">
+          <button onClick={() => navigate('/modes')} className="btn-primary px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition">
+            <ArrowLeft size={16} /> <span className="hidden sm:inline">Thoát</span>
+          </button>
+        </div>
+        <h1 className="text-lg sm:text-2xl md:text-3xl font-black uppercase tracking-widest text-center flex items-center justify-center gap-2 drop-shadow-md text-white" style={{ background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <ImageIcon size={24} className="text-amber-500 hidden sm:block" /> Lật Mở Tranh Cổ
         </h1>
-        <div className="text-lg font-bold text-amber-400 px-4 py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>Thưởng: {score} XP</div>
+        <div className="flex justify-end">
+          <div className="text-xs sm:text-sm md:text-lg font-bold text-amber-400 px-3 py-1.5 md:px-4 md:py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>+{score} XP</div>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
