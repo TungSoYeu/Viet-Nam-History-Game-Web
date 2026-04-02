@@ -6,6 +6,12 @@ const Challenge = require('../models/Challenge');
 const Chronological = require('../models/Chronological');
 const GuessCharacter = require('../models/GuessCharacter');
 const RevealPicture = require('../models/RevealPicture');
+const { getTheme4Content } = require('../services/theme4ContentService');
+
+function pickRandom(items = []) {
+  if (!Array.isArray(items) || items.length === 0) return null;
+  return items[Math.floor(Math.random() * items.length)];
+}
 
 exports.checkAnswer = async (req, res) => {
   const { questionId, userAnswer, userId, mode } = req.body;
@@ -79,7 +85,20 @@ exports.getRandomMatching = async (req, res) => {
         matchings = await Matching.aggregate([{ $sample: { size: 1 } }]);
     }
 
-    if (matchings.length === 0) return res.status(200).json(null); // Tránh lỗi 404
+    if (matchings.length === 0) {
+      const theme4Content = await getTheme4Content();
+      const round = pickRandom(theme4Content?.gameData?.connectingHistoryRounds);
+      if (!round) return res.status(200).json(null);
+
+      return res.json({
+        title: round.title,
+        type: round.id,
+        instruction: round.instruction,
+        pairs: round.pairs,
+        source: 'theme4',
+      });
+    }
+
     res.json(matchings[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -218,8 +237,25 @@ exports.addExperience = async (req, res) => {
 exports.getRandomChronological = async (req, res) => {
     try {
         const data = await Chronological.aggregate([{ $sample: { size: 1 } }]);
-        // Nếu không có dữ liệu, trả về object rỗng kèm message thay vì 404 để frontend không bị crash
-        if (data.length === 0) return res.status(200).json({ events: [] });
+        if (data.length === 0) {
+            const theme4Content = await getTheme4Content();
+            const flow = theme4Content?.gameData?.historicalFlowSet;
+
+            if (!flow) return res.status(200).json({ events: [] });
+
+            return res.json({
+                title: flow.title,
+                instruction: flow.instruction,
+                events: (flow.sentences || []).map((sentence, index) => ({
+                    id: sentence.id,
+                    text: sentence.text,
+                    order: index + 1,
+                    group: sentence.group,
+                })),
+                source: 'theme4',
+            });
+        }
+
         res.json(data[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -232,7 +268,24 @@ exports.getRandomMillionaire = async (req, res) => {
             { $match: { type: 'millionaire' } },
             { $sample: { size: 15 } }
         ]);
-        if (questions.length === 0) return res.status(200).json([]);
+
+        if (questions.length === 0) {
+            const theme4Content = await getTheme4Content();
+            const fallbackQuestions = (theme4Content?.gameData?.crosswordSets || []).flatMap((set) =>
+                (set.clues || []).map((clue, index) => ({
+                    _id: `${set.id}-${index + 1}`,
+                    content: clue.question,
+                    question: clue.question,
+                    options: clue.options,
+                    correctAnswer: clue.correctAnswer,
+                    keyword: set.acceptedAnswers?.[0] || set.keyword,
+                    source: 'theme4',
+                }))
+            );
+
+            return res.status(200).json(fallbackQuestions);
+        }
+
         res.json(questions);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -242,7 +295,23 @@ exports.getRandomMillionaire = async (req, res) => {
 exports.getRandomGuessCharacter = async (req, res) => {
     try {
         const data = await GuessCharacter.aggregate([{ $sample: { size: 1 } }]);
-        if (data.length === 0) return res.status(200).json(null);
+        if (data.length === 0) {
+            const theme4Content = await getTheme4Content();
+            const item = pickRandom(theme4Content?.gameData?.historicalRecognitionItems);
+
+            if (!item) return res.status(200).json(null);
+
+            return res.json({
+                name: item.acceptedAnswers?.[0] || item.title,
+                aliases: item.acceptedAnswers || [],
+                clues: [item.prompt, item.explanation].filter(Boolean),
+                image: item.imageUrl,
+                prompt: item.prompt,
+                type: item.type,
+                source: 'theme4',
+            });
+        }
+
         res.json(data[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -252,7 +321,22 @@ exports.getRandomGuessCharacter = async (req, res) => {
 exports.getRandomRevealPicture = async (req, res) => {
     try {
         const data = await RevealPicture.aggregate([{ $sample: { size: 1 } }]);
-        if (data.length === 0) return res.status(200).json(null);
+        if (data.length === 0) {
+            const theme4Content = await getTheme4Content();
+            const reveal = pickRandom(theme4Content?.gameData?.revealPictureSets);
+
+            if (!reveal) return res.status(200).json(null);
+
+            return res.json({
+                imageUrl: reveal.imageUrl,
+                answer: reveal.answer,
+                questions: reveal.questions,
+                acceptedAnswers: reveal.acceptedAnswers,
+                caption: reveal.caption,
+                source: 'theme4',
+            });
+        }
+
         res.json(data[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
