@@ -2,110 +2,34 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Flag, Flame, Hourglass, Puzzle, Swords, History, 
-  Library, UserSearch, Image as ImageIcon,
+  Flag, Hourglass, Puzzle, Swords, History, 
+  Library, UserSearch, Image as ImageIcon, ScanSearch,
   ArrowRight, Trophy, BookOpen, ChevronRight
 } from 'lucide-react';
 import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
 import ParticlesBackground from '../components/animations/ParticlesBackground';
+import { theme4Modes } from '../data/theme4Modes';
 
 export default function ModeSelection() {
   const navigate = useNavigate();
   const [selectedMode, setSelectedMode] = useState(null);
 
-  const competitionModes = [
-    { 
-      id: 'territory', name: "Mở Mang Bờ Cõi", 
-      desc: "Chinh phục bản đồ Việt Nam qua các trận đánh lịch sử.", 
-      longDesc: "Hành trình mở rộng bờ cõi từ thời sơ khai đến hiện đại. Mỗi vùng đất chiếm lĩnh được sẽ là một cột mốc vàng son của dân tộc.",
-      path: "/territory-map", 
-      bgImage: "/assets/images/bg-territory.jpg",
-      gradient: "linear-gradient(135deg, rgba(234, 88, 12, 0.8), rgba(249, 115, 22, 0.8))",
-      icon: <Flag size={28} />, emoji: "🗺️",
-      stats: "63 Tỉnh Thành"
-    },
-    { 
-      id: 'challenge', name: "Chinh Phục Thử Thách", 
-      desc: "Vượt qua 10 câu hỏi hiểm hóc (Chính xác 100%).", 
-      longDesc: "Thử thách khắc nghiệt nhất cho các nhà sử học. Chỉ một sai lầm nhỏ cũng khiến bạn phải bắt đầu lại từ con số không.",
-      path: "/survival", 
-      bgImage: "/assets/images/bg-challenge.jpg",
-      gradient: "linear-gradient(135deg, rgba(220, 38, 38, 0.8), rgba(239, 68, 68, 0.8))",
-      icon: <Flame size={28} />, emoji: "🔥",
-      stats: "10/10 Correct"
-    },
-    { 
-      id: 'timeAttack', name: "Thử Thách Thời Gian", 
-      desc: "Cuộc đua với nén nhang. Trả lời nhanh để tích điểm!", 
-      longDesc: "Thời gian không chờ đợi một ai. Hãy trả lời thật nhanh trước khi nén nhang tàn lụi.",
-      path: "/time-attack", 
-      bgImage: "/assets/images/bg-time.jpg", 
-      gradient: "linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8))",
-      icon: <Hourglass size={28} />, emoji: "⏳",
-      stats: "60 Giây"
-    },
-    { 
-      id: 'matching', name: "Nối Dữ Kiện", 
-      desc: "Kết nối các sự kiện và nhân vật đúng trình tự.", 
-      longDesc: "Hãy kết nối các nhân vật, sự kiện và triều đại lại với nhau để tạo nên một bức tranh toàn cảnh.",
-      path: "/matching", 
-      bgImage: "/assets/images/bg-matching.jpg",
-      gradient: "linear-gradient(135deg, rgba(22, 163, 74, 0.8), rgba(34, 197, 94, 0.8))",
-      icon: <Puzzle size={28} />, emoji: "🧩",
-      stats: "Logic & Trí Nhớ"
-    },
-    { 
-      id: 'pvp', name: "Võ Đài PvP", 
-      desc: "Thách đấu kiến thức với người chơi khác.", 
-      longDesc: "Đấu trường rực lửa nơi các danh tướng so tài cao thấp. Gửi lời thách đấu để khẳng định ai am tường sử Việt nhất.",
-      path: "/pvp", 
-      bgImage: "/assets/images/bg-pvp.jpg",
-      gradient: "linear-gradient(135deg, rgba(219, 39, 119, 0.8), rgba(236, 72, 153, 0.8))",
-      icon: <Swords size={28} />, emoji: "⚔️",
-      stats: "1v1 Trực tiếp"
-    },
-    { 
-      id: 'chronological', name: "Dòng Chảy Lịch Sử", 
-      desc: "Sắp xếp các sự kiện theo đúng dòng thời gian.", 
-      longDesc: "Thử thách tư duy logic bằng cách sắp xếp các cột mốc, cuộc khởi nghĩa và triều đại một cách chính xác nhất.",
-      path: "/chronological", 
-      bgImage: "/assets/images/bg-timeline.jpg",
-      gradient: "linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(139, 92, 246, 0.8))",
-      icon: <History size={28} />, emoji: "📜",
-      stats: "Sắp xếp 5 sự kiện"
-    },
-    { 
-      id: 'millionaire', name: "Khoa Cử Đình Nguyên", 
-      desc: "Vượt qua 15 câu hỏi để đoạt ngôi Trạng Nguyên.", 
-      longDesc: "Kỳ thi cao nhất của các sĩ tử thời xưa. Trải qua 15 câu hỏi hóc búa với 2 quyền trợ giúp.",
-      path: "/millionaire", 
-      bgImage: "/assets/images/bg-millionaire.jpg",
-      gradient: "linear-gradient(135deg, rgba(202, 138, 4, 0.8), rgba(234, 179, 8, 0.8))",
-      icon: <Library size={28} />, emoji: "🎓",
-      stats: "15 Câu - 2 Trợ giúp"
-    },
-    { 
-      id: 'guessCharacter', name: "Danh Nhân Ẩn Tích", 
-      desc: "Lật mở manh mối để đoán tên anh hùng dân tộc.", 
-      longDesc: "Hãy sử dụng tư duy nhạy bén, lật mở từng dữ kiện từ khó đến dễ để tìm ra tên vị anh hùng.",
-      path: "/guess-character", 
-      bgImage: "/assets/images/bg-character.jpg",
-      gradient: "linear-gradient(135deg, rgba(13, 148, 136, 0.8), rgba(20, 184, 166, 0.8))",
-      icon: <UserSearch size={28} />, emoji: "🕵️",
-      stats: "5 Dữ kiện gợi ý"
-    },
-    { 
-      id: 'revealPicture', name: "Lật Mở Tranh Cổ", 
-      desc: "Trả lời câu hỏi để giải mã bức tranh lịch sử.", 
-      longDesc: "Bức tranh lịch sử bị che khuất bởi 9 ô vuông bí ẩn. Trả lời đúng để lật mở từng mảnh ghép.",
-      path: "/reveal-picture", 
-      bgImage: "/assets/images/bg-reveal.jpg",
-      gradient: "linear-gradient(135deg, rgba(79, 70, 229, 0.8), rgba(99, 102, 241, 0.8))",
-      icon: <ImageIcon size={28} />, emoji: "🖼️",
-      stats: "Lưới ảnh 3x3"
-    }
-  ];
+  const iconMap = {
+    "turning-page": <ImageIcon size={28} />,
+    "understanding-teammates": <Swords size={28} />,
+    "historical-recognition": <ScanSearch size={28} />,
+    "connecting-history": <Puzzle size={28} />,
+    "crossword-decoding": <Library size={28} />,
+    "historical-flow": <History size={28} />,
+    "lightning-fast": <Hourglass size={28} />,
+    "picture-puzzle": <Flag size={28} />,
+  };
+
+  const competitionModes = theme4Modes.map((mode) => ({
+    ...mode,
+    icon: iconMap[mode.id] || <ImageIcon size={28} />,
+  }));
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -214,9 +138,11 @@ export default function ModeSelection() {
         <div className="responsive-container py-8 sm:py-12 relative z-10">
           {/* Header */}
           <header className="mb-8 text-center mt-4">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(212,160,83,0.8)' }}>⚔️ Đấu Trường</p>
-            <h1 className="historical-title mb-2 text-white" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Chọn Chế Độ Chơi</h1>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>Chọn một chế độ để bắt đầu hành trình</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(212,160,83,0.8)' }}>Chủ đề 4</p>
+            <h1 className="historical-title mb-2 text-white" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Chiến Tranh Bảo Vệ Tổ Quốc</h1>
+            <p className="text-sm max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Bộ trò chơi của Bài 7 và Bài 8 với số lượng câu hỏi cố định, hình ảnh lịch sử chính thống và lược đồ nhận diện.
+            </p>
           </header>
 
           {/* Mode Grid */}

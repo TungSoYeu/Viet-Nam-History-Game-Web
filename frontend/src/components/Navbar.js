@@ -26,9 +26,11 @@ import {
   History,
   GraduationCap,
   UserSearch,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ScanSearch
 } from 'lucide-react';
 import API_BASE_URL from '../config/api';
+import { theme4Modes } from '../data/theme4Modes';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -284,17 +286,22 @@ export default function Navbar() {
     }
   };
 
-  const modes = [
-    { name: "Mở Mang Bờ Cõi", path: "/territory-map", icon: <Map size={20} /> },
-    { name: "Sinh Tồn (Endless)", path: "/survival", icon: <ShieldCheck size={20} /> },
-    { name: "Thử Thách Thời Gian", path: "/time-attack", icon: <Timer size={20} /> },
-    { name: "Nối Dữ Kiện", path: "/matching", icon: <LayoutGrid size={20} /> },
-    { name: "Võ Đài PvP", path: "/pvp", icon: <Swords size={20} /> },
-    { name: "Dòng Chảy Lịch Sử", path: "/chronological", icon: <Milestone size={20} /> },
-    { name: "Khoa Cử Đình Nguyên", path: "/millionaire", icon: <GraduationCap size={20} /> },
-    { name: "Danh Nhân Ẩn Tích", path: "/guess-character", icon: <UserSearch size={20} /> },
-    { name: "Lật Mở Tranh Cổ", path: "/reveal-picture", icon: <ImageIcon size={20} /> },
-  ];
+  const iconMap = {
+    "turning-page": <ImageIcon size={20} />,
+    "understanding-teammates": <Swords size={20} />,
+    "historical-recognition": <ScanSearch size={20} />,
+    "connecting-history": <LayoutGrid size={20} />,
+    "crossword-decoding": <GraduationCap size={20} />,
+    "historical-flow": <Milestone size={20} />,
+    "lightning-fast": <Timer size={20} />,
+    "picture-puzzle": <Map size={20} />,
+  };
+
+  const modes = theme4Modes.map((mode) => ({
+    name: mode.name,
+    path: mode.path,
+    icon: iconMap[mode.id] || <ImageIcon size={20} />,
+  }));
 
   return (
     <>
