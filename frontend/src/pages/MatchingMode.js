@@ -2,39 +2,72 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Lightbulb, Package, Target, Trophy } from "lucide-react";
 import { connectingHistoryRounds } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
   resetModeSessionId,
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
 const MODE_ID = "connecting-history";
 
 const buildRoundState = (round) => {
-  const sampledPairs = shuffleArray(round.pairs);
+  if (!round) {
+    return {
+      round: null,
+      leftItems: [],
+      rightItems: [],
+      results: {},
+    };
+  }
+
+  const sampledPairs = shuffleArray(round.pairs).slice(0, 5);
+  const leftItems = shuffleArray(sampledPairs.map((pair, index) => ({
+    id: `left-${index}`,
+    content: pair.left,
+    match: pair.right,
+    image: pair.image,
+  })));
+
+  // Add distractor if present (hỗ trợ cả `distractor` và `distractors` trong dữ liệu)
+  let rightItems = sampledPairs.map((pair, index) => ({
+    id: `right-${index}`,
+    content: pair.right,
+  }));
+
+  const extraDistractors = round.distractors?.length
+    ? round.distractors
+    : Array.isArray(round.distractor)
+      ? round.distractor
+      : round.distractor
+        ? [round.distractor]
+        : [];
+
+  extraDistractors.forEach((dist, idx) => {
+    rightItems.push({
+      id: `dist-${idx}`,
+      content: dist,
+      isDistractor: true,
+    });
+  });
+
   return {
     round,
-    leftItems: shuffleArray(sampledPairs.map((pair, index) => ({
-      id: `left-${index}`,
-      content: pair.left,
-      match: pair.right,
-      image: pair.image,
-    }))),
-    rightItems: shuffleArray(sampledPairs.map((pair, index) => ({
-      id: `right-${index}`,
-      content: pair.right,
-    }))),
+    leftItems: leftItems,
+    rightItems: shuffleArray(rightItems),
     results: {},
   };
 };
 
 export default function MatchingMode() {
   const navigate = useNavigate();
+  const { data: activeConnectingRounds, loading } = useTheme4ModeData(
+    MODE_ID,
+    connectingHistoryRounds
+  );
   const [roundIndex, setRoundIndex] = useState(0);
-  const [roundState, setRoundState] = useState(() => buildRoundState(connectingHistoryRounds[0]));
+  const [roundState, setRoundState] = useState(() => buildRoundState(null));
   const [selectedLeftItem, setSelectedLeftItem] = useState(null);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
@@ -42,16 +75,28 @@ export default function MatchingMode() {
   const startedAtRef = useRef(Date.now());
 
   useEffect(() => {
+    if (!Array.isArray(activeConnectingRounds) || activeConnectingRounds.length === 0) return;
+
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalRounds: connectingHistoryRounds.length });
-  }, []);
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalRounds: activeConnectingRounds.length,
+    });
+    setRoundIndex(0);
+    setRoundState(buildRoundState(activeConnectingRounds[0]));
+    setSelectedLeftItem(null);
+    setScore(0);
+    setIsFinished(false);
+    setNotice(null);
+  }, [activeConnectingRounds]);
 
   useEffect(() => {
-    setRoundState(buildRoundState(connectingHistoryRounds[roundIndex]));
+    if (!Array.isArray(activeConnectingRounds) || activeConnectingRounds.length === 0) return;
+
+    setRoundState(buildRoundState(activeConnectingRounds[roundIndex]));
     setSelectedLeftItem(null);
     setNotice(null);
-  }, [roundIndex]);
+  }, [activeConnectingRounds, roundIndex]);
 
   const handleRightItemClick = async (rightBox) => {
     if (roundState.results[rightBox.id]) return;
@@ -94,9 +139,10 @@ export default function MatchingMode() {
       scoreAfter: nextScore,
     });
 
-    if (Object.keys(newResults).length !== roundState.rightItems.length) return;
+    // Chỉ cần nối hết các cặp đúng (cột trái hết thẻ); ô nhiễu không cần nối
+    if (newLeftItems.length > 0) return;
 
-    if (roundIndex + 1 < connectingHistoryRounds.length) {
+    if (roundIndex + 1 < activeConnectingRounds.length) {
       setTimeout(() => {
         setRoundIndex((prev) => prev + 1);
       }, 500);
@@ -113,6 +159,8 @@ export default function MatchingMode() {
   };
 
   const restart = () => {
+    if (!Array.isArray(activeConnectingRounds) || activeConnectingRounds.length === 0) return;
+
     logGameTelemetry(MODE_ID, "session_end", {
       solved: false,
       score,
@@ -121,9 +169,12 @@ export default function MatchingMode() {
     });
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalRounds: connectingHistoryRounds.length, replay: true });
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalRounds: activeConnectingRounds.length,
+      replay: true,
+    });
     setRoundIndex(0);
-    setRoundState(buildRoundState(connectingHistoryRounds[0]));
+    setRoundState(buildRoundState(activeConnectingRounds[0]));
     setSelectedLeftItem(null);
     setScore(0);
     setIsFinished(false);
@@ -140,6 +191,22 @@ export default function MatchingMode() {
     navigate("/modes");
   };
 
+  if (loading && !roundState.round) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+        Đang tải dữ liệu kết nối...
+      </div>
+    );
+  }
+
+  if (!roundState.round) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+        Chưa có vòng nối hợp lệ cho chế độ chơi này.
+      </div>
+    );
+  }
+
   if (isFinished) {
     return (
       <div className="min-h-screen p-4 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
@@ -148,7 +215,7 @@ export default function MatchingMode() {
           <h2 className="text-3xl font-black text-green-400 mb-3 uppercase">Hoàn Thành Kết Nối</h2>
           <p className="text-white font-bold text-xl mb-3">Điểm: {score} XP</p>
           <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.55)" }}>
-            Bạn đã hoàn thành đủ 2 phần: 5 câu nối thông tin - thông tin và 5 câu nối hình ảnh - thông tin.
+            Bạn đã hoàn thành toàn bộ {activeConnectingRounds.length} lượt nối của chế độ chơi này.
           </p>
           <div className="flex gap-3">
             <button onClick={restart} className="flex-1 py-3 rounded-xl font-black text-white" style={{ background: "rgba(255,255,255,0.08)" }}>
@@ -189,20 +256,10 @@ export default function MatchingMode() {
           </span>
         </div>
 
-        <div className="mb-6 w-full">
-          <ModeGuidePanel
-            objective={theme4ModeGuides.connecting.objective}
-            rules={theme4ModeGuides.connecting.rules}
-            scoring={theme4ModeGuides.connecting.scoring}
-            sample={theme4ModeGuides.connecting.sample}
-            statusText={`Vòng ${roundIndex + 1}/${connectingHistoryRounds.length}`}
-          />
-        </div>
-
         <div className="mb-6 h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 transition-all duration-500"
-            style={{ width: `${((roundIndex + Object.keys(roundState.results).length / roundState.rightItems.length) / connectingHistoryRounds.length) * 100}%` }}
+            style={{ width: `${((roundIndex + Object.keys(roundState.results).length / Math.max(1, roundState.rightItems.length)) / activeConnectingRounds.length) * 100}%` }}
           />
         </div>
 

@@ -2,19 +2,22 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Puzzle, Trophy } from "lucide-react";
 import { crosswordSets } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
   matchesAnswer,
   resetModeSessionId,
   saveXp,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
 const MODE_ID = "crossword-decoding";
 
 export default function MillionaireMode() {
   const navigate = useNavigate();
+  const { data: remoteCrosswordSets, loading } = useTheme4ModeData(
+    MODE_ID,
+    crosswordSets
+  );
   const [setIndex, setSetIndex] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -29,27 +32,13 @@ export default function MillionaireMode() {
   const [xpSaved, setXpSaved] = useState(false);
   const startedAtRef = useRef(Date.now());
 
-  const currentSet = crosswordSets[setIndex];
+  const activeCrosswordSets =
+    Array.isArray(remoteCrosswordSets) && remoteCrosswordSets.length > 0
+      ? remoteCrosswordSets
+      : crosswordSets;
+  const currentSet = activeCrosswordSets[setIndex];
   const currentClue = currentSet?.clues[clueIndex];
   const inCluePhase = currentSet && clueIndex < currentSet.clues.length;
-
-  useEffect(() => {
-    resetModeSessionId(MODE_ID);
-    startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalSections: crosswordSets.length });
-  }, []);
-
-  useEffect(() => {
-    if (finished && !xpSaved) {
-      logGameTelemetry(MODE_ID, "session_end", {
-        solved: true,
-        score,
-        durationMs: Date.now() - startedAtRef.current,
-      });
-      saveXp(score);
-      setXpSaved(true);
-    }
-  }, [finished, score, xpSaved]);
 
   const keywordSlots = useMemo(() => {
     if (!currentSet) return [];
@@ -68,6 +57,34 @@ export default function MillionaireMode() {
     setKeywordInput("");
     setKeywordResult(null);
   };
+
+  useEffect(() => {
+    if (loading || activeCrosswordSets.length === 0) return;
+
+    resetModeSessionId(MODE_ID);
+    startedAtRef.current = Date.now();
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalSections: activeCrosswordSets.length,
+    });
+    setSetIndex(0);
+    setScore(0);
+    setSummary([]);
+    setFinished(false);
+    setXpSaved(false);
+    resetRound();
+  }, [activeCrosswordSets, loading]);
+
+  useEffect(() => {
+    if (finished && !xpSaved) {
+      logGameTelemetry(MODE_ID, "session_end", {
+        solved: true,
+        score,
+        durationMs: Date.now() - startedAtRef.current,
+      });
+      saveXp(score);
+      setXpSaved(true);
+    }
+  }, [finished, score, xpSaved]);
 
   const handleExit = async () => {
     logGameTelemetry(MODE_ID, "session_end", {
@@ -94,7 +111,7 @@ export default function MillionaireMode() {
 
     setSummary(nextSummary);
 
-    if (setIndex === crosswordSets.length - 1) {
+    if (setIndex === activeCrosswordSets.length - 1) {
       setFinished(true);
       return;
     }
@@ -127,11 +144,14 @@ export default function MillionaireMode() {
 
     const correct = matchesAnswer(keywordInput, [
       currentSet.keyword,
-      ...currentSet.acceptedAnswers,
+      ...(currentSet.acceptedAnswers || []),
     ]);
 
     if (correct) setScore((prev) => prev + 20);
-    setKeywordResult({ correct, answer: currentSet.acceptedAnswers[0] });
+    setKeywordResult({
+      correct,
+      answer: currentSet.acceptedAnswers?.[0] || currentSet.keyword,
+    });
     logGameTelemetry(MODE_ID, "answer_submitted", {
       correct,
       sectionId: currentSet.id,
@@ -139,10 +159,39 @@ export default function MillionaireMode() {
     });
   };
 
-  if (!currentSet && !finished) {
+  const restartMode = () => {
+    logGameTelemetry(MODE_ID, "session_end", {
+      solved: false,
+      score,
+      durationMs: Date.now() - startedAtRef.current,
+      reason: "restart",
+    });
+    resetModeSessionId(MODE_ID);
+    startedAtRef.current = Date.now();
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalSections: activeCrosswordSets.length,
+      replay: true,
+    });
+    setSetIndex(0);
+    setScore(0);
+    setSummary([]);
+    setFinished(false);
+    setXpSaved(false);
+    resetRound();
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Đang tải phần từ khóa...
+      </div>
+    );
+  }
+
+  if (!currentSet && !finished) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
   }
@@ -158,7 +207,7 @@ export default function MillionaireMode() {
             Giải Mã Ô Chữ
           </h1>
           <p className="mt-4 text-center text-slate-300">
-            Bạn đã hoàn thành 3 phần cố định. Mỗi phần gồm 5 câu gợi mở trước khi giải mã từ khóa.
+            Bạn đã hoàn thành toàn bộ {activeCrosswordSets.length} từ khóa hàng dọc của chế độ ô chữ Chủ đề 4.
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -196,7 +245,7 @@ export default function MillionaireMode() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
-              onClick={() => window.location.reload()}
+              onClick={restartMode}
               className="flex-1 rounded-2xl bg-amber-500 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-400"
             >
               Chơi Lại
@@ -244,7 +293,7 @@ export default function MillionaireMode() {
                 Phần
               </div>
               <div className="text-lg font-black text-amber-300">
-                {setIndex + 1}/{crosswordSets.length}
+                {setIndex + 1}/{activeCrosswordSets.length}
               </div>
             </div>
             <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-3 text-center">
@@ -258,14 +307,6 @@ export default function MillionaireMode() {
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <ModeGuidePanel
-              objective={theme4ModeGuides.crossword.objective}
-              rules={theme4ModeGuides.crossword.rules}
-              scoring={theme4ModeGuides.crossword.scoring}
-              sample={theme4ModeGuides.crossword.sample}
-              statusText={`Phần ${setIndex + 1}/${crosswordSets.length}`}
-            />
-
             <div className="rounded-[24px] border border-amber-400/10 bg-slate-950/70 p-5">
               <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-300">
                 <KeyRound size={16} />
@@ -423,7 +464,7 @@ export default function MillionaireMode() {
                       onClick={() => finishSection(keywordResult.correct)}
                       className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-slate-900 transition hover:bg-amber-300"
                     >
-                      {setIndex === crosswordSets.length - 1
+                      {setIndex === activeCrosswordSets.length - 1
                         ? "Kết Thúc Chế Độ"
                         : "Sang Phần Tiếp"}
                     </button>
@@ -436,21 +477,10 @@ export default function MillionaireMode() {
           <div className="space-y-6">
             <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
               <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                Luật Chơi
-              </div>
-              <div className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-                <p>Mỗi phần được cố định ở 5 câu gợi mở.</p>
-                <p>Mỗi câu trả lời đúng sẽ mở ra một ký tự trong từ khóa.</p>
-                <p>Giải đúng từ khóa sẽ nhận thêm điểm thưởng cho phần đó.</p>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-              <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
                 Theo Dõi Tiến Độ
               </div>
               <div className="mt-4 space-y-3">
-                {crosswordSets.map((item, index) => {
+                {activeCrosswordSets.map((item, index) => {
                   const done = summary.find((entry) => entry.id === item.id);
                   const active = index === setIndex;
 

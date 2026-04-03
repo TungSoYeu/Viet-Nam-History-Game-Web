@@ -351,6 +351,11 @@ router.patch('/user/update-info', async (req, res) => {
 router.get('/admin/theme4/content', isAdmin, theme4Controller.getTheme4Content);
 router.put('/admin/theme4/content', isAdmin, theme4Controller.replaceTheme4Content);
 router.post('/admin/theme4/sync-default', isAdmin, theme4Controller.syncTheme4Defaults);
+router.get('/admin/theme4/modes/:modeId/items', isAdmin, theme4Controller.getTheme4ModeItems);
+router.post('/admin/theme4/modes/:modeId/items', isAdmin, theme4Controller.createTheme4ModeItem);
+router.put('/admin/theme4/modes/:modeId/items/:itemId', isAdmin, theme4Controller.updateTheme4ModeItem);
+router.delete('/admin/theme4/modes/:modeId/items/:itemId', isAdmin, theme4Controller.deleteTheme4ModeItem);
+router.post('/admin/theme4/uploads/image', isAdmin, upload.single('image'), theme4Controller.uploadTheme4Image);
 
 router.get('/admin/telemetry/summary', isAdmin, async (req, res) => {
     try {

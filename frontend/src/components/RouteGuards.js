@@ -18,7 +18,7 @@ export function AdminGuard({ children }) {
     return <Navigate to="/" replace />;
   }
   if (role !== 'admin') {
-    return <Navigate to="/modes" replace />;
+    return <Navigate to="/home" replace />;
   }
   return children;
 }

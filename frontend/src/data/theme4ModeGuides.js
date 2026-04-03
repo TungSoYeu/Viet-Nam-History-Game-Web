@@ -1,83 +1,114 @@
 export const theme4ModeGuides = {
   turningPage: {
-    objective: "Trả lời đúng để mở dần 9 ô của ảnh lịch sử và đoán đúng nhân vật/sự kiện trước khi hết điểm.",
+    objective:
+      "Củng cố Chủ đề 4 qua 10 'ẩn số lịch sử': mở từng mảnh ảnh bằng dữ kiện rồi xác định chính xác nhân vật, di tích hoặc địa danh lịch sử.",
     rules: [
-      "Mỗi ảnh có đúng 9 câu hỏi theo lưới 3x3.",
-      "Mở ô bằng cách chọn ô và trả lời câu hỏi ẩn.",
-      "Có thể đoán đáp án ảnh bất cứ lúc nào.",
+      "10 bức ảnh bí ẩn; mỗi ảnh là một lưới 2x2 gồm 4 mảnh ghép tương ứng với 4 dữ kiện.",
+      "Dữ kiện có thể liên quan trực tiếp đến ảnh hoặc là gợi ý gián tiếp để suy luận ra ảnh.",
+      "Trước mỗi lượt, hệ thống gợi ý số chữ cái của đáp án; giải đúng một dữ kiện sẽ mở một phần ảnh.",
     ],
-    scoring: "Bắt đầu 100 XP. Trả lời đúng trừ ít điểm hơn trả lời sai. Đoán đúng ảnh kết thúc vòng và nhận XP còn lại.",
-    sample: "Ô số 4: “Khởi nghĩa Lam Sơn bùng nổ năm nào?” -> “1418”.",
+    scoring:
+      "Trong web hiện dùng thang điểm giảm dần để khuyến khích mở ít ô và đoán sớm; có thể điều chỉnh theo yêu cầu của tiết dạy.",
+    sample:
+      "Dữ kiện: 'Khởi nghĩa Lam Sơn bùng nổ năm nào?' -> '1418'; sau khi mở dần 4 mảnh, học sinh đoán 'Lê Lợi'.",
   },
   teammate: {
-    objective: "Diễn đạt đúng 10 từ khóa theo gói, tối ưu phối hợp giữa người gợi ý và người đoán.",
+    objective:
+      "Tạo điều kiện để học sinh tương tác trực tiếp và đoán các từ khóa trọng tâm của Chủ đề 4 thông qua phối hợp đồng đội.",
     rules: [
-      "30 giây chuẩn bị, 60 giây thực hiện.",
-      "Mỗi gói có đúng 10 từ khóa.",
-      "Hết giờ thì kết thúc gói hiện tại.",
+      "Gồm 5 gói câu hỏi, mỗi gói 10 từ khóa; tổng cộng 50 từ khóa.",
+      "Từ khóa thuộc 4 nhóm nội dung chính: nhân vật lịch sử, sự kiện - phong trào, địa danh - căn cứ - trận đánh, và khái niệm hoặc thuật ngữ.",
+      "Có thể luân phiên vai trò người gợi ý và người đoán; màn chơi được giữ ở cấu trúc đơn giản để thuận tiện tổ chức trên lớp.",
     ],
-    scoring: "Mode này ưu tiên phối hợp nên không chấm XP theo từng từ. Dùng để luyện tốc độ xử lý và độ rõ cách diễn đạt.",
-    sample: "Từ khóa: “Chi Lăng”. Người gợi ý nêu mốc “1427”, người đoán chốt đáp án.",
+    scoring:
+      "Ưu tiên dùng như hoạt động lớp học để rèn phản xạ, diễn đạt và phối hợp; không bắt buộc chấm XP cạnh tranh.",
+    sample:
+      "Từ khóa 'Chi Lăng - Xương Giang': người gợi ý có thể nói 'năm 1427, viện binh nhà Minh thua lớn' để đồng đội đoán.",
   },
   recognition: {
-    objective: "Nhận diện đúng nhân vật, địa danh hoặc lược đồ kháng chiến từ tư liệu lịch sử.",
+    objective:
+      "Gồm hai hướng nhận diện: từ hình ảnh hoặc lược đồ sang từ khóa, và từ hệ thống từ khóa sang hình ảnh hay đối tượng lịch sử tương ứng.",
     rules: [
-      "Gồm 8 câu: 5 ảnh + 3 lược đồ.",
-      "Có thể phóng to ảnh/lược đồ để quan sát.",
-      "Chấp nhận nhiều biến thể đáp án hợp lệ.",
+      "Tổng cộng 10 nội dung nhận diện: 5 nội dung dựa trên hình ảnh hoặc lược đồ và 5 nội dung dựa trên hệ thống từ khóa gợi ý.",
+      "Đối tượng cần nhận diện có thể là nhân vật, địa danh, sự kiện hoặc phong trào.",
+      "Có thể phóng to ảnh hoặc lược đồ để quan sát chi tiết trước khi trả lời.",
     ],
-    scoring: "Mỗi câu đúng +10 XP. Kết thúc lượt sẽ cộng tổng XP đúng.",
-    sample: "Lược đồ có mốc 1075-1077 và phòng tuyến sông -> “Kháng chiến chống Tống thời Lý”.",
+    scoring: "Mỗi đáp án đúng nhận 10 XP; hết lượt hệ thống cộng tổng.",
+    sample:
+      "Gợi ý: 'Phòng tuyến Như Nguyệt, Nam quốc sơn hà, Tiên phát chế nhân' -> học sinh nhận diện nhân vật Lý Thường Kiệt.",
   },
   connecting: {
-    objective: "Nối đúng cặp dữ kiện để tái dựng quan hệ nhân vật - sự kiện và ảnh - thông tin.",
+    objective:
+      "Rèn khả năng xác lập quan hệ lịch sử qua hai dạng nối: hình ảnh với thông tin và thông tin với thông tin.",
     rules: [
-      "Có 2 vòng: thông tin-thông tin và ảnh-thông tin.",
-      "Mỗi vòng 5 cặp nối.",
-      "Sai thì chọn lại từ đầu cặp đó.",
+      "Gồm 10 câu: 5 câu nối hình ảnh với thông tin và 5 câu nối thông tin với thông tin.",
+      "Trong mỗi câu thường có khoảng 5 đáp án đúng và 1 phương án nhiễu để tăng mức độ tư duy.",
+      "Nếu nối sai, người chơi có thể chọn lại cặp khác.",
     ],
-    scoring: "Mỗi cặp đúng +10 XP. Hoàn thành đủ 10 cặp sẽ nhận tổng XP.",
-    sample: "“Nam quốc sơn hà” -> “Lý Thường Kiệt”.",
+    scoring: "Mỗi cặp nối đúng +10 XP; hết 10 vòng cộng tổng điểm.",
+    sample:
+      "Nối 'Nam quốc sơn hà' với bối cảnh kháng chiến chống Tống thời Lý, hoặc nối 'Lê Lợi' với 'Khởi nghĩa Lam Sơn'.",
   },
   crossword: {
-    objective: "Giải đúng câu gợi mở để mở ký tự và giải mã từ khóa lịch sử cuối mỗi phần.",
+    objective:
+      "Giải từng hàng ngang để dần suy luận ra từ khóa trung tâm ở hàng dọc.",
     rules: [
-      "3 phần, mỗi phần đúng 5 câu gợi mở.",
-      "Mỗi câu đúng mở thêm ký tự.",
-      "Sau 5 câu phải nhập từ khóa cuối.",
+      "Gồm 5 từ khóa hàng dọc; mỗi từ khóa có từ 5 đến 10 câu hỏi hàng ngang tùy độ dài.",
+      "Mỗi đáp án đúng sẽ mở thêm một phần dữ kiện của ô chữ.",
+      "Sau khi hoàn thành hàng ngang, học sinh nhập từ khóa trung tâm để hoàn tất phần chơi.",
     ],
-    scoring: "Câu gợi mở đúng +10 XP, giải đúng từ khóa +20 XP.",
-    sample: "Sau 3 ký tự mở dần “B A ? ? ? ? ? ?”, suy luận từ khóa là “Bạch Đằng”.",
+    scoring: "Điểm được tích lũy theo từng hàng ngang và thưởng thêm khi giải đúng từ khóa hàng dọc.",
+    sample:
+      "Các gợi ý hàng ngang dần mở ra những chữ cái của từ khóa 'Bạch Đằng' để học sinh suy luận đáp án cuối cùng.",
   },
   flow: {
-    objective: "Xếp 10 câu sự kiện vào đúng 4 dòng: bối cảnh, diễn biến, kết quả, di sản.",
+    objective:
+      "Nhận diện và tái hiện tiến trình của một sự kiện lịch sử bằng cách phân loại dữ kiện vào đúng các thành tố cơ bản.",
     rules: [
-      "Mỗi câu bắt buộc có mốc thời gian.",
-      "Đủ 10 câu mới được kiểm tra.",
-      "Sai dòng sẽ báo rõ số câu sai.",
+      "Bên trái gồm 4 dòng: Bối cảnh, Diễn biến, Kết quả - Ý nghĩa, Di sản để lại.",
+      "Bên phải là hệ thống dữ kiện lịch sử; người chơi kéo thả từng dữ kiện vào đúng dòng tương ứng.",
+      "Phải gán đủ toàn bộ dữ kiện trước khi kiểm tra kết quả.",
     ],
-    scoring: "Xếp đúng toàn bộ nhận 100 XP.",
-    sample: "“1407: Nhà Minh xâm lược...” -> Dòng Bối cảnh.",
+    scoring: "Xếp đúng toàn bộ dữ kiện sẽ nhận thưởng XP trọn bộ.",
+    sample:
+      "Dữ kiện '1407: giặc Minh xâm lược' -> xếp vào dòng Bối cảnh; dữ kiện '1427: Chi Lăng - Xương Giang' -> xếp vào nhóm phù hợp với tiến trình.",
   },
   lightning: {
-    objective: "Trả lời nhanh chuỗi câu hỏi ngắn, tối đa hóa điểm thưởng theo tốc độ và combo.",
+    objective:
+      "Thử thách kiến thức nhận biết và phản xạ tốc độ cao qua 30 câu hỏi liên tiếp với chuỗi lửa theo số câu đúng liên tiếp.",
     rules: [
-      "Mỗi câu có 8 giây.",
-      "Chỉ chọn 1 đáp án cho mỗi câu.",
-      "Hết giờ tính sai và mất combo.",
+      "Mỗi phiên có tối đa 30 câu nhận biết với đồng hồ đếm ngược tổng 60 giây và thêm 10 giây nhịp nhanh.",
+      "Người chơi trả lời liên tiếp; hệ thống hiển thị chuỗi ngọn lửa khi trả lời đúng liên tiếp.",
+      "Trả lời sai sẽ làm đứt chuỗi lửa và phải xây lại chuỗi đúng liên tiếp từ đầu.",
     ],
-    scoring: "Điểm mỗi câu = 10 + thời gian còn lại + thưởng combo.",
-    sample: "Trả lời đúng khi còn 6s và combo 2 -> điểm cao hơn câu đúng thường.",
+    scoring: "Điểm mỗi câu đúng = 10 XP cộng thưởng theo chuỗi đúng liên tiếp; kết thúc khi hết thời gian hoặc hết câu.",
+    sample: "Đúng liên tiếp 3 câu -> hiển thị 3 ngọn lửa; nếu câu sau sai thì chuỗi đúng trở về 0.",
   },
   picturePuzzle: {
-    objective: "Nhìn ảnh và suy luận đáp án với hệ gợi ý nhiều tầng.",
+    objective:
+      "Quan sát 2 đến 4 hình ảnh, xác định từ khóa của từng hình rồi ghép thành một nội dung lịch sử hoàn chỉnh.",
     rules: [
-      "Có đúng 10 câu ảnh.",
-      "Mỗi câu có thể mở thêm gợi ý tầng 1/2.",
-      "Đã trả lời thì khóa câu và chuyển câu tiếp.",
+      "Trò chơi gồm 10 câu; mỗi câu có từ 2 đến 4 hình ảnh gợi ý.",
+      "Mỗi hình ảnh tương ứng với một từ khóa hoặc một tiếng trong đáp án.",
+      "Người chơi cần ghép chúng thành tên sự kiện, phong trào, địa danh, nhân vật hoặc khái niệm hoàn chỉnh.",
     ],
-    scoring: "Mỗi câu đúng +10 XP. Dùng ít gợi ý hơn giúp nhận diện tốt hơn khi học.",
-    sample: "Gợi ý tầng 1: “Tên gồm 2 từ”; tầng 2: “Bắt đầu bằng chữ L”.",
+    scoring: "Mỗi câu đúng +10 XP.",
+    sample: "Ảnh gợi 'Cần' + 'Vương' -> 'Cần Vương' hoặc 'Phong trào Cần Vương'.",
   },
 };
 
+export const theme4ModeGuideKeys = {
+  "turning-page": "turningPage",
+  "understanding-teammates": "teammate",
+  "historical-recognition": "recognition",
+  "connecting-history": "connecting",
+  "crossword-decoding": "crossword",
+  "historical-flow": "flow",
+  "lightning-fast": "lightning",
+  "picture-puzzle": "picturePuzzle",
+};
+
+export const getTheme4ModeGuide = (modeId) => {
+  const guideKey = theme4ModeGuideKeys[modeId];
+  return guideKey ? theme4ModeGuides[guideKey] : null;
+};

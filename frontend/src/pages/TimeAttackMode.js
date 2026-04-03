@@ -1,67 +1,83 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bolt, ChevronRight, Clock3, Trophy } from "lucide-react";
+import { ArrowLeft, Flame, ChevronRight, Clock3, Trophy, Bolt } from "lucide-react";
 import { lightningFastQuestions } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
   resetModeSessionId,
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
-const QUESTION_TIME = 8;
+/** 60 giây theo mô tả + 10 giây nhịp “thêm” cho lớp vừa kịp 30 câu */
+const SESSION_TIME = 70;
+const TOTAL_QUESTIONS = 30;
+const STREAK_FLAME_SLOTS = 10;
 const MODE_ID = "lightning-fast";
 
 export default function TimeAttackMode() {
   const navigate = useNavigate();
-  const [questions, setQuestions] = useState(() => shuffleArray(lightningFastQuestions));
+  const { data: remoteLightningQuestions, loading } = useTheme4ModeData(
+    MODE_ID,
+    lightningFastQuestions
+  );
+  const activeQuestionBank =
+    Array.isArray(remoteLightningQuestions) && remoteLightningQuestions.length > 0
+      ? remoteLightningQuestions
+      : lightningFastQuestions;
+  const targetQuestionCount = Math.min(TOTAL_QUESTIONS, activeQuestionBank.length);
+  const [timeLeft, setTimeLeft] = useState(SESSION_TIME);
+  const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [finished, setFinished] = useState(false);
   const [xpSaved, setXpSaved] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
   const startedAtRef = useRef(Date.now());
 
   const currentQuestion = questions[currentIndex];
 
+  const buildQuestionSet = () =>
+    shuffleArray(activeQuestionBank).slice(0, targetQuestionCount);
+
   useEffect(() => {
+    if (loading || targetQuestionCount === 0) return;
+
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: lightningFastQuestions.length });
-  }, []);
+    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: targetQuestionCount });
+    setQuestions(buildQuestionSet());
+    setCurrentIndex(0);
+    setTimeLeft(SESSION_TIME);
+    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
+    setFeedback(null);
+    setFinished(false);
+    setXpSaved(false);
+    setSessionReady(true);
+  }, [loading, targetQuestionCount, activeQuestionBank]);
+
 
   useEffect(() => {
-    if (finished || feedback) return;
+    if (finished) return;
 
-    if (timeLeft === 0) {
-      setFeedback({
-        correct: false,
-        timedOut: true,
-        answer: currentQuestion.correctAnswer,
-        explanation: currentQuestion.explanation,
-        message: "Hết giờ.",
-        selectedOption: "",
-      });
-      logGameTelemetry(MODE_ID, "answer_submitted", {
-        correct: false,
-        reason: "timeout",
-        index: currentIndex,
-      });
-      setStreak(0);
+    if (timeLeft <= 0) {
+      setFinished(true);
       return;
     }
 
-    const timer = window.setTimeout(() => {
+    const timer = window.setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
 
-    return () => window.clearTimeout(timer);
-  }, [currentQuestion, feedback, finished, timeLeft]);
+    return () => window.clearInterval(timer);
+  }, [finished, timeLeft]);
+
 
   useEffect(() => {
     if (finished && !xpSaved) {
@@ -91,8 +107,15 @@ export default function TimeAttackMode() {
     if (!currentQuestion || feedback) return;
     const correct = option === currentQuestion.correctAnswer;
 
+    logGameTelemetry(MODE_ID, "answer_submitted", {
+      correct,
+      index: currentIndex,
+      timeLeft,
+      streak: correct ? streak + 1 : 0,
+    });
+
     if (correct) {
-      const bonus = 10 + timeLeft + streak * 2;
+      const bonus = 10 + streak * 2;
       const nextStreak = streak + 1;
       setScore((prev) => prev + bonus);
       setStreak(nextStreak);
@@ -105,13 +128,9 @@ export default function TimeAttackMode() {
         delta: bonus,
         selectedOption: option,
       });
-      logGameTelemetry(MODE_ID, "answer_submitted", {
-        correct: true,
-        index: currentIndex,
-        timeLeft,
-        streak: nextStreak,
-        delta: bonus,
-      });
+      
+      // Auto advance after correct answer in "Nhanh như chớp" to keep pace
+      setTimeout(nextQuestion, 600);
       return;
     }
 
@@ -124,12 +143,6 @@ export default function TimeAttackMode() {
       delta: 0,
       selectedOption: option,
     });
-    logGameTelemetry(MODE_ID, "answer_submitted", {
-      correct: false,
-      index: currentIndex,
-      timeLeft,
-      streak: 0,
-    });
   };
 
   const nextQuestion = () => {
@@ -139,7 +152,6 @@ export default function TimeAttackMode() {
     }
 
     setCurrentIndex((prev) => prev + 1);
-    setTimeLeft(QUESTION_TIME);
     setFeedback(null);
   };
 
@@ -153,22 +165,34 @@ export default function TimeAttackMode() {
     });
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: lightningFastQuestions.length, replay: true });
-    setQuestions(shuffleArray(lightningFastQuestions));
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalQuestions: targetQuestionCount,
+      replay: true,
+    });
+    setQuestions(buildQuestionSet());
     setCurrentIndex(0);
-    setTimeLeft(QUESTION_TIME);
+    setTimeLeft(SESSION_TIME);
     setScore(0);
     setStreak(0);
     setBestStreak(0);
     setFeedback(null);
     setFinished(false);
     setXpSaved(false);
+    setSessionReady(true);
   };
+
+  if (loading || (targetQuestionCount > 0 && !sessionReady)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Đang tải bộ câu hỏi nhanh...
+      </div>
+    );
+  }
 
   if (!currentQuestion && !finished) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
-        Đang tải bộ câu hỏi nhanh...
+        Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
   }
@@ -184,7 +208,7 @@ export default function TimeAttackMode() {
             Nhanh Như Chớp
           </h1>
           <p className="mt-4 text-slate-300">
-            Bạn đã hoàn thành 10 câu hỏi ngắn với thời gian 8 giây cho mỗi câu.
+            Bạn đã hoàn thành tối đa {targetQuestionCount} câu nhận biết trong nhịp thời gian nhanh của chế độ này, với chuỗi lửa theo số câu đúng liên tiếp.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -249,11 +273,8 @@ export default function TimeAttackMode() {
               Nhanh Như Chớp
             </div>
             <h1 className="mt-3 text-2xl sm:text-3xl font-black uppercase tracking-[0.18em] text-white">
-              Câu Hỏi Ngắn, Thời Gian Ngắn
+              Hỏi Nhanh, Đáp Nhanh
             </h1>
-            <p className="mt-2 text-sm text-slate-300">
-              Cấu trúc cố định: 10 câu hỏi, 8 giây cho mỗi câu.
-            </p>
           </div>
 
           <div className="flex items-center justify-center gap-3 md:justify-end">
@@ -276,14 +297,6 @@ export default function TimeAttackMode() {
 
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <ModeGuidePanel
-              objective={theme4ModeGuides.lightning.objective}
-              rules={theme4ModeGuides.lightning.rules}
-              scoring={theme4ModeGuides.lightning.scoring}
-              sample={theme4ModeGuides.lightning.sample}
-              statusText={`Câu ${currentIndex + 1}/${questions.length} | Combo ${streak}`}
-            />
-
             <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
               Đồng Hồ Thời Gian
             </div>
@@ -306,15 +319,23 @@ export default function TimeAttackMode() {
             <div className="mt-6 space-y-4">
               <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
                 <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
-                  Chuỗi Hiện Tại
+                  Chuỗi lửa
                 </div>
-                <div className="mt-2 text-3xl font-black text-white">{streak}</div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4 text-sm leading-6 text-slate-300">
-                Trả lời đúng càng nhanh thì điểm thưởng càng cao.
-              </div>
-              <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-4 text-sm leading-6 text-amber-100">
-                Công thức điểm nhanh: <span className="font-black">10 + giây còn lại + (combo x 2)</span>.
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  {Array.from({ length: STREAK_FLAME_SLOTS }, (_, i) => (
+                    <Flame
+                      key={i}
+                      size={22}
+                      className={
+                        i < streak
+                          ? "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.9)]"
+                          : "text-slate-700 opacity-40"
+                      }
+                      strokeWidth={i < streak ? 2 : 1}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 text-2xl font-black text-white tabular-nums">{streak} liên tiếp</div>
               </div>
             </div>
           </div>

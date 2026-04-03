@@ -99,7 +99,7 @@ export default function Login() {
         localStorage.setItem('username', data.username);
         localStorage.setItem('role', data.role);
         if (data.token) localStorage.setItem('token', data.token);
-        navigate(data.role === 'admin' ? '/admin' : '/modes');
+        navigate(data.role === 'admin' ? '/admin' : '/home');
       }
     })
     .catch(err => alert("Lỗi: " + err.message))
@@ -119,14 +119,14 @@ export default function Login() {
       localStorage.setItem('username', data.username);
       localStorage.setItem('role', data.role);
       if (data.token) localStorage.setItem('token', data.token);
-      navigate(data.role === 'admin' ? '/admin' : '/modes');
+      navigate(data.role === 'admin' ? '/admin' : '/home');
     })
     .catch(err => alert("Lỗi đăng nhập Google: " + err.message))
     .finally(() => setLoading(false));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       {/* Decorative orbs */}
       <div className="absolute top-[-20%] right-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(212,160,83,0.4) 0%, transparent 70%)' }}></div>
       <div className="absolute bottom-[-20%] left-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(185,28,28,0.4) 0%, transparent 70%)' }}></div>

@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle, ScanSearch, Search, Trophy, XCircle, ZoomIn } from "lucide-react";
+import { ArrowLeft, CheckCircle, History, ScanSearch, Search, Trophy, XCircle, ZoomIn } from "lucide-react";
 import { historicalRecognitionItems } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
   matchesAnswer,
@@ -9,18 +10,21 @@ import {
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
 const recognitionTypeLabels = {
   image: "Hình ảnh",
   diagram: "Lược đồ",
+  keyword_hint: "Từ khóa",
 };
 const MODE_ID = "historical-recognition";
 
 export default function GuessCharacterMode() {
   const navigate = useNavigate();
-  const [items, setItems] = useState(() => shuffleArray(historicalRecognitionItems));
+  const { data: activeRecognitionItems, loading } = useTheme4ModeData(
+    MODE_ID,
+    historicalRecognitionItems
+  );
+  const [items, setItems] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [guess, setGuess] = useState("");
   const [feedback, setFeedback] = useState(null);
@@ -33,12 +37,25 @@ export default function GuessCharacterMode() {
   const progressLabel = useMemo(() => `${currentIndex + 1}/${items.length}`, [currentIndex, items.length]);
 
   useEffect(() => {
+    if (!Array.isArray(activeRecognitionItems)) return;
+
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: historicalRecognitionItems.length });
-  }, []);
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalQuestions: activeRecognitionItems.length,
+    });
+    setItems(shuffleArray(activeRecognitionItems));
+    setCurrentIndex(0);
+    setGuess("");
+    setFeedback(null);
+    setScore(0);
+    setFinished(false);
+    setZoomOpen(false);
+  }, [activeRecognitionItems]);
 
   const replay = () => {
+    if (!Array.isArray(activeRecognitionItems)) return;
+
     logGameTelemetry(MODE_ID, "session_end", {
       score,
       solved: finished,
@@ -46,8 +63,11 @@ export default function GuessCharacterMode() {
     });
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: historicalRecognitionItems.length, replay: true });
-    setItems(shuffleArray(historicalRecognitionItems));
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalQuestions: activeRecognitionItems.length,
+      replay: true,
+    });
+    setItems(shuffleArray(activeRecognitionItems));
     setCurrentIndex(0);
     setGuess("");
     setFeedback(null);
@@ -97,7 +117,27 @@ export default function GuessCharacterMode() {
     navigate("/modes");
   };
 
-  if (!currentItem) return null;
+  if (loading && items.length === 0) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400"
+        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+      >
+        Đang tải dữ liệu nhận diện...
+      </div>
+    );
+  }
+
+  if (!currentItem) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-400"
+        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+      >
+        Chưa có dữ liệu nhận diện hợp lệ cho chế độ chơi này.
+      </div>
+    );
+  }
 
   return (
     <div
@@ -132,45 +172,47 @@ export default function GuessCharacterMode() {
             <h3 className="text-white text-xl font-black">{currentItem.title}</h3>
           </div>
           <div className="p-5">
-            <ModeGuidePanel
-              objective={theme4ModeGuides.recognition.objective}
-              rules={theme4ModeGuides.recognition.rules}
-              scoring={theme4ModeGuides.recognition.scoring}
-              sample={theme4ModeGuides.recognition.sample}
-              statusText={`Câu ${currentIndex + 1}/${items.length}`}
-            />
             <div
-              className="rounded-2xl overflow-hidden mb-5 mt-5 bg-slate-900 relative"
+              className="rounded-2xl overflow-hidden mb-5 bg-slate-900 relative min-h-[300px] flex items-center justify-center p-6"
               style={{ border: "1px solid rgba(255,255,255,0.08)" }}
             >
-              <img
-                src={currentItem.imageUrl}
-                alt={currentItem.title}
-                className="w-full aspect-square object-contain p-2 md:p-3"
-              />
-              <button
-                onClick={() => {
-                  setZoomOpen(true);
-                  logGameTelemetry(MODE_ID, "hint_used", { index: currentIndex, action: "zoom" });
-                }}
-                className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-900/80 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-white"
-              >
-                <ZoomIn size={14} />
-                Phóng To
-              </button>
+              {currentItem.type === "keyword_hint" ? (
+                <div className="text-center p-4">
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-amber-300">
+                    <History size={16} />
+                    Hệ thống từ khóa gợi ý
+                  </div>
+                  <p className="text-xl md:text-2xl font-black text-white leading-relaxed italic">
+                    "{currentItem.prompt}"
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <img
+                    src={currentItem.imageUrl}
+                    alt={currentItem.title}
+                    className="w-full aspect-square object-contain p-2 md:p-3"
+                  />
+                  <button
+                    onClick={() => {
+                      setZoomOpen(true);
+                      logGameTelemetry(MODE_ID, "hint_used", { index: currentIndex, action: "zoom" });
+                    }}
+                    className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-900/80 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-white"
+                  >
+                    <ZoomIn size={14} />
+                    Phóng To
+                  </button>
+                </>
+              )}
             </div>
-            <p className="text-lg font-bold text-white leading-relaxed">{currentItem.prompt}</p>
+            {currentItem.type !== "keyword_hint" && <p className="text-lg font-bold text-white leading-relaxed">{currentItem.prompt}</p>}
+
           </div>
         </div>
 
         <div className="rounded-3xl p-6 shadow-2xl flex flex-col" style={{ background: "#16213e", border: "1px solid rgba(255,255,255,0.08)" }}>
           <div className="mb-5">
-            <p className="text-xs uppercase font-black tracking-[0.2em] mb-2" style={{ color: "rgba(212,160,83,0.8)" }}>
-              Trọng tâm Chủ đề 4
-            </p>
-            <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Gồm 5 câu nhận diện hình ảnh và 3 câu nhận diện lược đồ, phù hợp với nhân vật, địa danh và các cuộc khởi nghĩa, kháng chiến.
-            </p>
             <div className="mt-3 rounded-xl border border-white/10 bg-slate-900/50 p-3">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Đáp án chấp nhận</p>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -212,6 +254,11 @@ export default function GuessCharacterMode() {
                 </h4>
               </div>
               <p className="text-white font-bold mb-2">Đáp án chấp nhận: {currentItem.acceptedAnswers[0]}</p>
+              {feedback.isCorrect && currentItem.type === "keyword_hint" && (
+                <div className="mb-4 rounded-xl overflow-hidden border border-emerald-400/30">
+                  <img src={currentItem.imageToFind} alt="Answer" className="w-full h-auto object-cover max-h-48" />
+                </div>
+              )}
               <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.6)" }}>
                 {currentItem.explanation}
               </p>

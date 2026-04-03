@@ -2,20 +2,28 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ImageIcon, Lightbulb, Trophy } from "lucide-react";
 import { picturePuzzleItems } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
+  matchesAnswer,
   resetModeSessionId,
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
 const MODE_ID = "picture-puzzle";
 
 export default function TerritoryMap() {
   const navigate = useNavigate();
-  const [items, setItems] = useState(() => shuffleArray(picturePuzzleItems));
+  const { data: remotePicturePuzzleItems, loading } = useTheme4ModeData(
+    MODE_ID,
+    picturePuzzleItems
+  );
+  const activePicturePuzzleItems =
+    Array.isArray(remotePicturePuzzleItems) && remotePicturePuzzleItems.length > 0
+      ? remotePicturePuzzleItems
+      : picturePuzzleItems;
+  const [items, setItems] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
   const [feedback, setFeedback] = useState(null);
@@ -24,6 +32,7 @@ export default function TerritoryMap() {
   const [finished, setFinished] = useState(false);
   const [xpSaved, setXpSaved] = useState(false);
   const [hintLevel, setHintLevel] = useState(0);
+  const [sessionReady, setSessionReady] = useState(false);
   const startedAtRef = useRef(Date.now());
 
   const currentItem = items[currentIndex];
@@ -40,10 +49,24 @@ export default function TerritoryMap() {
   }, [currentItem]);
 
   useEffect(() => {
+    if (loading || activePicturePuzzleItems.length === 0) return;
+
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: picturePuzzleItems.length });
-  }, []);
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalQuestions: activePicturePuzzleItems.length,
+    });
+    setItems(shuffleArray(activePicturePuzzleItems));
+    setCurrentIndex(0);
+    setSelectedOption("");
+    setFeedback(null);
+    setScore(0);
+    setCorrectCount(0);
+    setFinished(false);
+    setXpSaved(false);
+    setHintLevel(0);
+    setSessionReady(true);
+  }, [activePicturePuzzleItems, loading]);
 
   useEffect(() => {
     if (finished && !xpSaved) {
@@ -71,21 +94,24 @@ export default function TerritoryMap() {
 
   const handleAnswer = (option) => {
     if (!currentItem || feedback) return;
-    const correct = option === currentItem.answer;
+    const acceptedAnswers = currentItem.acceptedAnswers?.length
+      ? currentItem.acceptedAnswers
+      : [currentItem.answer];
+    const isCorrect = matchesAnswer(option, acceptedAnswers);
     setSelectedOption(option);
     setFeedback({
-      correct,
-      answer: currentItem.answer,
+      correct: isCorrect,
+      answer: currentItem.acceptedAnswers?.[0] || currentItem.answer,
       explanation: currentItem.explanation,
     });
     logGameTelemetry(MODE_ID, "answer_submitted", {
-      correct,
+      correct: isCorrect,
       index: currentIndex,
       hintLevel,
-      scoreAfter: correct ? score + 10 : score,
+      scoreAfter: isCorrect ? score + 10 : score,
     });
 
-    if (correct) {
+    if (isCorrect) {
       setScore((prev) => prev + 10);
       setCorrectCount((prev) => prev + 1);
     }
@@ -113,8 +139,11 @@ export default function TerritoryMap() {
     });
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: picturePuzzleItems.length, replay: true });
-    setItems(shuffleArray(picturePuzzleItems));
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalQuestions: activePicturePuzzleItems.length,
+      replay: true,
+    });
+    setItems(shuffleArray(activePicturePuzzleItems));
     setCurrentIndex(0);
     setSelectedOption("");
     setFeedback(null);
@@ -123,12 +152,21 @@ export default function TerritoryMap() {
     setFinished(false);
     setXpSaved(false);
     setHintLevel(0);
+    setSessionReady(true);
   };
+
+  if (loading || (activePicturePuzzleItems.length > 0 && !sessionReady)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Đang chuẩn bị phần đuổi hình bắt chữ...
+      </div>
+    );
+  }
 
   if (!currentItem && !finished) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
-        Đang chuẩn bị phần đuổi hình bắt chữ...
+        Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
   }
@@ -144,7 +182,7 @@ export default function TerritoryMap() {
             Đuổi Hình Bắt Chữ
           </h1>
           <p className="mt-4 text-slate-300">
-            Bạn đã hoàn thành 10 câu hỏi bằng hình ảnh lịch sử chính thống.
+            Bạn đã hoàn thành toàn bộ 10 câu ghép từ khóa thành đáp án lịch sử hoàn chỉnh.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -209,11 +247,8 @@ export default function TerritoryMap() {
               Đuổi Hình Bắt Chữ
             </div>
             <h1 className="mt-3 text-2xl sm:text-3xl font-black uppercase tracking-[0.18em] text-white">
-              Nhìn Hình Và Tìm Đáp Án
+              Xác Định Từ Khóa, Ghép Thành Đáp Án
             </h1>
-            <p className="mt-2 text-sm text-slate-300">
-              Cấu trúc cố định: 10 câu hỏi hình ảnh với tư liệu lịch sử chính thống.
-            </p>
           </div>
 
           <div className="flex items-center justify-center gap-3 md:justify-end">
@@ -236,21 +271,20 @@ export default function TerritoryMap() {
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <ModeGuidePanel
-              objective={theme4ModeGuides.picturePuzzle.objective}
-              rules={theme4ModeGuides.picturePuzzle.rules}
-              scoring={theme4ModeGuides.picturePuzzle.scoring}
-              sample={theme4ModeGuides.picturePuzzle.sample}
-              statusText={`Câu ${currentIndex + 1}/${items.length} | Gợi ý tầng ${hintLevel}`}
-            />
-
-            <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/70">
-              <img
-                src={currentItem.imageUrl}
-                alt={`Đuổi hình bắt chữ ${currentIndex + 1}`}
-                className="h-[300px] w-full object-contain bg-slate-950 p-4 sm:h-[420px]"
-              />
+            <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/70 p-6">
+              <div className="grid grid-cols-2 gap-4">
+                {currentItem.images.map((img, idx) => (
+                  <div key={idx} className="aspect-square bg-slate-900 rounded-2xl overflow-hidden border border-white/5 p-2">
+                    <img
+                      src={img}
+                      alt={`Mảnh ghép ${idx + 1}`}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
+
 
             <div className="mt-5 rounded-[24px] border border-white/10 bg-slate-950/60 p-5">
               <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-amber-300">
@@ -258,7 +292,7 @@ export default function TerritoryMap() {
                 Gợi Ý
               </div>
               <p className="mt-4 text-base leading-7 text-slate-200">
-                Hãy xác định nhân vật hoặc hình tượng lịch sử trong bức ảnh.
+                Hãy tìm từ khóa của từng hình rồi ghép chúng thành cụm từ lịch sử hoàn chỉnh.
               </p>
               <div className="mt-4 space-y-2">
                 {hintLevel > 0 ? (
@@ -298,33 +332,25 @@ export default function TerritoryMap() {
             <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
               Bảng Đáp Án
             </div>
-            <div className="mt-5 grid gap-3">
-              {currentItem.options.map((option, index) => {
-                const isSelected = selectedOption === option;
-                const isCorrect = option === currentItem.answer;
-
-                return (
+            <div className="mt-5">
+              {!feedback && (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={selectedOption}
+                    onChange={(e) => setSelectedOption(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAnswer(selectedOption)}
+                    placeholder="Nhập đáp án lịch sử hoàn chỉnh..."
+                    className="w-full rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 text-lg font-bold text-white outline-none focus:border-sky-400"
+                  />
                   <button
-                    key={option}
-                    onClick={() => handleAnswer(option)}
-                    disabled={Boolean(feedback)}
-                    className={`rounded-2xl border p-4 text-left transition ${
-                      feedback
-                        ? isCorrect
-                          ? "border-emerald-400/30 bg-emerald-500/15 text-emerald-100"
-                          : isSelected
-                            ? "border-rose-400/30 bg-rose-500/15 text-rose-100"
-                            : "border-white/10 bg-slate-800 text-slate-400"
-                        : "border-white/10 bg-slate-800 text-white hover:border-sky-300/30 hover:bg-slate-700"
-                    }`}
+                    onClick={() => handleAnswer(selectedOption)}
+                    className="w-full rounded-2xl bg-sky-500 py-4 font-black uppercase tracking-widest text-slate-900 transition hover:bg-sky-400"
                   >
-                    <div className="text-xs font-black uppercase tracking-[0.24em] text-sky-200/80">
-                      Đáp án {String.fromCharCode(65 + index)}
-                    </div>
-                    <div className="mt-2 text-lg font-semibold">{option}</div>
+                    Xác Nhận Đáp Án
                   </button>
-                );
-              })}
+                </div>
+              )}
             </div>
 
             {feedback && (
@@ -336,7 +362,7 @@ export default function TerritoryMap() {
                 }`}
               >
                 <div className="text-lg font-black text-white">
-                  {feedback.correct ? "Chọn đúng hình ảnh." : "Chọn chưa đúng."}
+                  {feedback.correct ? "Ghép đúng đáp án lịch sử." : "Ghép chưa đúng đáp án."}
                 </div>
                 <div className="mt-2 text-sm text-slate-300">
                   Đáp án đúng:{" "}

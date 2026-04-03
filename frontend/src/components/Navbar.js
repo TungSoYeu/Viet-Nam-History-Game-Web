@@ -132,7 +132,7 @@ export default function Navbar() {
     }
   }, [location]);
 
-  if (location.pathname === '/' || location.pathname === '/login') return null;
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/landing') return null;
 
   const handleGoogleSuccess = (credentialResponse) => {
     const userId = localStorage.getItem('userId');
@@ -312,7 +312,7 @@ export default function Navbar() {
             
             {/* Left: Logo */}
             <div className="flex items-center flex-1">
-              <Link to="/modes" className="flex items-center gap-2 group shrink-0">
+              <Link to="/home" className="flex items-center gap-2 group shrink-0">
                 <ScrollText size={28} className="group-hover:rotate-12 transition-transform text-amber-400" />
                 <span className="font-black text-lg lg:text-xl tracking-tighter uppercase hidden md:inline" style={{ background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Danh Nhân Đất Việt</span>
               </Link>
@@ -398,9 +398,9 @@ export default function Navbar() {
 
       {/* BOTTOM NAV - Mobile Only */}
       <nav className="md:hidden bottom-nav">
-        <Link to="/modes" className={`bottom-nav-item ${location.pathname === '/modes' ? 'active' : ''}`}>
+        <Link to="/home" className={`bottom-nav-item ${location.pathname === '/home' ? 'active' : ''}`}>
           <div className="icon-wrapper"><Map size={24} /></div>
-          <span>Chơi Game</span>
+          <span>Trang Chủ</span>
         </Link>
         <Link to="/timeline" className={`bottom-nav-item ${location.pathname === '/timeline' ? 'active' : ''}`}>
           <div className="icon-wrapper"><Castle size={24} /></div>
