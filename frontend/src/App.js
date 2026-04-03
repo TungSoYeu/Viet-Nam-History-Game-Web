@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import './App.css';
 import Navbar from './components/Navbar';
 import { AuthGuard, AdminGuard } from './components/RouteGuards';
+import { ToastProvider } from './components/Toast';
 
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
@@ -74,11 +75,14 @@ function App() {
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <Router>
-        <AppContent />
-      </Router>
+      <ToastProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ToastProvider>
     </GoogleOAuthProvider>
   );
 }
 
 export default App;
+

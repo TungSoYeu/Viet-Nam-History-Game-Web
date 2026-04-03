@@ -12,6 +12,24 @@ if (!process.env.VERCEL) {
 // Connect to database is now handled by middleware
 const app = express();
 
+const normalizeOrigin = (value) => {
+    if (!value) return [];
+
+    return value
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .flatMap((entry) => {
+            if (/^https?:\/\//i.test(entry)) {
+                return [entry.replace(/\/$/, '')];
+            }
+
+            return [
+                `https://${entry.replace(/\/$/, '')}`,
+            ];
+        });
+};
+
 const parseAllowedOrigins = () => {
     const configuredOrigins = [
         process.env.CLIENT_URL,
@@ -19,9 +37,7 @@ const parseAllowedOrigins = () => {
         process.env.CORS_ORIGINS,
     ]
         .filter(Boolean)
-        .flatMap((value) => value.split(','))
-        .map((origin) => origin.trim())
-        .filter(Boolean);
+        .flatMap((value) => normalizeOrigin(value));
 
     const localOrigins = [
         'http://localhost:3000',
@@ -36,6 +52,9 @@ const parseAllowedOrigins = () => {
 
     const productionOrigins = [
         'https://project-game-nckh.onrender.com',
+        ...normalizeOrigin(process.env.VERCEL_URL),
+        ...normalizeOrigin(process.env.VERCEL_BRANCH_URL),
+        ...normalizeOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL),
     ];
 
     return Array.from(

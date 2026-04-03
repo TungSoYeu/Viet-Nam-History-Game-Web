@@ -27,14 +27,17 @@ import {
   GraduationCap,
   UserSearch,
   Image as ImageIcon,
-  ScanSearch
+  ScanSearch,
+  Gamepad2
 } from 'lucide-react';
 import API_BASE_URL from '../config/api';
 import { theme4Modes } from '../data/theme4Modes';
+import { useToast } from './Toast';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
   
   // Khởi tạo ref để bắt sự kiện click ra ngoài
   const navRef = useRef(null);
@@ -137,7 +140,7 @@ export default function Navbar() {
   const handleGoogleSuccess = (credentialResponse) => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      alert("Bạn cần đăng nhập trước khi thực hiện liên kết!");
+      toast.warning("Bạn cần đăng nhập trước khi thực hiện liên kết!");
       return;
     }
 
@@ -156,10 +159,10 @@ export default function Navbar() {
     .then(data => {
       if (data.success) {
         setUser(data.user);
-        alert("Liên kết tài khoản Google thành công!");
+        toast.success("Liên kết tài khoản Google thành công!");
       }
     })
-    .catch(err => alert("Lỗi liên kết Google: " + err.message));
+    .catch(err => toast.error("Lỗi liên kết Google: " + err.message));
   };
 
   const handleLogout = () => {
@@ -228,13 +231,13 @@ export default function Navbar() {
         setUser(data.user);
         setSelectedFile(null);
         setPreviewUrl(null);
-        alert("Cập nhật ảnh đại diện thành công!");
+        toast.success("Cập nhật ảnh đại diện thành công!");
       } else {
-        alert(data.message || "Lỗi khi tải ảnh lên");
+        toast.error(data.message || "Lỗi khi tải ảnh lên");
       }
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Lỗi tải ảnh: " + err.message);
+      toast.error("Lỗi tải ảnh: " + err.message);
     } finally {
       setUploading(false);
     }
@@ -243,7 +246,7 @@ export default function Navbar() {
   const handleUpdateInfo = async () => {
     const userId = localStorage.getItem('userId');
     if (!userId || !user) {
-        alert("Không tìm thấy mã người dùng. Hãy đăng nhập lại!");
+        toast.error("Không tìm thấy mã người dùng. Hãy đăng nhập lại!");
         return;
     }
     
@@ -276,13 +279,13 @@ export default function Navbar() {
         setSelectedProvince(null);
         setSelectedDistrict(null);
         setSchoolName('');
-        alert("Cập nhật thông tin thành công!");
+        toast.success("Cập nhật thông tin thành công!");
       } else {
-        alert(data.message || "Lỗi khi cập nhật thông tin");
+        toast.error(data.message || "Lỗi khi cập nhật thông tin");
       }
     } catch (err) {
       console.error("Update info error:", err);
-      alert("Lỗi kết nối máy chủ khi lưu thông tin");
+      toast.error("Lỗi kết nối máy chủ khi lưu thông tin");
     }
   };
 
@@ -397,22 +400,27 @@ export default function Navbar() {
       </nav>
 
       {/* BOTTOM NAV - Mobile Only */}
-      <nav className="md:hidden bottom-nav">
-        <Link to="/home" className={`bottom-nav-item ${location.pathname === '/home' ? 'active' : ''}`}>
-          <div className="icon-wrapper"><Map size={24} /></div>
+      <nav className="md:hidden bottom-nav" aria-label="Điều hướng chính">
+        <Link to="/home" className={`bottom-nav-item ${location.pathname === '/home' ? 'active' : ''}`} aria-label="Trang chủ">
+          <div className="icon-wrapper"><Map size={22} /></div>
           <span>Trang Chủ</span>
         </Link>
-        <Link to="/timeline" className={`bottom-nav-item ${location.pathname === '/timeline' ? 'active' : ''}`}>
-          <div className="icon-wrapper"><Castle size={24} /></div>
+        <Link to="/modes" className={`bottom-nav-item ${location.pathname === '/modes' || location.pathname.includes('/guide') ? 'active' : ''}`} aria-label="Chế độ chơi">
+          <div className="icon-wrapper"><Gamepad2 size={22} /></div>
+          <span>Thách Đấu</span>
+        </Link>
+        <Link to="/timeline" className={`bottom-nav-item ${location.pathname === '/timeline' || location.pathname.includes('/study') ? 'active' : ''}`} aria-label="Thư viện lịch sử">
+          <div className="icon-wrapper"><Castle size={22} /></div>
           <span>Thư Viện</span>
         </Link>
-        <Link to="/leaderboard" className={`bottom-nav-item ${location.pathname === '/leaderboard' ? 'active' : ''}`}>
-          <div className="icon-wrapper"><Trophy size={24} /></div>
+        <Link to="/leaderboard" className={`bottom-nav-item ${location.pathname === '/leaderboard' ? 'active' : ''}`} aria-label="Bảng xếp hạng">
+          <div className="icon-wrapper"><Trophy size={22} /></div>
           <span>Xếp Hạng</span>
         </Link>
         <button 
           onClick={() => setShowProfile(true)}
           className={`bottom-nav-item ${showProfile ? 'active' : ''}`}
+          aria-label="Hồ sơ cá nhân"
         >
           <div className="icon-wrapper">
             <img 
@@ -494,7 +502,7 @@ export default function Navbar() {
                               <div className="scale-75 origin-right">
                                 <GoogleLogin
                                   onSuccess={handleGoogleSuccess}
-                                  onError={() => alert('Liên kết thất bại')}
+                                  onError={() => toast.error('Liên kết thất bại')}
                                   text="continue_with"
                                   shape="pill"
                                 />
