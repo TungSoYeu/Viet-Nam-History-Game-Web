@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import API_BASE_URL from '../config/api';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 function FlashcardItem({ card }) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -63,7 +64,17 @@ export default function StudyDetail() {
       });
   }, [lessonId]);
 
-  if (loading) return <div className="p-8 text-center italic text-amber-500 min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>Đang lật mở trang sử...</div>;
+  if (loading) return (
+    <div className="study-page min-h-screen flex flex-col">
+      <div className="study-header flex flex-col items-center">
+        <div className="skeleton" style={{ width: 100, height: 36, borderRadius: 8, marginBottom: 12 }} />
+        <div className="skeleton" style={{ width: 300, height: 32, borderRadius: 8 }} />
+      </div>
+      <div className="mx-4 sm:mx-6 mb-4 p-6 sm:p-8 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <SkeletonLoader variant="text" count={3} />
+      </div>
+    </div>
+  );
   if (!lesson) return <div className="p-8 text-center text-red-400 min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>Không tìm thấy tư liệu về thời kỳ này.</div>;
 
   return (

@@ -206,21 +206,24 @@ export default function HomePage() {
     <div className="min-h-screen relative" style={{ background: '#0a0a0a' }}>
       {/* Background - Blurred Gallery */}
       <div className="absolute inset-0 z-0">
-        {heroes.map((hero, idx) => (
-          <div
-            key={idx}
-            className="absolute inset-0 w-full h-full"
-            style={{
-              backgroundImage: `url('${hero.image}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              opacity: idx === bgIndex ? 0.35 : 0,
-              transform: idx === bgIndex ? 'scale(1.1)' : 'scale(1)',
-              transition: 'opacity 1.5s ease-in-out, transform 6s linear',
-              filter: 'blur(25px) brightness(0.35) saturate(1.2)'
-            }}
-          />
-        ))}
+        {heroes.map((hero, idx) => {
+          const isNear = Math.abs(idx - bgIndex) <= 1 || (idx === 0 && bgIndex === heroes.length - 1) || (bgIndex === 0 && idx === heroes.length - 1);
+          return (
+            <div
+              key={idx}
+              className="absolute inset-0 w-full h-full"
+              style={{
+                backgroundImage: isNear ? `url('${hero.image}')` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                opacity: idx === bgIndex ? 0.35 : 0,
+                transform: idx === bgIndex ? 'scale(1.1)' : 'scale(1)',
+                transition: 'opacity 1.5s ease-in-out, transform 6s linear',
+                filter: 'blur(25px) brightness(0.35) saturate(1.2)'
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Deep Glass Overlay */}
@@ -233,7 +236,7 @@ export default function HomePage() {
       />
 
       {/* Floating Icon Panel - Right Side */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 hidden lg:flex flex-col gap-2">
         {iconPanels.map((panel, idx) => (
           <motion.div
             key={panel.icon}
@@ -373,6 +376,7 @@ export default function HomePage() {
                       <img 
                         src={currentHero.image} 
                         alt={currentHero.name}
+                        loading="eager"
                         className="w-full h-80 object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
                         style={{ 
                           filter: 'brightness(1.15) saturate(1.1) contrast(1.05)',
@@ -394,7 +398,7 @@ export default function HomePage() {
                 </motion.div>
 
                 {/* Pagination Dots */}
-                <div className="flex justify-center gap-2 mt-6">
+                <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mt-6">
                   {heroes.map((_, idx) => (
                     <button
                       key={idx}
@@ -447,6 +451,7 @@ export default function HomePage() {
                         <img 
                           src={hero.image} 
                           alt={hero.name}
+                          loading="lazy"
                           className="w-full h-full object-cover"
                         />
                       </div>

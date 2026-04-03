@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Trophy, ChevronRight } from 'lucide-react';
 import API_BASE_URL from '../config/api';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 export default function Timeline() {
   const navigate = useNavigate();
@@ -24,10 +25,12 @@ export default function Timeline() {
   }, []);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center history-bg">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-full border-4 border-t-amber-600 border-r-transparent border-b-transparent border-l-transparent animate-spin mx-auto mb-4"></div>
-        <p className="text-sm font-semibold text-amber-800">Đang lật mở trang sử...</p>
+    <div className="min-h-screen p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="max-w-3xl mx-auto pt-12">
+        <div className="skeleton skeleton-text" style={{ width: 120, height: 12, margin: '0 auto 16px' }} />
+        <div className="skeleton skeleton-text" style={{ width: 280, height: 28, margin: '0 auto 12px' }} />
+        <div className="skeleton skeleton-text" style={{ width: 240, height: 14, margin: '0 auto 40px' }} />
+        <SkeletonLoader variant="timeline" count={6} />
       </div>
     </div>
   );

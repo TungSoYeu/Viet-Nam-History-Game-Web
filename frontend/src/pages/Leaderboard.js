@@ -6,6 +6,7 @@ import API_BASE_URL from '../config/api';
 import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
 import ParticlesBackground from '../components/animations/ParticlesBackground';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 // Danh sách các danh nhân tiêu biểu để làm avatar mặc định
 const HISTORICAL_AVATARS = [
@@ -84,9 +85,10 @@ export default function Leaderboard() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="text-xl font-black text-amber-400 animate-pulse flex items-center gap-3 italic">
-         <Star className="animate-spin" /> Đang tra cứu Bảng Phong Thần...
+    <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="w-full max-w-4xl">
+        <SkeletonLoader variant="podium" className="mb-12" />
+        <SkeletonLoader variant="list" count={5} />
       </div>
     </div>
   );
