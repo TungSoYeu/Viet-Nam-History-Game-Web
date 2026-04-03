@@ -289,6 +289,55 @@ textarea:focus-visible {
   filter: drop-shadow(0 0 6px rgba(212, 160, 83, 0.4));
 }
 
+/* ============================
+   FLASHCARDS
+   ============================ */
+.flashcard-container {
+  position: relative;
+  height: 20rem;
+  perspective: 1400px;
+  cursor: pointer;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flashcard-container.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+}
+
+.flashcard-front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+@media (max-width: 640px) {
+  .flashcard-container {
+    height: 22rem;
+  }
+}
+
 @media (min-width: 768px) {
   .bottom-nav {
     left: 50%;

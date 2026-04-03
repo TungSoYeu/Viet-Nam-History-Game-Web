@@ -3,9 +3,9 @@
   "name": "Sử Việt Hùng Ca - App Học Sử",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "favicon-clean.png",
+      "sizes": "768x768",
+      "type": "image/png"
     },
     {
       "src": "logo192.png",
