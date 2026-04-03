@@ -33,7 +33,7 @@ export default function LandingPage() {
 
   return (
     <AnimatedPage>
-      <div className="relative min-h-[100dvh] flex flex-col items-center justify-center p-6 overflow-hidden">
+      <div className="relative min-h-[100dvh] flex flex-col items-center justify-center p-6">
         <ParticlesBackground type="dust" />
         
         {/* 1. Animated Background Carousel Layer */}
@@ -76,15 +76,15 @@ export default function LandingPage() {
 
           {/* Title */}
           <h1 className="text-5xl sm:text-6xl font-black mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 50%, #f0d48a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Danh Nhân Đất Việt
+            Hành Trình Lịch Sử 11
           </h1>
 
           {/* Tagline */}
           <p className="text-lg sm:text-xl mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ color: '#f0d48a', fontFamily: "'Playfair Display', serif" }}>
-            "Dòng máu Lạc Hồng, ngàn năm vang vọng"
+            "Chinh phục Chủ đề 4: Lịch sử Việt Nam"
           </p>
           <p className="text-sm sm:text-base mb-10 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" style={{ color: 'rgba(255,255,255,0.8)' }}>
-            Khám phá 4000 năm lịch sử qua trò chơi tương tác
+            Hệ thống trò chơi tương tác củng cố và khắc sâu kiến thức
           </p>
 
           {/* CTA Button */}
@@ -98,7 +98,6 @@ export default function LandingPage() {
             </div>
           </BouncyButton>
 
-          {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-3 mt-10">
             {[
               { icon: <BookOpen size={14} />, text: '9 Chế Độ Chơi' },

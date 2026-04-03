@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Flag, Hourglass, Puzzle, Swords, History, 
-  Library, UserSearch, Image as ImageIcon, ScanSearch,
-  ArrowRight, Trophy, BookOpen, ChevronRight
+  Flag, Hourglass, Puzzle, History, 
+  Library, Image as ImageIcon, ScanSearch,
+  ArrowRight, Trophy, BookOpen, ChevronRight, Users
 } from 'lucide-react';
 import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
@@ -17,7 +17,7 @@ export default function ModeSelection() {
 
   const iconMap = {
     "turning-page": <ImageIcon size={28} />,
-    "understanding-teammates": <Swords size={28} />,
+    "understanding-teammates": <Users size={28} />,
     "historical-recognition": <ScanSearch size={28} />,
     "connecting-history": <Puzzle size={28} />,
     "crossword-decoding": <Library size={28} />,
@@ -97,13 +97,13 @@ export default function ModeSelection() {
                 </div>
                 <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <span className="block text-[10px] uppercase font-bold mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Phần thưởng</span>
-                  <span className="text-white font-bold">100 - 500 XP</span>
+                  <span className="text-white font-bold">{selectedMode.rewardText || '100 - 500 XP'}</span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-3">
                 <BouncyButton 
-                  onClick={() => navigate(selectedMode.path)}
+                  onClick={() => navigate(`/modes/${selectedMode.id}/guide`)}
                   className="w-full"
                 >
                   <div className="w-full py-4 rounded-2xl font-black text-lg uppercase text-white flex items-center justify-center gap-2"
@@ -113,7 +113,7 @@ export default function ModeSelection() {
                       boxShadow: '0 4px 20px rgba(0,0,0,0.3)' 
                     }}
                   >
-                    XUẤT QUÂN <ChevronRight size={20} />
+                    XEM HƯỚNG DẪN <ChevronRight size={20} />
                   </div>
                 </BouncyButton>
                 <button 

@@ -16,14 +16,14 @@ const theme4Content = {
     maxQuestionsPerSection: 10,
     imagePolicy: "Không sử dụng hình ảnh AI; phải dùng hình ảnh lịch sử chính thống, phổ biến và có giá trị.",
     notes: [
-      "Lật Mở Trang Sử: 5 hình ảnh, mỗi hình 6-9 câu hỏi.",
-      "Hiểu Ý Đồng Đội: 5 gói, mỗi gói 10 từ khóa, 30 giây chuẩn bị, 60 giây thực hiện.",
-      "Nhận Diện Lịch Sử: 5 câu hình ảnh và 3 câu lược đồ.",
-      "Kết Nối Lịch Sử: 5 câu thông tin - thông tin và 5 câu hình ảnh - thông tin.",
-      "Giải Mã Ô Chữ: 3 từ khóa, mỗi từ khóa 5 câu gợi mở.",
-      "Dòng Chảy Lịch Sử: 10 câu có mốc thời gian, sắp xếp vào 4 dòng.",
-      "Nhanh Như Chớp: 10 câu hỏi ngắn, 5-10 giây mỗi câu.",
-      "Đuổi Hình Bắt Chữ: 10 câu hỏi bằng hình ảnh.",
+      "Lật Mở Trang Sử: 10 ảnh bí ẩn, mỗi ảnh 2x2 với 4 dữ kiện; tổng 40 dữ kiện và có gợi ý số chữ đáp án.",
+      "Hiểu Ý Đồng Đội: 5 gói, mỗi gói 10 từ khóa; ưu tiên tổ chức như hoạt động tương tác trực tiếp trên lớp.",
+      "Nhận Diện Lịch Sử: 10 nội dung, kết hợp nhận diện từ hình ảnh hoặc lược đồ và nhận diện từ hệ thống từ khóa.",
+      "Kết Nối Lịch Sử: 10 câu, gồm 5 nối hình ảnh - thông tin và 5 nối thông tin - thông tin, có 1 phương án nhiễu.",
+      "Giải Mã Ô Chữ: 5 từ khóa hàng dọc, mỗi từ khóa có từ 5 đến 10 câu hỏi hàng ngang.",
+      "Dòng Chảy Lịch Sử: kéo thả dữ kiện vào 4 tiêu chí bối cảnh, diễn biến, kết quả - ý nghĩa và di sản để lại.",
+      "Nhanh Như Chớp: 30 câu nhận biết, 60 giây chính và thêm 10 giây nhịp nhanh, có chuỗi lửa theo số câu đúng liên tiếp.",
+      "Đuổi Hình Bắt Chữ: 10 câu, mỗi câu gồm 2 đến 4 hình ảnh để ghép thành đáp án lịch sử hoàn chỉnh.",
     ],
   },
   modeDataKeys: {
@@ -39,7 +39,7 @@ const theme4Content = {
   modes: theme4Modes,
   gameData: theme4GameData,
   meta: {
-    version: "theme4-default-v1",
+    version: "theme4-default-v2",
     source: "default",
   },
 };

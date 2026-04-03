@@ -67,16 +67,14 @@ export default function StudyDetail() {
   if (!lesson) return <div className="p-8 text-center text-red-400 min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>Không tìm thấy tư liệu về thời kỳ này.</div>;
 
   return (
-    <div className="p-4 sm:p-6 min-h-screen max-w-4xl mx-auto flex flex-col" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-3 mb-6 sm:mb-8">
-        <div className="flex justify-center sm:justify-start">
-          <button onClick={() => navigate('/timeline')} className="btn-primary px-4 py-2 text-sm shrink-0">📜 Quay lại</button>
-        </div>
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{lesson.title}</h1>
+    <div className="study-page min-h-screen flex flex-col">
+      <div className="study-header flex flex-col items-center">
+        <button onClick={() => navigate('/timeline')} className="btn-primary px-4 py-2 text-sm shrink-0">📜 Quay lại</button>
+        <h1 className="study-title text-xl sm:text-2xl md:text-3xl font-bold text-center" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{lesson.title}</h1>
         <div className="hidden sm:flex justify-end pr-2 text-xs font-bold text-slate-400">Đọc Hiểu</div>
       </div>
 
-      <div className="flex mb-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="study-tabs flex px-4 sm:px-6 mb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <button 
           onClick={() => setActiveTab('wiki')}
           className={`flex-1 sm:flex-none px-4 sm:px-8 py-3 font-bold transition text-sm sm:text-base ${activeTab === 'wiki' ? 'text-amber-400' : 'text-gray-500 hover:text-gray-300'}`}
@@ -93,9 +91,9 @@ export default function StudyDetail() {
         </button>
       </div>
 
-      <div className="flex-1 p-8 overflow-y-auto rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <div className="study-content flex-1 mx-4 sm:mx-6 mb-4 p-6 sm:p-8 overflow-y-auto rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
         {activeTab === 'wiki' ? (
-          <div className="prose prose-invert prose-amber max-w-none">
+          <div className="wiki-content prose prose-invert max-w-none">
             {lesson.wiki?.content ? (
               <ReactMarkdown>{lesson.wiki.content}</ReactMarkdown>
             ) : (

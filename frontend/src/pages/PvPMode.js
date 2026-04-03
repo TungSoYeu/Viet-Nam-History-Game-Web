@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock3, Flag, Play, RefreshCw, Users } from "lucide-react";
 import { teammatePackages } from "../data/theme4GameData";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import { logGameTelemetry, resetModeSessionId } from "../utils/gameHelpers";
 
 const PREP_SECONDS = 30;
@@ -12,6 +11,10 @@ const MODE_ID = "understanding-teammates";
 
 export default function PvPMode() {
   const navigate = useNavigate();
+  const { data: remoteTeammatePackages, loading } = useTheme4ModeData(
+    MODE_ID,
+    teammatePackages
+  );
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [phase, setPhase] = useState("select");
   const [timeLeft, setTimeLeft] = useState(PREP_SECONDS);
@@ -19,6 +22,9 @@ export default function PvPMode() {
   const [revealedKeywords, setRevealedKeywords] = useState(false);
   const [activeRole, setActiveRole] = useState("nguoi-goi-y");
   const startedAtRef = useRef(Date.now());
+  const activePackages = Array.isArray(remoteTeammatePackages)
+    ? remoteTeammatePackages
+    : teammatePackages;
 
   useEffect(() => {
     if (phase !== "prep" && phase !== "play") return;
@@ -103,6 +109,22 @@ export default function PvPMode() {
   };
 
   if (phase === "select") {
+    if (loading && !remoteTeammatePackages) {
+      return (
+        <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+          Đang tải gói từ khóa đồng đội...
+        </div>
+      );
+    }
+
+    if (!activePackages.length) {
+      return (
+        <div className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+        Chưa có gói câu hỏi cho chế độ chơi này.
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen p-4 sm:p-8" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
         <div className="max-w-6xl mx-auto">
@@ -126,23 +148,10 @@ export default function PvPMode() {
             >
               Hiểu Ý Đồng Đội
             </h1>
-            <p className="max-w-3xl mx-auto text-sm sm:text-base" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Cấu trúc cố định: 30 giây chuẩn bị, 60 giây thực hiện, 5 gói chơi và 10 từ khóa mỗi gói.
-            </p>
-          </div>
-
-          <div className="mb-8">
-            <ModeGuidePanel
-              objective={theme4ModeGuides.teammate.objective}
-              rules={theme4ModeGuides.teammate.rules}
-              scoring={theme4ModeGuides.teammate.scoring}
-              sample={theme4ModeGuides.teammate.sample}
-              statusText="Sẵn sàng chọn gói"
-            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {teammatePackages.map((pkg) => (
+            {activePackages.map((pkg) => (
               <button
                 key={pkg.id}
                 onClick={() => startPackage(pkg)}
@@ -154,7 +163,7 @@ export default function PvPMode() {
                 </div>
                 <h2 className="text-xl font-black text-white mb-2">{pkg.title}</h2>
                 <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  10 từ khóa gắn với Chủ đề 4, Bài 7 và Bài 8.
+                  10 từ khóa trọng tâm để một bạn gợi ý, một bạn đoán thật nhanh và chính xác.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {pkg.keywords.slice(0, 4).map((keyword) => (
@@ -192,16 +201,6 @@ export default function PvPMode() {
             <Clock3 size={20} className="text-amber-400" />
             <span className="text-3xl font-black text-white tabular-nums">{timeLeft}s</span>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <ModeGuidePanel
-            objective={theme4ModeGuides.teammate.objective}
-            rules={theme4ModeGuides.teammate.rules}
-            scoring={theme4ModeGuides.teammate.scoring}
-            sample={theme4ModeGuides.teammate.sample}
-            statusText={phase === "prep" ? "Đang chuẩn bị" : phase === "play" ? "Đang thực hiện" : "Đã kết thúc gói"}
-          />
         </div>
 
         <div className="mb-6 h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
@@ -301,7 +300,7 @@ export default function PvPMode() {
             </div>
             <h2 className="text-3xl font-black text-green-400 mb-3">Đã Hết Thời Gian</h2>
             <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Bạn đã hoàn thành trọn 60 giây thực hiện của gói 10 từ khóa này.
+              Gói chơi này đã khép lại. Bạn có thể chơi lại gói hiện tại hoặc chuyển sang một gói từ khóa khác.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
               {selectedPackage?.keywords.map((keyword) => (

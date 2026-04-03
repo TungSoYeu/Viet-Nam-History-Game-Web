@@ -7,7 +7,9 @@ import { AuthGuard, AdminGuard } from './components/RouteGuards';
 
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
+import HomePage from './pages/HomePage';
 import ModeSelection from './pages/ModeSelection';
+import ModeGuidePage from './pages/ModeGuidePage';
 import Timeline from './pages/Timeline';
 import GamePlay from './pages/GamePlay';
 import StudyDetail from './pages/StudyDetail';
@@ -18,7 +20,7 @@ import PvPMode from './pages/PvPMode';
 import PvPBattle from './pages/PvPBattle';
 import ChangePassword from './pages/ChangePassword';
 import TerritoryMap from './pages/TerritoryMap';
-import AdminDashboard from './pages/AdminDashboard';
+import Theme4AdminManager from './pages/Theme4AdminManager';
 import Leaderboard from './pages/Leaderboard';
 import ChronologicalMode from './pages/ChronologicalMode';
 import MillionaireMode from './pages/MillionaireMode';
@@ -38,8 +40,11 @@ function AppContent() {
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/landing" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/home" element={<AuthGuard><HomePage /></AuthGuard>} />
             <Route path="/modes" element={<AuthGuard><ModeSelection /></AuthGuard>} />
+            <Route path="/modes/:modeId/guide" element={<AuthGuard><ModeGuidePage /></AuthGuard>} />
             <Route path="/timeline" element={<AuthGuard><Timeline /></AuthGuard>} />
             <Route path="/study/:lessonId" element={<AuthGuard><StudyDetail /></AuthGuard>} />
             <Route path="/play/:lessonId" element={<AuthGuard><GamePlay /></AuthGuard>} />
@@ -50,7 +55,7 @@ function AppContent() {
             <Route path="/pvp/battle" element={<AuthGuard><PvPBattle /></AuthGuard>} />
             <Route path="/territory-map" element={<AuthGuard><TerritoryMap /></AuthGuard>} />
             <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
-            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+            <Route path="/admin" element={<AdminGuard><Theme4AdminManager /></AdminGuard>} />
             <Route path="/leaderboard" element={<AuthGuard><Leaderboard /></AuthGuard>} />
             <Route path="/chronological" element={<AuthGuard><ChronologicalMode /></AuthGuard>} />
             <Route path="/millionaire" element={<AuthGuard><MillionaireMode /></AuthGuard>} />

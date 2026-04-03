@@ -113,7 +113,7 @@ export default function Leaderboard() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
         <ParticlesBackground type="dust" />
         
         {/* Header */}
@@ -179,7 +179,7 @@ export default function Leaderboard() {
         </div>
 
         {/* Runner Up List (4th - 10th) with Ancient Border */}
-        <div className="w-full max-w-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-10 shadow-2xl relative z-10 overflow-hidden" 
+        <div className="w-full max-w-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-10 shadow-2xl relative z-10" 
           style={{ 
             background: 'rgba(255,255,255,0.04)', 
             border: '1px solid rgba(255,255,255,0.08)',

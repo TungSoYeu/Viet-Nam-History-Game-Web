@@ -2,21 +2,20 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, History, RefreshCcw, Trophy } from "lucide-react";
 import { historicalFlowSet } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
   resetModeSessionId,
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
 const MODE_ID = "historical-flow";
 
 const lines = [
   { id: "context", label: "Dòng 1", title: "Bối cảnh", required: 2 },
   { id: "developments", label: "Dòng 2", title: "Diễn biến", required: 4 },
-  { id: "result", label: "Dòng 3", title: "Kết quả", required: 2 },
+  { id: "result", label: "Dòng 3", title: "Kết quả – Ý nghĩa", required: 2 },
   { id: "legacy", label: "Dòng 4", title: "Di sản", required: 2 },
 ];
 const lineColors = {
@@ -26,27 +25,48 @@ const lineColors = {
   legacy: "border-amber-400/30 bg-amber-500/10",
 };
 
-const createBoard = () =>
-  shuffleArray(historicalFlowSet.sentences).map((sentence) => ({
+const createBoard = (flowSet) =>
+  shuffleArray(flowSet?.sentences || []).map((sentence) => ({
     ...sentence,
     selectedGroup: "",
   }));
 
 export default function ChronologicalMode() {
   const navigate = useNavigate();
-  const [sentences, setSentences] = useState(createBoard);
+  const { data: remoteHistoricalFlowSet, loading } = useTheme4ModeData(
+    MODE_ID,
+    historicalFlowSet
+  );
+  const activeHistoricalFlowSet =
+    remoteHistoricalFlowSet &&
+    !Array.isArray(remoteHistoricalFlowSet) &&
+    Array.isArray(remoteHistoricalFlowSet.sentences)
+      ? remoteHistoricalFlowSet
+      : historicalFlowSet;
+  const totalSentences = activeHistoricalFlowSet?.sentences?.length || 0;
+  const [sentences, setSentences] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [incorrectIds, setIncorrectIds] = useState([]);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState(0);
   const [xpSaved, setXpSaved] = useState(false);
+  const [boardReady, setBoardReady] = useState(false);
   const startedAtRef = useRef(Date.now());
 
   useEffect(() => {
+    if (loading || totalSentences === 0) return;
+
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalSentences: historicalFlowSet.sentences.length });
-  }, []);
+    logGameTelemetry(MODE_ID, "session_start", { totalSentences });
+    setSentences(createBoard(activeHistoricalFlowSet));
+    setFeedback(null);
+    setIncorrectIds([]);
+    setFinished(false);
+    setScore(0);
+    setXpSaved(false);
+    setBoardReady(true);
+  }, [activeHistoricalFlowSet, loading, totalSentences]);
 
   useEffect(() => {
     if (finished && !xpSaved) {
@@ -92,13 +112,14 @@ export default function ChronologicalMode() {
     });
     resetModeSessionId(MODE_ID);
     startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalSentences: historicalFlowSet.sentences.length, replay: true });
-    setSentences(createBoard());
+    logGameTelemetry(MODE_ID, "session_start", { totalSentences, replay: true });
+    setSentences(createBoard(activeHistoricalFlowSet));
     setFeedback(null);
     setIncorrectIds([]);
     setFinished(false);
     setScore(0);
     setXpSaved(false);
+    setBoardReady(true);
   };
 
   const handleExit = async () => {
@@ -127,10 +148,10 @@ export default function ChronologicalMode() {
       return;
     }
 
-    if (placedCount !== historicalFlowSet.sentences.length) {
+    if (placedCount !== totalSentences) {
       setFeedback({
         type: "warning",
-        text: `Hãy xếp đủ 10 câu trước. Hiện mới có ${placedCount}/10 câu đã được đưa vào dòng.`,
+        text: `Hãy xếp đủ ${totalSentences} câu trước. Hiện mới có ${placedCount}/${totalSentences} câu đã được đưa vào dòng.`,
       });
       setIncorrectIds([]);
       logGameTelemetry(MODE_ID, "answer_submitted", {
@@ -149,7 +170,7 @@ export default function ChronologicalMode() {
       setIncorrectIds([]);
       setFeedback({
         type: "success",
-        text: "Cả 10 câu đã được xếp đúng vào các dòng lịch sử.",
+        text: `Cả ${totalSentences} câu đã được xếp đúng vào các dòng lịch sử.`,
       });
       setScore(100);
       setFinished(true);
@@ -168,6 +189,22 @@ export default function ChronologicalMode() {
       wrongCount: wrongItems.length,
     });
   };
+
+  if (loading || (totalSentences > 0 && !boardReady)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Đang tải dòng chảy lịch sử...
+      </div>
+    );
+  }
+
+  if (!activeHistoricalFlowSet || totalSentences === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Chưa có bộ dữ kiện hợp lệ cho chế độ chơi này.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-6 text-white sm:px-6">
@@ -189,10 +226,10 @@ export default function ChronologicalMode() {
               Dòng Chảy Lịch Sử
             </div>
             <h1 className="mt-3 text-2xl sm:text-3xl font-black uppercase tracking-[0.18em] text-white">
-              {historicalFlowSet.title}
+              {activeHistoricalFlowSet.title}
             </h1>
             <p className="mt-2 text-sm text-slate-300">
-              {historicalFlowSet.instruction}
+              {activeHistoricalFlowSet.instruction}
             </p>
           </div>
 
@@ -201,7 +238,7 @@ export default function ChronologicalMode() {
               <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
                 Đã xếp
               </div>
-              <div className="text-lg font-black text-white">{placedCount}/10</div>
+              <div className="text-lg font-black text-white">{placedCount}/{totalSentences}</div>
             </div>
             <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-center">
               <div className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80">
@@ -214,23 +251,13 @@ export default function ChronologicalMode() {
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <div className="mb-5">
-              <ModeGuidePanel
-                objective={theme4ModeGuides.flow.objective}
-                rules={theme4ModeGuides.flow.rules}
-                scoring={theme4ModeGuides.flow.scoring}
-                sample={theme4ModeGuides.flow.sample}
-                statusText={`Đã xếp ${placedCount}/10 câu`}
-              />
-            </div>
-
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                Các Câu Sự Kiện
+                Các Dữ Kiện Lịch Sử
                 </div>
                 <div className="mt-2 text-sm text-slate-300">
-                  Mỗi câu đều có mốc thời gian và phải được đưa vào đúng một trong bốn dòng.
+                  Mỗi dữ kiện cần được đặt vào đúng một trong bốn dòng của tiến trình sự kiện.
                 </div>
               </div>
               <button
@@ -364,17 +391,6 @@ export default function ChronologicalMode() {
                 ))}
               </div>
             </div>
-
-            <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-              <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                Cấu Trúc Cố Định
-              </div>
-              <div className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-                <p>Tổng cộng 10 câu, mỗi câu đều phải có mốc thời gian.</p>
-                <p>Dòng 1 là bối cảnh, dòng 2 là diễn biến, dòng 3 là kết quả.</p>
-                <p>Dòng 4 thể hiện ý nghĩa và di sản để lại.</p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -388,7 +404,7 @@ export default function ChronologicalMode() {
                 Hoàn Thành Dòng Chảy Lịch Sử
               </h2>
               <p className="mt-4 text-slate-300">
-                Bạn đã xếp đúng 10 câu vào 4 dòng của tiến trình khởi nghĩa Lam Sơn.
+                Bạn đã xếp đúng toàn bộ dữ kiện vào 4 dòng của tiến trình lịch sử.
               </p>
               <div className="mt-5 text-4xl font-black text-amber-300">{score} XP</div>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">

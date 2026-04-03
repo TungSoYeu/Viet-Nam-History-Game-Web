@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { revealPictureSets } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
   matchesAnswer,
@@ -17,16 +18,18 @@ import {
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-import ModeGuidePanel from "../components/game/ModeGuidePanel";
-import { theme4ModeGuides } from "../data/theme4ModeGuides";
 
-const GRID_COLUMNS = 3;
-const GRID_ROWS = 3;
+const GRID_COLUMNS = 2;
+const GRID_ROWS = 2;
 const GRID_SIZE = GRID_COLUMNS * GRID_ROWS;
 const MODE_ID = "turning-page";
 
 export default function RevealPictureMode() {
   const navigate = useNavigate();
+  const { data: remoteRevealPictureSets, loading } = useTheme4ModeData(
+    MODE_ID,
+    revealPictureSets
+  );
   const [pictureData, setPictureData] = useState(null);
   const [tileQuestions, setTileQuestions] = useState([]);
   const [revealedTiles, setRevealedTiles] = useState([]);
@@ -39,11 +42,22 @@ export default function RevealPictureMode() {
   const [guessFeedback, setGuessFeedback] = useState(null);
   const startedAtRef = useRef(Date.now());
 
-  const hintLevel =
-    revealedTiles.length < 3 ? "Cấp 1 (mở nét chính)" : revealedTiles.length < 6 ? "Cấp 2 (mở bố cục)" : "Cấp 3 (gần lộ toàn ảnh)";
+  const answerLengthHint = pictureData ? pictureData.answer.replace(/\s/g, "").length : 0;
+  const wordCount = pictureData ? pictureData.answer.split(" ").length : 0;
+  const activeRevealPictureSets =
+    Array.isArray(remoteRevealPictureSets) && remoteRevealPictureSets.length > 0
+      ? remoteRevealPictureSets
+      : revealPictureSets;
 
-  const loadRound = () => {
-    const selected = shuffleArray(revealPictureSets)[0];
+
+  const loadRound = (sourceSets = activeRevealPictureSets) => {
+    if (!Array.isArray(sourceSets) || sourceSets.length === 0) {
+      setPictureData(null);
+      setTileQuestions([]);
+      return;
+    }
+
+    const selected = shuffleArray(sourceSets)[0];
     setPictureData(selected);
     setTileQuestions(selected.questions.slice(0, GRID_SIZE));
     setRevealedTiles([]);
@@ -58,21 +72,34 @@ export default function RevealPictureMode() {
     startedAtRef.current = Date.now();
     logGameTelemetry(MODE_ID, "session_start", {
       totalTiles: GRID_SIZE,
-      acceptedAnswers: selected.acceptedAnswers.length,
+      acceptedAnswers: selected.acceptedAnswers?.length || 0,
     });
   };
 
   useEffect(() => {
-    loadRound();
-  }, []);
+    if (!loading) {
+      loadRound(activeRevealPictureSets);
+    }
+  }, [activeRevealPictureSets, loading]);
 
-  if (!pictureData) {
+  if (loading && !pictureData) {
     return (
       <div
         className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-500"
         style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
       >
-        Đang tải hình ảnh lịch sử...
+        Đang tải dữ liệu trang sử...
+      </div>
+    );
+  }
+
+  if (!pictureData) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-500"
+        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+      >
+        Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
   }
@@ -170,7 +197,7 @@ export default function RevealPictureMode() {
             Lật Mở Trang Sử Thành Công
           </h2>
           <p className="text-xl font-bold text-white mb-6">
-            Hình ảnh là <span className="text-amber-500 uppercase">{pictureData.answer}</span>
+            Đáp án là <span className="text-amber-500 uppercase">{pictureData.answer}</span>
           </p>
           <img
             src={pictureData.imageUrl}
@@ -233,16 +260,6 @@ export default function RevealPictureMode() {
             {tileQuestions.length} câu hỏi
           </div>
         </div>
-      </div>
-
-      <div className="w-full max-w-5xl mb-4">
-        <ModeGuidePanel
-          objective={theme4ModeGuides.turningPage.objective}
-          rules={theme4ModeGuides.turningPage.rules}
-          scoring={theme4ModeGuides.turningPage.scoring}
-          sample={theme4ModeGuides.turningPage.sample}
-          statusText={`Đã mở ${revealedTiles.length}/${GRID_SIZE} ô | ${hintLevel}`}
-        />
       </div>
 
       <div className="w-full max-w-5xl mb-6">
@@ -323,7 +340,10 @@ export default function RevealPictureMode() {
             <Search size={20} className="text-amber-500" /> Đoán Đáp Án
           </h3>
           <p className="text-sm mb-3 text-center" style={{ color: "rgba(255,255,255,0.5)" }}>
-            Khi đã đủ dữ kiện, hãy đoán nhân vật hoặc sự kiện lịch sử.
+            Khi đã đủ dữ kiện, hãy đoán chính xác nhân vật, di tích hoặc địa danh lịch sử.
+          </p>
+          <p className="text-xs mb-2 text-center" style={{ color: "#f0d48a" }}>
+            Đáp án gồm {answerLengthHint} chữ cái ({wordCount} từ)
           </p>
           <p className="text-xs mb-6 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
             Điểm hiện tại: {score} XP
