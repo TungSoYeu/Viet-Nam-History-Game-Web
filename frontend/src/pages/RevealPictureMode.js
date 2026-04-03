@@ -41,6 +41,7 @@ export default function RevealPictureMode() {
   const [tileFeedback, setTileFeedback] = useState(null);
   const [guessFeedback, setGuessFeedback] = useState(null);
   const startedAtRef = useRef(Date.now());
+  const [scorePop, setScorePop] = useState(false);
 
   const answerLengthHint = pictureData ? pictureData.answer.replace(/\s/g, "").length : 0;
   const wordCount = pictureData ? pictureData.answer.split(" ").length : 0;
@@ -120,6 +121,8 @@ export default function RevealPictureMode() {
     const delta = isCorrect ? -5 : -15;
     const nextScore = Math.max(10, score + delta);
     setScore(nextScore);
+    setScorePop(true);
+    setTimeout(() => setScorePop(false), 500);
     setTileFeedback({
       correct: isCorrect,
       answer: prompt.a,
@@ -139,6 +142,8 @@ export default function RevealPictureMode() {
     if (!isCorrect) {
       const nextScore = Math.max(10, score - 10);
       setScore(nextScore);
+      setScorePop(true);
+      setTimeout(() => setScorePop(false), 500);
       setGuessFeedback({
         correct: false,
         answer: pictureData.answer,
@@ -345,7 +350,7 @@ export default function RevealPictureMode() {
           <p className="text-xs mb-2 text-center" style={{ color: "#f0d48a" }}>
             Đáp án gồm {answerLengthHint} chữ cái ({wordCount} từ)
           </p>
-          <p className="text-xs mb-6 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <p className={`text-xs mb-6 text-center transition-all ${scorePop ? 'animate-score-pop' : ''}`} style={{ color: "rgba(255,255,255,0.35)" }}>
             Điểm hiện tại: {score} XP
           </p>
           <input
@@ -416,8 +421,8 @@ export default function RevealPictureMode() {
               <div
                 className={`rounded-xl border p-4 ${
                   tileFeedback.correct
-                    ? "border-emerald-400/30 bg-emerald-500/10"
-                    : "border-rose-400/30 bg-rose-500/10"
+                    ? "border-emerald-400/30 bg-emerald-500/10 animate-correct-pulse"
+                    : "border-rose-400/30 bg-rose-500/10 animate-wrong-shake"
                 }`}
               >
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-white">

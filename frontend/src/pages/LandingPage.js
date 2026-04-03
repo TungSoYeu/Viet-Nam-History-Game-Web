@@ -19,10 +19,7 @@ export default function LandingPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    BACKGROUND_IMAGES.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
+    // Removed eager preloading to improve initial performance
 
     const intervalId = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % BACKGROUND_IMAGES.length);
@@ -38,19 +35,22 @@ export default function LandingPage() {
         
         {/* 1. Animated Background Carousel Layer */}
         <div className="absolute inset-0 z-0 bg-slate-900">
-          {BACKGROUND_IMAGES.map((imgUrl, idx) => (
-            <div
-              key={idx}
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat w-full h-full"
-              style={{
-                backgroundImage: `url('${imgUrl}')`,
-                opacity: idx === currentImageIndex ? 1 : 0,
-                transform: idx === currentImageIndex ? 'scale(1.05)' : 'scale(1)',
-                transition: 'opacity 1s ease-in-out, transform 5s linear',
-                filter: 'brightness(0.8) saturate(1.2)'
-              }}
-            />
-          ))}
+          {BACKGROUND_IMAGES.map((imgUrl, idx) => {
+            const isNear = Math.abs(idx - currentImageIndex) <= 1 || (idx === 0 && currentImageIndex === BACKGROUND_IMAGES.length - 1) || (currentImageIndex === 0 && idx === BACKGROUND_IMAGES.length - 1);
+            return (
+              <div
+                key={idx}
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat w-full h-full"
+                style={{
+                  backgroundImage: isNear ? `url('${imgUrl}')` : 'none',
+                  opacity: idx === currentImageIndex ? 1 : 0,
+                  transform: idx === currentImageIndex ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'opacity 1s ease-in-out, transform 5s linear',
+                  filter: 'brightness(0.8) saturate(1.2)'
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* 2. Unified Vignette / Dark Glass Overlay Layer */}

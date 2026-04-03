@@ -9,6 +9,7 @@ import {
   resetModeSessionId,
   saveXp,
 } from "../utils/gameHelpers";
+import SkeletonLoader from "../components/SkeletonLoader";
 
 const MODE_ID = "crossword-decoding";
 
@@ -31,6 +32,7 @@ export default function MillionaireMode() {
   const [finished, setFinished] = useState(false);
   const [xpSaved, setXpSaved] = useState(false);
   const startedAtRef = useRef(Date.now());
+  const [scorePop, setScorePop] = useState(false);
 
   const activeCrosswordSets =
     Array.isArray(remoteCrosswordSets) && remoteCrosswordSets.length > 0
@@ -135,6 +137,8 @@ export default function MillionaireMode() {
       setScore((prev) => prev + 10);
       setCorrectClues((prev) => prev + 1);
       setRevealedCount((prev) => Math.min(currentSet.keyword.length, prev + 1));
+      setScorePop(true);
+      setTimeout(() => setScorePop(false), 500);
     }
   };
 
@@ -147,7 +151,11 @@ export default function MillionaireMode() {
       ...(currentSet.acceptedAnswers || []),
     ]);
 
-    if (correct) setScore((prev) => prev + 20);
+    if (correct) {
+      setScore((prev) => prev + 20);
+      setScorePop(true);
+      setTimeout(() => setScorePop(false), 500);
+    }
     setKeywordResult({
       correct,
       answer: currentSet.acceptedAnswers?.[0] || currentSet.keyword,
@@ -182,8 +190,8 @@ export default function MillionaireMode() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
-        Đang tải phần từ khóa...
+      <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+        <SkeletonLoader variant="card" count={2} className="max-w-xl" />
       </div>
     );
   }
@@ -300,7 +308,7 @@ export default function MillionaireMode() {
               <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
                 Điểm
               </div>
-              <div className="text-lg font-black text-white">{score} XP</div>
+              <div className={`text-lg font-black text-white transition-all ${scorePop ? 'animate-score-pop' : ''}`}>{score} XP</div>
             </div>
           </div>
         </div>
