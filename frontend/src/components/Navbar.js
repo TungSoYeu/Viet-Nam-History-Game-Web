@@ -399,8 +399,8 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* BOTTOM NAV - Mobile Only */}
-      <nav className="md:hidden bottom-nav" aria-label="Điều hướng chính">
+      {/* BOTTOM NAV - Visible on all screen sizes */}
+      <nav className="bottom-nav" aria-label="Điều hướng chính">
         <Link to="/home" className={`bottom-nav-item ${location.pathname === '/home' ? 'active' : ''}`} aria-label="Trang chủ">
           <div className="icon-wrapper"><Map size={22} /></div>
           <span>Trang Chủ</span>
