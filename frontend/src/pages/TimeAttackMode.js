@@ -1,250 +1,417 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
-import Questions from '../components/Questions';
-import PeriodSelector from '../components/PeriodSelector';
-import API_BASE_URL from '../config/api';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Flame, ChevronRight, Clock3, Trophy, Bolt } from "lucide-react";
+import { lightningFastQuestions } from "../data/theme4GameData";
+import useTheme4ModeData from "../hooks/useTheme4ModeData";
+import {
+  logGameTelemetry,
+  resetModeSessionId,
+  saveXp,
+  shuffleArray,
+} from "../utils/gameHelpers";
+
+/** 60 giây theo mô tả + 10 giây nhịp “thêm” cho lớp vừa kịp 30 câu */
+const SESSION_TIME = 70;
+const TOTAL_QUESTIONS = 30;
+const STREAK_FLAME_SLOTS = 10;
+const MODE_ID = "lightning-fast";
 
 export default function TimeAttackMode() {
   const navigate = useNavigate();
-  const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const { data: remoteLightningQuestions, loading } = useTheme4ModeData(
+    MODE_ID,
+    lightningFastQuestions
+  );
+  const activeQuestionBank =
+    Array.isArray(remoteLightningQuestions) && remoteLightningQuestions.length > 0
+      ? remoteLightningQuestions
+      : lightningFastQuestions;
+  const targetQuestionCount = Math.min(TOTAL_QUESTIONS, activeQuestionBank.length);
+  const [timeLeft, setTimeLeft] = useState(SESSION_TIME);
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [combo, setCombo] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [xpSaved, setXpSaved] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
+  const startedAtRef = useRef(Date.now());
+
+  const currentQuestion = questions[currentIndex];
+
+  const buildQuestionSet = () =>
+    shuffleArray(activeQuestionBank).slice(0, targetQuestionCount);
 
   useEffect(() => {
-    if (!selectedPeriod) return;
+    if (loading || targetQuestionCount === 0) return;
 
-    setLoading(true);
-    const endpoint = selectedPeriod === 'all' 
-        ? '/api/questions/all' 
-        : `/api/questions/${selectedPeriod}`;
+    resetModeSessionId(MODE_ID);
+    startedAtRef.current = Date.now();
+    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: targetQuestionCount });
+    setQuestions(buildQuestionSet());
+    setCurrentIndex(0);
+    setTimeLeft(SESSION_TIME);
+    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
+    setFeedback(null);
+    setFinished(false);
+    setXpSaved(false);
+    setSessionReady(true);
+  }, [loading, targetQuestionCount, activeQuestionBank]);
 
-    fetch(`${API_BASE_URL}${endpoint}`)
-      .then(res => res.json())
-      .then(data => {
-        // Shuffle and take only 10 questions for Time Attack Mode
-        const sampledQuestions = data
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 10);
-        setQuestions(sampledQuestions);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Lỗi khi tải câu hỏi:", err);
-        setLoading(false);
-      });
-  }, [selectedPeriod]);
 
   useEffect(() => {
-    if (loading || isGameOver || timeLeft <= 0 || !selectedPeriod) return;
-    
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsGameOver(true);
-          return 0;
-        }
-        return prev - 1;
-      });
+    if (finished) return;
+
+    if (timeLeft <= 0) {
+      setFinished(true);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [loading, isGameOver, timeLeft, selectedPeriod]);
+    return () => window.clearInterval(timer);
+  }, [finished, timeLeft]);
 
-  // Save accumulated score as XP when game ends
+
   useEffect(() => {
-    if (!isGameOver || score <= 0) return;
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      fetch(`${API_BASE_URL}/api/user/add-xp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, xp: score })
-      }).catch(err => console.error("Error saving XP:", err));
+    if (finished && !xpSaved) {
+      logGameTelemetry(MODE_ID, "session_end", {
+        solved: true,
+        score,
+        bestStreak,
+        durationMs: Date.now() - startedAtRef.current,
+      });
+      saveXp(score);
+      setXpSaved(true);
     }
-  }, [isGameOver, score]);
+  }, [bestStreak, finished, score, xpSaved]);
 
-  const handleAnswer = (userAnswer) => {
-    const question = questions[currentIndex];
-    const userId = localStorage.getItem('userId');
+  const handleExit = async () => {
+    logGameTelemetry(MODE_ID, "session_end", {
+      solved: false,
+      score,
+      bestStreak,
+      durationMs: Date.now() - startedAtRef.current,
+    });
+    if (!finished && score > 0) await saveXp(score);
+    navigate("/modes");
+  };
 
-    fetch(`${API_BASE_URL}/api/submit-answer`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        questionId: question._id, 
-        userAnswer, 
-        userId, 
-        mode: 'timeAttack' 
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      setFeedback(data);
-      if (data.correct) {
-        setScore(prev => prev + 20 + (combo * 5));
-        setCombo(prev => prev + 1);
-        // Cộng thêm thời gian cho mỗi câu đúng (3s) + combo bonus
-        setTimeLeft(prev => Math.min(120, prev + 3 + Math.floor(combo / 2)));
-      } else {
-        setCombo(0);
-        // Trừ thời gian nếu sai (5s)
-        setTimeLeft(prev => Math.max(0, prev - 5));
-      }
+  const handleAnswer = (option) => {
+    if (!currentQuestion || feedback) return;
+    const correct = option === currentQuestion.correctAnswer;
+
+    logGameTelemetry(MODE_ID, "answer_submitted", {
+      correct,
+      index: currentIndex,
+      timeLeft,
+      streak: correct ? streak + 1 : 0,
+    });
+
+    if (correct) {
+      const bonus = 10 + streak * 2;
+      const nextStreak = streak + 1;
+      setScore((prev) => prev + bonus);
+      setStreak(nextStreak);
+      setBestStreak((prev) => Math.max(prev, nextStreak));
+      setFeedback({
+        correct: true,
+        answer: currentQuestion.correctAnswer,
+        explanation: currentQuestion.explanation,
+        message: "Chính xác.",
+        delta: bonus,
+        selectedOption: option,
+      });
+      
+      // Auto advance after correct answer in "Nhanh như chớp" to keep pace
+      setTimeout(nextQuestion, 600);
+      return;
+    }
+
+    setStreak(0);
+    setFeedback({
+      correct: false,
+      answer: currentQuestion.correctAnswer,
+      explanation: currentQuestion.explanation,
+        message: "Chưa đúng.",
+      delta: 0,
+      selectedOption: option,
     });
   };
 
   const nextQuestion = () => {
-    setFeedback(null);
-    if (currentIndex + 1 < questions.length) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      setIsGameOver(true);
+    if (currentIndex === questions.length - 1) {
+      setFinished(true);
+      return;
     }
+
+    setCurrentIndex((prev) => prev + 1);
+    setFeedback(null);
   };
 
-  if (!selectedPeriod) {
-    return (
-      <PeriodSelector 
-        title="Thử Thách Nén Nhang"
-        description="Hãy chọn thời kỳ bạn am hiểu nhất để chạy đua với thời gian!"
-        onSelect={(id) => setSelectedPeriod(id)}
-        onBack={() => navigate('/modes')}
-      />
-    );
-  }
+  const restartMode = () => {
+    logGameTelemetry(MODE_ID, "session_end", {
+      solved: false,
+      score,
+      bestStreak,
+      durationMs: Date.now() - startedAtRef.current,
+      reason: "restart",
+    });
+    resetModeSessionId(MODE_ID);
+    startedAtRef.current = Date.now();
+    logGameTelemetry(MODE_ID, "session_start", {
+      totalQuestions: targetQuestionCount,
+      replay: true,
+    });
+    setQuestions(buildQuestionSet());
+    setCurrentIndex(0);
+    setTimeLeft(SESSION_TIME);
+    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
+    setFeedback(null);
+    setFinished(false);
+    setXpSaved(false);
+    setSessionReady(true);
+  };
 
-  if (loading) return <div className="p-8 text-center text-blue-900 font-bold">Đang mồi lửa nén nhang...</div>;
-
-  if (questions.length === 0) {
+  if (loading || (targetQuestionCount > 0 && !sessionReady)) {
     return (
-      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
-        <p className="text-red-800 mb-4 font-bold">Chưa có dữ liệu câu hỏi cho thử thách này!</p>
-        <button onClick={() => navigate('/modes')} className="btn-historical">Quay lại Sa Bàn</button>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Đang tải bộ câu hỏi nhanh...
       </div>
     );
   }
 
-  if (isGameOver || timeLeft <= 0) {
+  if (!currentQuestion && !finished) {
     return (
-      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-4xl font-bold text-red-700 mb-4">NHANG ĐÃ TÀN!</h2>
-        <p className="text-2xl mb-2 font-bold">Điểm số đạt được: {score}</p>
-        <p className="text-lg mb-8 italic">Vận tốc lật mở sử sách thật đáng nể!</p>
-        <button onClick={() => navigate('/modes')} className="btn-historical">Quay lại Sa Bàn</button>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+        Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
   }
 
-  const currentQuestion = questions[currentIndex];
-  // Tính % chiều dài nén nhang (60s mặc định ban đầu là 100%)
-  const incenseHeight = (timeLeft / 60) * 100;
+  if (finished) {
+    return (
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top,#451a03_0%,#020617_68%)] px-4 py-8 text-white flex items-center justify-center">
+        <div className="w-full max-w-3xl rounded-[32px] border border-amber-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
+            <Trophy size={40} />
+          </div>
+          <h1 className="mt-5 text-3xl sm:text-4xl font-black uppercase tracking-[0.18em] text-amber-300">
+            Nhanh Như Chớp
+          </h1>
+          <p className="mt-4 text-slate-300">
+            Bạn đã hoàn thành tối đa {targetQuestionCount} câu nhận biết trong nhịp thời gian nhanh của chế độ này, với chuỗi lửa theo số câu đúng liên tiếp.
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-5">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                Tổng Điểm
+              </div>
+              <div className="mt-2 text-3xl font-black text-amber-300">{score}</div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-5">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                Số Câu
+              </div>
+              <div className="mt-2 text-3xl font-black text-white">
+                {questions.length}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-5">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                Chuỗi Tốt Nhất
+              </div>
+              <div className="mt-2 text-3xl font-black text-white">{bestStreak}</div>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={restartMode}
+              className="flex-1 rounded-2xl bg-amber-500 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-400"
+            >
+              Chơi Lại
+            </button>
+            <button
+              onClick={() => navigate("/modes")}
+              className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black text-white transition hover:bg-slate-700"
+            >
+              Về Chủ Đề 4
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 md:p-6 min-h-screen bg-slate-900 text-white relative overflow-hidden flex items-center justify-center">
-      {/* Live Wallpaper / Background Effect */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,165,0,0.1)_0%,transparent_70%)] animate-pulse"></div>
-        {[...Array(20)].map((_, i) => (
-          <div 
-            key={i}
-            className="absolute rounded-full bg-amber-500/20 blur-xl animate-float"
-            style={{
-              width: `${Math.random() * 200 + 50}px`,
-              height: `${Math.random() * 200 + 50}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${Math.random() * 10 + 10}s`
-            }}
-          ></div>
-        ))}
-        {/* Time Warp Lines */}
-        <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-[150%] h-[150%] border-[40px] border-amber-600/5 rounded-full animate-spin-slow opacity-30"></div>
-            <div className="w-[120%] h-[120%] border-[20px] border-orange-600/5 rounded-full animate-reverse-spin opacity-20"></div>
-        </div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-5xl flex flex-col md:flex-row gap-6 md:gap-12 items-center justify-center">
-        {/* Cột trái: Nén nhang (Incense burning) */}
-        <div className="w-full md:w-32 flex flex-row md:flex-col items-center justify-center gap-4 bg-slate-800/50 p-6 rounded-3xl border-2 border-slate-700 shadow-2xl backdrop-blur-sm">
-          <div className="text-xs md:text-sm font-black text-amber-500 uppercase md:vertical-text tracking-widest text-center">Nén Nhang Thời Gian</div>
-          <div className="w-48 md:w-8 h-8 md:h-96 bg-slate-700 rounded-full overflow-hidden flex flex-row md:flex-col justify-end border-2 border-amber-900/50 p-0.5 relative shadow-inner">
-            <div 
-              className="h-full md:w-full bg-gradient-to-r md:bg-gradient-to-t from-red-600 via-orange-500 to-yellow-400 rounded-full transition-all duration-1000 relative shadow-[0_0_15px_rgba(239,68,68,0.5)]"
-              style={{ 
-                width: window.innerWidth < 768 ? `${Math.min(100, incenseHeight)}%` : '100%',
-                height: window.innerWidth >= 768 ? `${Math.min(100, incenseHeight)}%` : '100%' 
-              }}
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-6 text-white sm:px-6">
+      <div className="mx-auto flex max-w-5xl flex-col gap-6">
+        <div className="grid gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
+          <div className="flex justify-center md:justify-start">
+            <button
+              onClick={handleExit}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-bold text-slate-200 transition hover:bg-white/5"
             >
-              {/* Đốm lửa đang cháy */}
-              <div className="absolute top-0 right-0 md:top-0 md:left-0 w-2 md:w-full h-full md:h-2 bg-white animate-pulse shadow-[0_0_20px_rgba(255,255,255,1)] z-10"></div>
+              <ArrowLeft size={18} />
+              Thoát Với {score} XP
+            </button>
+          </div>
+
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-amber-300">
+              <Bolt size={16} />
+              Nhanh Như Chớp
+            </div>
+            <h1 className="mt-3 text-2xl sm:text-3xl font-black uppercase tracking-[0.18em] text-white">
+              Hỏi Nhanh, Đáp Nhanh
+            </h1>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 md:justify-end">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-3 text-center">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                Tiến Độ
+              </div>
+              <div className="text-lg font-black text-white">
+                {currentIndex + 1}/{questions.length}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-center">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80">
+                Điểm
+              </div>
+              <div className="text-lg font-black text-amber-300">{score}</div>
             </div>
           </div>
-          <div className="text-3xl md:text-4xl font-black text-red-500 tabular-nums drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">{timeLeft}s</div>
         </div>
 
-        {/* Cột phải: Game Play */}
-        <div className="flex-1 w-full flex flex-col gap-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <button onClick={() => navigate('/modes')} className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl font-bold flex items-center gap-2 transition-all border-2 border-slate-700 active:scale-95 shadow-lg">
-              <ArrowLeft size={20} /> Thoát (Lấy {score} XP)
-            </button>
-            <div className="flex gap-4 w-full sm:w-auto">
-              <div className="flex-1 sm:flex-none bg-orange-600/20 px-6 py-3 rounded-2xl border-2 border-orange-500/50 backdrop-blur-sm">
-                 <span className="text-xs text-orange-400 font-black uppercase tracking-widest block mb-1">Combo Thần Tốc</span>
-                 <span className="text-2xl font-black text-orange-500 ml-1">{combo}x</span>
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+            <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
+              Đồng Hồ Thời Gian
+            </div>
+
+            <div className="mt-6 flex flex-col items-center">
+              <div className="relative flex h-44 w-44 items-center justify-center rounded-full border-[10px] border-amber-400/20 bg-slate-950">
+                <div className="absolute inset-4 rounded-full border border-white/10" />
+                <div className="text-center">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
+                    <Clock3 size={20} />
+                  </div>
+                  <div className="text-5xl font-black text-amber-300">{timeLeft}</div>
+                  <div className="mt-1 text-xs font-black uppercase tracking-[0.24em] text-slate-400">
+                    Giây
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 sm:flex-none bg-amber-600/20 px-6 py-3 rounded-2xl border-2 border-amber-500/50 backdrop-blur-sm">
-                 <span className="text-xs text-amber-400 font-black uppercase tracking-widest block mb-1">Điểm Tích Lũy</span>
-                 <span className="text-2xl font-black text-amber-500 ml-1">{score} XP</span>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
+                <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                  Chuỗi lửa
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  {Array.from({ length: STREAK_FLAME_SLOTS }, (_, i) => (
+                    <Flame
+                      key={i}
+                      size={22}
+                      className={
+                        i < streak
+                          ? "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.9)]"
+                          : "text-slate-700 opacity-40"
+                      }
+                      strokeWidth={i < streak ? 2 : 1}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 text-2xl font-black text-white tabular-nums">{streak} liên tiếp</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-800/80 backdrop-blur-md rounded-3xl p-8 md:p-12 border-4 border-amber-600/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center relative overflow-hidden group">
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-amber-500/5 rounded-full group-hover:scale-150 transition-transform duration-1000"></div>
-            
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-12 leading-relaxed italic z-10 px-4 drop-shadow-lg">
-              "{currentQuestion.content}"
-            </h2>
-            
-            <div className="w-full z-10">
-              <Questions question={currentQuestion} onAnswer={handleAnswer} feedback={feedback} />
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+            <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
+              Câu {currentIndex + 1}
             </div>
 
-            {feedback && (
-              <div className={`mt-10 p-8 rounded-2xl w-full border-4 animate-bounce-in z-20 backdrop-blur-xl ${feedback.correct ? 'bg-green-600/20 border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.2)]' : 'bg-red-600/20 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.2)]'}`}>
-                <p className="font-black text-3xl mb-3 uppercase tracking-wider">{feedback.message}</p>
-                {feedback.correct ? (
-                  <div className="flex flex-col items-center">
-                    <p className="text-green-400 font-black text-xl mb-4 flex items-center gap-2">
-                       <span className="animate-ping">🔥</span> +3 GIÂY LINH NGHIỆM!
-                    </p>
-                    {feedback.explanation && (
-                      <p className="text-slate-300 italic mb-6 leading-relaxed max-w-2xl">
-                        "Sử ký chép rằng: {feedback.explanation}"
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-red-400 font-black text-xl mb-6 flex items-center gap-2">
-                    <span className="animate-shake">⚠️</span> -5 GIÂY TÀN NHANG!
-                  </p>
-                )}
-                <button onClick={nextQuestion} className="px-16 py-4 bg-amber-600 text-white rounded-xl font-black text-xl hover:bg-amber-500 transition-all shadow-[0_10px_20px_rgba(217,119,6,0.3)] flex items-center gap-3 mx-auto justify-center active:scale-95 group">
-                  TIẾP THEO <ChevronRight size={24} className="group-hover:translate-x-2 transition-transform" />
-                </button>
+            <div className="mt-5 rounded-[28px] border border-amber-400/10 bg-slate-950/70 p-6">
+              <h2 className="text-2xl font-bold leading-relaxed text-white">
+                {currentQuestion.content}
+              </h2>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {currentQuestion.options.map((option, index) => {
+                  const isCorrect = option === currentQuestion.correctAnswer;
+                  const isChosen = feedback?.selectedOption === option;
+
+                  return (
+                    <button
+                      key={option}
+                      onClick={() => handleAnswer(option)}
+                      disabled={Boolean(feedback)}
+                      className={`rounded-2xl border p-4 text-left transition ${
+                        feedback
+                          ? isCorrect
+                            ? "border-emerald-400/30 bg-emerald-500/15 text-emerald-100"
+                            : isChosen
+                              ? "border-rose-400/30 bg-rose-500/15 text-rose-100"
+                              : "border-white/10 bg-slate-800 text-slate-400"
+                          : "border-white/10 bg-slate-800 text-white hover:border-amber-400/30 hover:bg-slate-700"
+                      }`}
+                    >
+                      <div className="text-xs font-black uppercase tracking-[0.24em] text-amber-300/80">
+                        Đáp án {String.fromCharCode(65 + index)}
+                      </div>
+                      <div className="mt-2 text-lg font-semibold">{option}</div>
+                    </button>
+                  );
+                })}
               </div>
-            )}
+
+              {feedback && (
+                <div
+                  className={`mt-5 rounded-2xl border px-5 py-4 ${
+                    feedback.correct
+                      ? "border-emerald-400/30 bg-emerald-500/10"
+                      : "border-rose-400/30 bg-rose-500/10"
+                  }`}
+                >
+                  <div className="text-lg font-black text-white">{feedback.message}</div>
+                  <div className="mt-2 text-sm text-slate-300">
+                    Đáp án đúng:{" "}
+                    <span className="font-bold text-amber-300">
+                      {feedback.answer}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-sm text-slate-300">
+                    {feedback.explanation}
+                  </div>
+                  {feedback.correct && (
+                    <div className="mt-3 text-sm font-bold text-emerald-300">
+                      +{feedback.delta} XP
+                    </div>
+                  )}
+                  <button
+                    onClick={nextQuestion}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-slate-900 transition hover:bg-amber-300"
+                  >
+                    {currentIndex === questions.length - 1 ? "Kết Thúc Chế Độ" : "Tiếp Theo"}
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

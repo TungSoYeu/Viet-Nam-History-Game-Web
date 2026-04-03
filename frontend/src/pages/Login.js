@@ -99,7 +99,7 @@ export default function Login() {
         localStorage.setItem('username', data.username);
         localStorage.setItem('role', data.role);
         if (data.token) localStorage.setItem('token', data.token);
-        navigate(data.role === 'admin' ? '/admin' : '/modes');
+        navigate(data.role === 'admin' ? '/admin' : '/home');
       }
     })
     .catch(err => alert("Lỗi: " + err.message))
@@ -119,14 +119,14 @@ export default function Login() {
       localStorage.setItem('username', data.username);
       localStorage.setItem('role', data.role);
       if (data.token) localStorage.setItem('token', data.token);
-      navigate(data.role === 'admin' ? '/admin' : '/modes');
+      navigate(data.role === 'admin' ? '/admin' : '/home');
     })
     .catch(err => alert("Lỗi đăng nhập Google: " + err.message))
     .finally(() => setLoading(false));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       {/* Decorative orbs */}
       <div className="absolute top-[-20%] right-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(212,160,83,0.4) 0%, transparent 70%)' }}></div>
       <div className="absolute bottom-[-20%] left-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(185,28,28,0.4) 0%, transparent 70%)' }}></div>
@@ -136,7 +136,7 @@ export default function Login() {
         <div className="text-center mb-6">
           <span className="text-5xl">🏯</span>
           <h1 className="text-2xl sm:text-3xl font-black mt-3" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {isRegister ? "Ghi Danh Sử Sách" : "Hành Trình Lịch Sử"}
+            {isRegister ? "Ghi Danh Sử Sách" : "Danh Nhân Đất Việt"}
           </h1>
           <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
             {isRegister ? "Tạo tài khoản mới" : "Đăng nhập để tiếp tục"}
@@ -159,7 +159,7 @@ export default function Login() {
               <>
                 <input type="email" placeholder="Địa chỉ Email (Không bắt buộc)" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} />
                 <input type="text" placeholder="Họ và tên" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} required />
-                <input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }} required />
+                <input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white', colorScheme: 'dark' }} required />
                 <div className="space-y-2">
                   <select onChange={handleProvinceChange} required className="w-full px-4 py-3 rounded-xl text-sm outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.1)', color: 'white' }}>
                     <option value="" style={{ color: 'black' }}>-- Tỉnh/Thành phố --</option>

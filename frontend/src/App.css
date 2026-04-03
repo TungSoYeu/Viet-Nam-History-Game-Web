@@ -4,50 +4,14 @@
    1. DESIGN TOKENS
    ============================ */
 :root {
-  /* Primary Palette - Vietnamese Heritage */
   --viet-red: #b91c1c;
   --viet-red-dark: #7f1d1d;
   --viet-red-glow: rgba(185, 28, 28, 0.3);
   --viet-gold: #d4a053;
   --viet-gold-light: #f0d48a;
   --viet-gold-glow: rgba(212, 160, 83, 0.3);
-  --viet-bronze: #78350f;
-
-  /* Background System */
-  --bg-cream: #fdf8ef;
-  --bg-warm: #f9f1e1;
-  --bg-dark: #1a1a2e;
-  --bg-dark-card: #16213e;
-  --bg-dark-surface: #0f3460;
-
-  /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.3);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-
-  /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #b91c1c 0%, #d4a053 100%);
-  --gradient-gold: linear-gradient(135deg, #d4a053 0%, #f0d48a 50%, #d4a053 100%);
-  --gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  --gradient-warm: linear-gradient(180deg, #fdf8ef 0%, #f9f1e1 100%);
-
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
-  --shadow-glow-red: 0 0 30px rgba(185, 28, 28, 0.2);
-  --shadow-glow-gold: 0 0 30px rgba(212, 160, 83, 0.25);
-
-  /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* App */
-  --app-height: 100dvh;
+  --bg-dark-obsidian: #0a0a0f; /* Nền tối sâu đồng nhất */
+  --bg-card-slate: rgba(30, 41, 59, 0.8); /* Card tối hơn để nổi bật */
   --nav-height: 72px;
 }
 
@@ -57,725 +21,200 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: var(--app-height);
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
   font-family: 'Be Vietnam Pro', sans-serif;
-  background-color: var(--bg-cream);
-  overscroll-behavior-y: contain;
+  background-color: var(--bg-dark-obsidian) !important;
+  color: #f8fafc;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  touch-action: manipulation;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-input, textarea, select {
-  user-select: text !important;
-  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 #root, .App {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.font-serif {
-  font-family: 'Playfair Display', serif !important;
+  background-color: var(--bg-dark-obsidian);
 }
 
 /* ============================
-   3. LAYOUT
+   3. LAYOUT & SCROLLING
    ============================ */
 .app-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(var(--nav-height) + 16px);
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 20px);
   scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-dark-obsidian);
 }
 
-.app-content::-webkit-scrollbar { display: none; }
-.app-content { scrollbar-width: none; -ms-overflow-style: none; }
-
-@media (min-width: 768px) {
-  .app-content { padding-bottom: 0; }
-}
-
-.responsive-container {
+.app-content > div {
+  flex: 1 0 auto;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
 }
 
-@media (min-width: 768px) {
-  .responsive-container { padding: 0 24px; }
+.app-content::-webkit-scrollbar { width: 5px; }
+.app-content::-webkit-scrollbar-thumb {
+  background: rgba(212, 160, 83, 0.3);
+  border-radius: 10px;
 }
 
 /* ============================
-   4. BACKGROUNDS
+   19. STUDY PAGE & TIMELINE (UNIFIED DARK)
    ============================ */
-.history-bg {
-  min-height: 100vh;
-  background: var(--gradient-warm);
-  position: relative;
+body:has(.study-page), body:has(.timeline-page),
+.study-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
 }
 
-.history-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 20% 20%, var(--viet-gold-glow) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, var(--viet-red-glow) 0%, transparent 50%);
-  pointer-events: none;
-  opacity: 0.4;
+.study-page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.game-bg {
-  min-height: 100vh;
-  background: var(--gradient-dark);
-  position: relative;
+.study-page .study-header {
+  padding: 1.5rem 1.5rem 1rem;
 }
 
-.game-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 30% 10%, rgba(185, 28, 28, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 70% 90%, rgba(212, 160, 83, 0.08) 0%, transparent 40%);
-  pointer-events: none;
+.study-page .study-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  background: linear-gradient(135deg, #f0d48a, #d4a053);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.study-page .study-content {
+  flex: 1;
+  border-radius: 1.5rem;
+  background: rgba(15, 23, 42, 0.7); /* Card nội dung đậm hơn */
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0 1.5rem 2rem;
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.wiki-content p {
+  color: #cbd5e1;
+  line-height: 1.8;
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+  text-align: justify;
 }
 
 /* ============================
-   5. TYPOGRAPHY
+   OTHER COMPONENTS
    ============================ */
 .historical-title {
   font-family: 'Playfair Display', serif;
   font-weight: 900;
-  background: var(--gradient-hero);
+  background: linear-gradient(135deg, #f0d48a, #d4a053);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: clamp(1.6rem, 5vw, 3rem);
   text-align: center;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
 }
 
-.section-title {
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  color: var(--viet-red-dark);
-  letter-spacing: -0.01em;
-}
-
-/* ============================
-   6. GLASS CARDS
-   ============================ */
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--glass-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-.glass-card:active {
-  transform: translateY(0px) scale(0.98);
-}
-
-.historical-card {
-  background: white;
-  border: 1px solid rgba(212, 160, 83, 0.25);
-  box-shadow: var(--shadow-md);
-  padding: clamp(16px, 3vw, 24px);
-  border-radius: var(--radius-lg);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.historical-card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-4px);
-}
-
-/* Dark Card (for game screens) */
-.dark-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-}
-
-/* ============================
-   7. BUTTONS
-   ============================ */
 .btn-primary {
-  background: var(--gradient-hero);
+  background: linear-gradient(135deg, var(--viet-red) 0%, #7f1d1d 100%);
   color: white;
+  padding: 12px 28px;
+  border-radius: 9999px;
   font-weight: 700;
-  padding: 14px 28px;
   border: none;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-  box-shadow: 0 4px 16px var(--viet-red-glow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(185, 28, 28, 0.4);
 }
 
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
-}
-
-.btn-primary:hover::after {
-  transform: translateX(100%);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--viet-red-glow);
-}
-
-.btn-primary:active {
-  transform: translateY(0) scale(0.97);
-}
-
-.btn-historical {
-  background: var(--viet-red);
-  color: #fff;
-  font-weight: 700;
-  padding: 14px 28px;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.25s;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  letter-spacing: 0.02em;
-  box-shadow: 0 4px 12px var(--viet-red-glow);
-}
-
-.btn-historical:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--viet-red-glow);
-}
-
-.btn-historical:active {
-  transform: translateY(0) scale(0.97);
-}
-
-.btn-gold {
-  background: var(--gradient-gold);
-  color: var(--viet-bronze);
-  font-weight: 700;
-  padding: 14px 28px;
-  border: none;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  box-shadow: 0 4px 16px var(--viet-gold-glow);
-  transition: all 0.3s;
-}
-
-.btn-gold:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--viet-gold-glow);
-}
-
-/* Game Answer Button */
 .answer-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 16px 20px;
   color: white;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
   width: 100%;
+  text-align: left;
+  transition: all 0.2s;
 }
 
 .answer-btn:hover {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateX(4px);
+  border-color: var(--viet-gold);
 }
 
-.answer-btn:active {
-  transform: scale(0.98);
-}
-
-.answer-btn.correct {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: rgba(34, 197, 94, 0.5);
-  color: #86efac;
-}
-
-.answer-btn.wrong {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.5);
-  color: #fca5a5;
-}
-
-/* ============================
-   8. BOTTOM NAVIGATION
-   ============================ */
 .bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   height: var(--nav-height);
-  background: rgba(15, 23, 42, 0.85); /* Dark blue/slate glass */
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
   z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.bottom-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 10px;
-  font-weight: 700;
-  flex: 1;
-  text-decoration: none;
-  transition: all 0.3s;
-  padding: 8px 0;
-  gap: 4px;
-  position: relative;
-}
-
-.bottom-nav-item.active {
-  color: var(--viet-gold-light);
-}
-
-.bottom-nav-item .icon-wrapper {
-  padding: 8px;
-  border-radius: var(--radius-md);
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bottom-nav-item.active .icon-wrapper {
-  background: linear-gradient(135deg, rgba(212, 160, 83, 0.15), rgba(240, 212, 138, 0.15));
-  color: var(--viet-gold-light);
-  box-shadow: 0 4px 12px rgba(212, 160, 83, 0.2);
-}
-
-/* Active indicator dot */
-.bottom-nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--viet-red);
 }
 
 /* ============================
-   9. FORM INPUTS
+   ANIMATIONS
    ============================ */
-.input-field {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1.5px solid rgba(0, 0, 0, 0.1);
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
-  font-weight: 400;
-  color: #1f2937;
-  transition: all 0.25s;
-  outline: none;
-  font-family: 'Be Vietnam Pro', sans-serif;
-}
-
-.input-field:focus {
-  border-color: var(--viet-gold);
-  box-shadow: 0 0 0 3px var(--viet-gold-glow);
-  background: white;
-}
-
-.input-field::placeholder {
-  color: #9ca3af;
-  font-weight: 400;
-}
-
-.input-label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--viet-red-dark);
-  margin-bottom: 6px;
-  letter-spacing: 0.02em;
-}
-
-/* ============================
-   10. LESSON & MODE CARDS
-   ============================ */
-.lesson-card {
-  background: white;
-  border: 1px solid rgba(212, 160, 83, 0.2);
-  border-radius: var(--radius-lg);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.lesson-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
-  border-color: var(--viet-gold);
-}
-
-.lesson-card:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.mode-card {
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: var(--radius-xl);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
-}
-
-.mode-card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-6px);
-}
-
-.mode-card:active {
-  transform: translateY(0) scale(0.97);
-}
-
-.mode-card .mode-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  opacity: 0.1;
-  transition: opacity 0.3s;
-}
-
-.mode-card:hover .mode-gradient {
-  opacity: 0.18;
-}
-
-/* ============================
-   11. PROGRESS BARS
-   ============================ */
-.progress-bar {
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  background: var(--gradient-hero);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.progress-bar-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 30px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
-  animation: shimmer 2s infinite;
-}
-
-/* ============================
-   12. ANIMATIONS
-   ============================ */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
-
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(24px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-24px); }
-  to { opacity: 1; transform: translateX(0); }
+.animate-fade-in-scale {
+  animation: fadeInScale 0.4s ease-out forwards;
 }
 
 @keyframes bounceIn {
   0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.05); }
-  70% { transform: scale(0.95); }
+  50% { transform: scale(1.05); opacity: 1; }
+  70% { transform: scale(0.9); }
   100% { transform: scale(1); opacity: 1; }
 }
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--viet-red-glow); }
-  50% { box-shadow: 0 0 20px 4px var(--viet-red-glow); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.animate-bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
 }
-
-@keyframes confetti-pop {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.animate-fade-in { animation: fadeIn 0.5s ease forwards; }
-.animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
-.animate-fade-in-scale { animation: fadeInScale 0.4s ease forwards; }
-.animate-slide-right { animation: slideInRight 0.5s ease forwards; }
-.animate-slide-left { animation: slideInLeft 0.5s ease forwards; }
-.animate-bounce-in { animation: bounceIn 0.5s ease forwards; }
-.animate-float { animation: float 4s ease-in-out infinite; }
-.animate-spin-slow { animation: spin-slow 20s linear infinite; }
-.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-.animate-shake { animation: shake 0.5s ease forwards; }
-.animate-confetti { animation: confetti-pop 0.5s ease forwards; }
-
-/* Staggered children animation */
-.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
-.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
-.stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
-
-/* ============================
-   13. SCROLLBAR STYLES
-   ============================ */
-.custom-scrollbar::-webkit-scrollbar { width: 4px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--viet-gold);
-  border-radius: var(--radius-full);
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--viet-red);
-}
-
-/* ============================
-   14. FLASHCARD STYLES
-   ============================ */
-.perspective-1000 { perspective: 1000px; }
-.transform-style-3d {
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-.rotate-y-180 { transform: rotateY(180deg); }
-.flashcard-container.flipped .transform-style-3d { transform: rotateY(180deg); }
-
-.flashcard-front, .flashcard-back {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-lg);
-}
-
-.flashcard-front {
-  background: white;
-  border: 1.5px solid rgba(212, 160, 83, 0.3);
-  color: var(--viet-red);
-  z-index: 2;
-  box-shadow: var(--shadow-md);
-}
-
-.flashcard-back {
-  background: var(--gradient-hero);
-  color: white;
-  transform: rotateY(180deg);
-  z-index: 1;
-  box-shadow: var(--shadow-lg);
-}
-
-.flashcard-container { cursor: pointer; user-select: none; }
-
-.back-answer {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.fun-fact-box {
-  background: rgba(255,255,255,0.08);
-  padding: 1rem;
-  border-radius: var(--radius-md);
-  border-left: 3px solid var(--viet-gold);
-  margin-top: 1rem;
-}
-
-/* ============================
-   15. GAME-SPECIFIC STYLES
-   ============================ */
-/* Score badge */
-.score-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-.score-badge.gold {
-  background: linear-gradient(135deg, rgba(212, 160, 83, 0.15), rgba(240, 212, 138, 0.15));
-  color: var(--viet-gold);
-  border: 1px solid rgba(212, 160, 83, 0.2);
-}
-
-.score-badge.red {
-  background: linear-gradient(135deg, rgba(185, 28, 28, 0.1), rgba(239, 68, 68, 0.1));
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.15);
-}
-
-/* Timer ring */
-.timer-ring {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Victory / Defeat overlays */
-.result-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  animation: fadeIn 0.3s ease;
-}
-
-.result-overlay.victory {
-  background: radial-gradient(circle, rgba(212, 160, 83, 0.15) 0%, rgba(26, 26, 46, 0.95) 70%);
-}
-
-.result-overlay.defeat {
-  background: radial-gradient(circle, rgba(185, 28, 28, 0.1) 0%, rgba(26, 26, 46, 0.95) 70%);
-}
-
-/* ============================
-   16. UTILITIES
-   ============================ */
-.text-gradient {
-  background: var(--gradient-hero);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.border-gradient {
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  background-origin: padding-box;
-}
-
-.no-tap-highlight {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Skeleton loading */
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: var(--radius-md);
-}
-
-/* Safe area padding for iOS */
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.safe-area-top {
-  padding-top: env(safe-area-inset-top, 0);
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }

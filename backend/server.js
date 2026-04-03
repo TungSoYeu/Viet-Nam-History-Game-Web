@@ -9,20 +9,74 @@ if (!process.env.VERCEL) {
     dotenv.config({ override: true });
 }
 
-// Connect to database
-connectDB();
-
+// Connect to database is now handled by middleware
 const app = express();
 
+const parseAllowedOrigins = () => {
+    const configuredOrigins = [
+        process.env.CLIENT_URL,
+        process.env.CLIENT_URLS,
+        process.env.CORS_ORIGINS,
+    ]
+        .filter(Boolean)
+        .flatMap((value) => value.split(','))
+        .map((origin) => origin.trim())
+        .filter(Boolean);
+
+    const localOrigins = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:4173',
+        'http://127.0.0.1:4173',
+    ];
+
+    const productionOrigins = [
+        'https://project-game-nckh.onrender.com',
+    ];
+
+    return Array.from(
+        new Set([
+            ...(process.env.NODE_ENV === 'production' ? productionOrigins : []),
+            ...localOrigins,
+            ...configuredOrigins,
+        ])
+    );
+};
+
 // CORS Configuration
+const allowedOrigins = parseAllowedOrigins();
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production'
-        ? [process.env.CLIENT_URL, 'https://project-game-nckh.onrender.com'].filter(Boolean)
-        : ['http://localhost:3000'],
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true
 };
 app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
+
+// Middleware: Yêu cầu kết nối DB trước khi xử lý request (Rất quan trọng cho Vercel Serverless)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error("Lỗi kết nối CSDL trong middleware:", err.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Lỗi Server Internal: Không thể kết nối đến Cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình MONGO_URI trên Vercel và Whitelist IP trên MongoDB Atlas.",
+            error: err.message
+        });
+    }
+});
 
 // Serve uploaded files (only for local development, not needed on Vercel)
 if (!process.env.VERCEL) {

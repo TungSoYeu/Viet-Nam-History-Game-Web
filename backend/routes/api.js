@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const gameController = require('../controller/gameController');
+const theme4Controller = require('../controllers/theme4Controller');
 const { put } = require('@vercel/blob');
 const fs = require('fs');
 const path = require('path');
@@ -14,6 +15,8 @@ const Matching = require('../models/Matching');
 const Chronological = require('../models/Chronological');
 const GuessCharacter = require('../models/GuessCharacter');
 const RevealPicture = require('../models/RevealPicture');
+const TelemetryEvent = require('../models/TelemetryEvent');
+const { getTheme4Content } = require('../services/theme4ContentService');
 const { isAdmin } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
@@ -234,6 +237,33 @@ router.post('/user/link-google', async (req, res) => {
 // Diagnostic route
 router.get('/ping', (req, res) => res.json({ message: "API is working", time: new Date() }));
 
+// Theme 4 public content routes
+router.get('/theme4/content', theme4Controller.getTheme4Content);
+router.get('/theme4/modes', theme4Controller.getTheme4Modes);
+router.get('/theme4/modes/:modeId', theme4Controller.getTheme4Mode);
+
+// Telemetry public route
+router.post('/telemetry/events', async (req, res) => {
+    try {
+        const { userId, modeId, eventType, sessionId = '', payload = {} } = req.body || {};
+        if (!modeId || !eventType) {
+            return res.status(400).json({ success: false, message: 'modeId và eventType là bắt buộc.' });
+        }
+
+        const doc = await TelemetryEvent.create({
+            userId: userId || null,
+            modeId: String(modeId).trim(),
+            eventType: String(eventType).trim(),
+            sessionId: String(sessionId || '').trim(),
+            payload: payload && typeof payload === 'object' ? payload : {},
+        });
+
+        return res.json({ success: true, id: doc._id });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // Đường dẫn cập nhật Avatar
 router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) => {
     const userId = req.body.userId;
@@ -318,6 +348,99 @@ router.patch('/user/update-info', async (req, res) => {
 });
 
 // --- ADMIN ROUTES (Được bảo vệ bởi Middleware kiểm tra quyền) ---
+router.get('/admin/theme4/content', isAdmin, theme4Controller.getTheme4Content);
+router.put('/admin/theme4/content', isAdmin, theme4Controller.replaceTheme4Content);
+router.post('/admin/theme4/sync-default', isAdmin, theme4Controller.syncTheme4Defaults);
+router.get('/admin/theme4/modes/:modeId/items', isAdmin, theme4Controller.getTheme4ModeItems);
+router.post('/admin/theme4/modes/:modeId/items', isAdmin, theme4Controller.createTheme4ModeItem);
+router.put('/admin/theme4/modes/:modeId/items/:itemId', isAdmin, theme4Controller.updateTheme4ModeItem);
+router.delete('/admin/theme4/modes/:modeId/items/:itemId', isAdmin, theme4Controller.deleteTheme4ModeItem);
+router.post('/admin/theme4/uploads/image', isAdmin, upload.single('image'), theme4Controller.uploadTheme4Image);
+
+router.get('/admin/telemetry/summary', isAdmin, async (req, res) => {
+    try {
+        const days = Math.max(1, Number(req.query.days) || 7);
+        const modeId = req.query.modeId ? String(req.query.modeId).trim() : '';
+        const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+        const match = { createdAt: { $gte: startDate } };
+        if (modeId) match.modeId = modeId;
+
+        const [eventCounts, answerAccuracy, sessionDurations] = await Promise.all([
+            TelemetryEvent.aggregate([
+                { $match: match },
+                {
+                    $group: {
+                        _id: { modeId: '$modeId', eventType: '$eventType' },
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { '_id.modeId': 1, '_id.eventType': 1 } },
+            ]),
+            TelemetryEvent.aggregate([
+                { $match: { ...match, eventType: 'answer_submitted' } },
+                {
+                    $group: {
+                        _id: '$modeId',
+                        total: { $sum: 1 },
+                        correct: {
+                            $sum: {
+                                $cond: [{ $eq: ['$payload.correct', true] }, 1, 0],
+                            },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        modeId: '$_id',
+                        total: 1,
+                        correct: 1,
+                        accuracy: {
+                            $cond: [
+                                { $eq: ['$total', 0] },
+                                0,
+                                { $round: [{ $multiply: [{ $divide: ['$correct', '$total'] }, 100] }, 2] },
+                            ],
+                        },
+                    },
+                },
+                { $sort: { modeId: 1 } },
+            ]),
+            TelemetryEvent.aggregate([
+                { $match: { ...match, eventType: 'session_end' } },
+                {
+                    $group: {
+                        _id: '$modeId',
+                        sessions: { $sum: 1 },
+                        avgDurationMs: { $avg: '$payload.durationMs' },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        modeId: '$_id',
+                        sessions: 1,
+                        avgDurationMs: { $round: ['$avgDurationMs', 0] },
+                    },
+                },
+                { $sort: { modeId: 1 } },
+            ]),
+        ]);
+
+        return res.json({
+            success: true,
+            windowDays: days,
+            modeFilter: modeId || null,
+            eventCounts,
+            answerAccuracy,
+            sessionDurations,
+        });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // Thêm mới
 router.post('/admin/questions', isAdmin, async (req, res) => {
     try {
@@ -508,6 +631,10 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/matching/all', async (req, res) => {
   try {
     const games = await Matching.find();
+    if (games.length === 0) {
+      const theme4Content = await getTheme4Content();
+      return res.json(theme4Content?.gameData?.connectingHistoryRounds || []);
+    }
     res.json(games);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -518,6 +645,11 @@ router.get('/chronological/all', async (req, res) => {
     try {
         const Chronological = require('../models/Chronological');
         const data = await Chronological.find();
+        if (data.length === 0) {
+            const theme4Content = await getTheme4Content();
+            const flow = theme4Content?.gameData?.historicalFlowSet;
+            return res.json(flow ? [flow] : []);
+        }
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -528,6 +660,10 @@ router.get('/guess-character/all', async (req, res) => {
     try {
         const GuessCharacter = require('../models/GuessCharacter');
         const data = await GuessCharacter.find();
+        if (data.length === 0) {
+            const theme4Content = await getTheme4Content();
+            return res.json(theme4Content?.gameData?.historicalRecognitionItems || []);
+        }
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -538,6 +674,10 @@ router.get('/reveal-picture/all', async (req, res) => {
     try {
         const RevealPicture = require('../models/RevealPicture');
         const data = await RevealPicture.find();
+        if (data.length === 0) {
+            const theme4Content = await getTheme4Content();
+            return res.json(theme4Content?.gameData?.revealPictureSets || []);
+        }
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });

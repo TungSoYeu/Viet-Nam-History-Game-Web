@@ -1,12 +1,10 @@
 # Dependency directories
 node_modules/
 
-# Environment variables
+# Environment variables (tất cả file .env)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
 # Build output
 frontend/build/
@@ -33,5 +31,13 @@ yarn-error.log*
 # Capacitor build artifacts
 frontend/android/
 frontend/ios/
+
 # Vercel
 Vercel_Deployment_Guide.md
+
+# Debug/Test scripts (chứa thông tin nhạy cảm)
+backend/test-mongo.js
+backend/test-dns.js
+
+# Lock file ở root (không cần thiết)
+/package-lock.json
