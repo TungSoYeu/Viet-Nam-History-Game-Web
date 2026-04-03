@@ -9,15 +9,25 @@ function FlashcardItem({ card }) {
   const parts = card.back.split('BẠN CÓ BIẾT:');
   const mainAnswer = parts[0];
   const funFact = parts[1];
+  const toggleFlip = () => setIsFlipped((value) => !value);
 
   return (
     <div 
-      className={`flashcard-container h-80 perspective-1000 ${isFlipped ? 'flipped' : ''}`}
-      onClick={() => setIsFlipped(!isFlipped)}
+      className={`flashcard-container ${isFlipped ? 'flipped' : ''}`}
+      onClick={toggleFlip}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleFlip();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isFlipped}
     >
-      <div className="relative w-full h-full transform-style-3d">
+      <div className="flashcard-inner">
         {/* Front */}
-        <div className="flashcard-front p-8 backface-hidden shadow-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
+        <div className="flashcard-face flashcard-front p-8 shadow-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
           <div className="w-12 h-1 mb-6 opacity-30" style={{ background: 'rgba(212,160,83,0.8)' }}></div>
           <h3 className="text-xl sm:text-2xl riddle-text text-center font-serif italic text-white">
             "{card.front}"
@@ -29,7 +39,7 @@ function FlashcardItem({ card }) {
         </div>
         
         {/* Back */}
-        <div className="flashcard-back p-8 backface-hidden shadow-2xl overflow-y-auto" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
+        <div className="flashcard-face flashcard-back p-8 shadow-2xl overflow-y-auto" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
           <div className="text-center mb-4">
               <span className="text-[10px] uppercase tracking-tighter opacity-60 mb-1 block text-gray-400">Lời giải</span>
               <h4 className="text-2xl back-answer text-amber-400 font-black">{mainAnswer}</h4>
