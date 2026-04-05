@@ -3,6 +3,7 @@ const path = require('path');
 
 const frontendDir = path.join(__dirname, '..', 'frontend');
 const buildCommand = process.platform === 'win32' ? 'npm run build' : 'npm run build';
+const buildPath = process.env.BUILD_PATH || '../dist';
 
 const result = spawnSync(buildCommand, {
   cwd: frontendDir,
@@ -10,7 +11,8 @@ const result = spawnSync(buildCommand, {
   shell: true,
   env: {
     ...process.env,
-    BUILD_PATH: '../dist',
+    BUILD_PATH: buildPath,
+    CI: 'false',
   },
 });
 

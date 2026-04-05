@@ -33,6 +33,8 @@ import {
 import API_BASE_URL from '../config/api';
 import { theme4Modes } from '../data/theme4Modes';
 import { useToast } from './Toast';
+import { getActiveClassroomName } from '../utils/classroomContext';
+import { getRoleLabel, isTeacherRole, normalizeRole } from '../utils/roleUtils';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -48,7 +50,9 @@ export default function Navbar() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const username = localStorage.getItem('username');
-  const role = localStorage.getItem('role');
+  const role = normalizeRole(localStorage.getItem('role'));
+  const activeClassroomName = getActiveClassroomName();
+  const isTeacher = isTeacherRole(role);
   const [user, setUser] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -172,7 +176,7 @@ export default function Navbar() {
 
   const handleProvinceChange = (e) => {
     const provCode = e.target.value;
-    const province = provinces.find(p => p.code == provCode); 
+    const province = provinces.find((p) => String(p.code) === provCode);
     setSelectedProvince(province || null);
     
     const getSortName = (name) => {
@@ -194,7 +198,7 @@ export default function Navbar() {
 
   const handleDistrictChange = (e) => {
     const distCode = e.target.value;
-    const dist = districts.find(d => d.code == distCode);
+    const dist = districts.find((d) => String(d.code) === distCode);
     setSelectedDistrict(dist);
   };
 
@@ -345,6 +349,9 @@ export default function Navbar() {
               <Link to="/leaderboard" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
                 <Trophy size={18} /> Phong Thần
               </Link>
+              <Link to="/courses" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/courses' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                <GraduationCap size={18} /> Khoá Học
+              </Link>
             </div>
 
             {/* Right: Profile/XP Section */}
@@ -371,6 +378,15 @@ export default function Navbar() {
                      <span className="hidden sm:block text-[10px] font-bold text-amber-400 uppercase tracking-widest">Tích lũy</span>
                      <span className="text-xs font-black text-amber-300">{user?.experience || 0} XP</span>
                   </div>
+                  {activeClassroomName ? (
+                    <>
+                      <div className="h-8 w-[1px] bg-amber-800 mx-1 hidden lg:block"></div>
+                      <div className="hidden lg:flex flex-col items-start max-w-[140px]">
+                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Lớp đang học</span>
+                        <span className="text-xs font-black text-white truncate max-w-[140px]">{activeClassroomName}</span>
+                      </div>
+                    </>
+                  ) : null}
                </div>
 
                {showUserMenu && (
@@ -381,10 +397,18 @@ export default function Navbar() {
                     >
                       <User size={16} className="text-amber-500" /> Thông Tin Cá Nhân
                     </button>
-                    {role === 'admin' && (
-                      <Link to="/admin" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
-                        <Settings size={16} className="text-amber-500" /> Bảng Điều Khiển
-                      </Link>
+                    <Link to="/courses" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                      <GraduationCap size={16} className="text-amber-500" /> Quản Lý Khoá Học
+                    </Link>
+                    {isTeacher && (
+                      <>
+                        <Link to="/teacher/content" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                          <Settings size={16} className="text-amber-500" /> Soạn Học Thuật
+                        </Link>
+                        <Link to="/teacher/theme4" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                          <ShieldCheck size={16} className="text-amber-500" /> Soạn Chủ Đề 4
+                        </Link>
+                      </>
                     )}
                     <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
                       <Key size={16} className="text-amber-500" /> Đổi Mật Khẩu
@@ -399,8 +423,8 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* BOTTOM NAV - Mobile Only */}
-      <nav className="md:hidden bottom-nav" aria-label="Điều hướng chính">
+      {/* BOTTOM NAV - Visible on all screen sizes */}
+      <nav className="bottom-nav" aria-label="Điều hướng chính">
         <Link to="/home" className={`bottom-nav-item ${location.pathname === '/home' ? 'active' : ''}`} aria-label="Trang chủ">
           <div className="icon-wrapper"><Map size={22} /></div>
           <span>Trang Chủ</span>
@@ -546,8 +570,8 @@ export default function Navbar() {
                         </div>
                         <div className="flex flex-col flex-1">
                             <span className="text-xs uppercase font-black tracking-widest mb-1 text-amber-500/80">Vai trò</span>
-                            <span className={`text-base font-black uppercase ${role === 'admin' ? 'text-red-400' : 'text-blue-400'}`}>
-                                {role === 'admin' ? 'Quản trị viên' : 'Người chơi'}
+                            <span className={`text-base font-black uppercase ${isTeacher ? 'text-red-400' : 'text-blue-400'}`}>
+                                {getRoleLabel(role)}
                             </span>
                         </div>
                     </div>

@@ -40,4 +40,4 @@ backend/test-mongo.js
 backend/test-dns.js
 
 # Lock file ở root (không cần thiết)
-/package-lock.json
+/package-lock.jsonfrontend/nul

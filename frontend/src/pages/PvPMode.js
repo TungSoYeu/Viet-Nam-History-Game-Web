@@ -21,13 +21,22 @@ export default function PvPMode() {
   const [keywordIndex, setKeywordIndex] = useState(0);
   const [revealedKeywords, setRevealedKeywords] = useState(false);
   const [activeRole, setActiveRole] = useState("nguoi-goi-y");
+  const [finishReason, setFinishReason] = useState(null);
+  const [timerRunning, setTimerRunning] = useState(false);
   const startedAtRef = useRef(Date.now());
+  const sessionActiveRef = useRef(false);
   const activePackages = Array.isArray(remoteTeammatePackages)
     ? remoteTeammatePackages
     : teammatePackages;
 
+  const endSession = (payload) => {
+    if (!sessionActiveRef.current) return;
+    logGameTelemetry(MODE_ID, "session_end", payload);
+    sessionActiveRef.current = false;
+  };
+
   useEffect(() => {
-    if (phase !== "prep" && phase !== "play") return;
+    if ((phase !== "prep" && phase !== "play") || !timerRunning) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -35,11 +44,13 @@ export default function PvPMode() {
           clearInterval(timer);
           if (phase === "prep") {
             setPhase("play");
+            setActiveRole("nguoi-doan");
             setRevealedKeywords(false);
+            setTimerRunning(true);
             return ROUND_SECONDS;
           }
           if (selectedPackage) {
-            logGameTelemetry(MODE_ID, "session_end", {
+            endSession({
               solved: false,
               reason: "time_up",
               packageId: selectedPackage.id,
@@ -47,6 +58,8 @@ export default function PvPMode() {
               durationMs: Date.now() - startedAtRef.current,
             });
           }
+          setFinishReason("time_up");
+          setTimerRunning(false);
           setPhase("finished");
           return 0;
         }
@@ -55,23 +68,37 @@ export default function PvPMode() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [keywordIndex, phase, revealedKeywords, selectedPackage]);
+  }, [keywordIndex, phase, revealedKeywords, selectedPackage, timerRunning]);
 
   const startPackage = (pkg) => {
-    resetModeSessionId(MODE_ID);
-    startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { packageId: pkg.id, totalKeywords: pkg.keywords.length });
+    sessionActiveRef.current = false;
     setSelectedPackage(pkg);
-    setPhase("prep");
+    setPhase("prep-ready");
     setTimeLeft(PREP_SECONDS);
     setKeywordIndex(0);
     setRevealedKeywords(false);
     setActiveRole("nguoi-goi-y");
+    setFinishReason(null);
+    setTimerRunning(false);
+  };
+
+  const startPrepPhase = () => {
+    if (!selectedPackage) return;
+    resetModeSessionId(MODE_ID);
+    startedAtRef.current = Date.now();
+    sessionActiveRef.current = true;
+    logGameTelemetry(MODE_ID, "session_start", {
+      packageId: selectedPackage.id,
+      totalKeywords: selectedPackage.keywords.length,
+    });
+    setPhase("prep");
+    setTimeLeft(PREP_SECONDS);
+    setTimerRunning(true);
   };
 
   const resetRound = () => {
     if (selectedPackage && phase !== "select") {
-      logGameTelemetry(MODE_ID, "session_end", {
+      endSession({
         solved: phase === "finished",
         packageId: selectedPackage.id,
         shownKeywords: keywordIndex + (revealedKeywords ? 1 : 0),
@@ -84,6 +111,8 @@ export default function PvPMode() {
     setKeywordIndex(0);
     setRevealedKeywords(false);
     setActiveRole("nguoi-goi-y");
+    setFinishReason(null);
+    setTimerRunning(false);
   };
 
   const nextKeyword = () => {
@@ -95,17 +124,23 @@ export default function PvPMode() {
       packageId: selectedPackage.id,
     });
     if (keywordIndex + 1 >= selectedPackage.keywords.length) {
-      logGameTelemetry(MODE_ID, "session_end", {
+      endSession({
         solved: true,
         packageId: selectedPackage.id,
         shownKeywords: selectedPackage.keywords.length,
         durationMs: Date.now() - startedAtRef.current,
       });
+      setFinishReason("completed");
+      setTimerRunning(false);
       setPhase("finished");
       return;
     }
     setKeywordIndex((prev) => prev + 1);
     setRevealedKeywords(false);
+  };
+
+  const toggleTimerRunning = () => {
+    setTimerRunning((prev) => !prev);
   };
 
   if (phase === "select") {
@@ -143,10 +178,10 @@ export default function PvPMode() {
 
           <div className="text-center mb-10">
             <h1
-              className="text-3xl sm:text-4xl font-black uppercase mb-3"
+              className="vn-safe-heading text-3xl sm:text-4xl font-black mb-3"
               style={{ background: "linear-gradient(135deg, #f0d48a, #d4a053)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
             >
-              Hiểu Ý Đồng Đội
+              Hiểu ý đồng đội
             </h1>
           </div>
 
@@ -161,15 +196,15 @@ export default function PvPMode() {
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg, rgba(236,72,153,0.9), rgba(168,85,247,0.9))" }}>
                   <Users size={24} className="text-white" />
                 </div>
-                <h2 className="text-xl font-black text-white mb-2">{pkg.title}</h2>
+                <h2 className="vn-safe-heading text-xl font-black text-white mb-2">{pkg.title}</h2>
                 <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  10 từ khóa trọng tâm để một bạn gợi ý, một bạn đoán thật nhanh và chính xác.
+                  10 từ khóa tổng hợp được trộn nhiều mảng nội dung để một bạn gợi ý, một bạn đoán thật nhanh và chính xác.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {pkg.keywords.slice(0, 4).map((keyword) => (
                     <span
                       key={keyword}
-                      className="px-3 py-1 rounded-full text-xs font-bold"
+                      className="vn-safe-chip px-3 py-1 rounded-full text-xs font-bold"
                       style={{ background: "rgba(255,255,255,0.06)", color: "#f0d48a", border: "1px solid rgba(255,255,255,0.08)" }}
                     >
                       {keyword}
@@ -186,6 +221,15 @@ export default function PvPMode() {
 
   const currentKeyword = selectedPackage?.keywords[keywordIndex];
   const keywordProgress = selectedPackage ? ((keywordIndex + 1) / selectedPackage.keywords.length) * 100 : 0;
+  const revealedHistory = selectedPackage
+    ? selectedPackage.keywords.slice(0, revealedKeywords ? keywordIndex + 1 : keywordIndex)
+    : [];
+  const phaseTitle =
+    phase === "prep" || phase === "prep-ready"
+      ? "Ghi Nhớ Từ Khóa"
+      : phase === "play"
+        ? "Người Đoán Thực Hiện"
+        : "Hoàn Thành Gói Chơi";
 
   return (
     <div className="min-h-screen p-4 sm:p-8 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
@@ -195,11 +239,27 @@ export default function PvPMode() {
             <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(212,160,83,0.8)" }}>
               {selectedPackage?.title}
             </p>
-            <h1 className="text-2xl sm:text-3xl font-black text-white">{phase === "prep" ? "Chuẩn Bị" : phase === "play" ? "Thực Hiện" : "Hoàn Thành Gói Chơi"}</h1>
+            <h1 className="vn-safe-heading text-2xl sm:text-3xl font-black text-white">{phaseTitle}</h1>
           </div>
-          <div className="px-5 py-3 rounded-2xl flex items-center gap-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <Clock3 size={20} className="text-amber-400" />
-            <span className="text-3xl font-black text-white tabular-nums">{timeLeft}s</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
+            <div className="px-5 py-3 rounded-2xl flex items-center gap-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <Clock3 size={20} className="text-pink-300" />
+              <div>
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-pink-200/80">Người gợi ý</div>
+                <div className="text-2xl font-black text-white tabular-nums">
+                  {phase === "prep" || phase === "prep-ready" ? `${timeLeft}s / ${PREP_SECONDS}s` : `${PREP_SECONDS}s`}
+                </div>
+              </div>
+            </div>
+            <div className="px-5 py-3 rounded-2xl flex items-center gap-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <Clock3 size={20} className="text-emerald-300" />
+              <div>
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-200/80">Người đoán</div>
+                <div className="text-2xl font-black text-white tabular-nums">
+                  {phase === "play" ? `${timeLeft}s / ${ROUND_SECONDS}s` : `${ROUND_SECONDS}s`}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -210,14 +270,16 @@ export default function PvPMode() {
           />
         </div>
 
-        {phase === "prep" && (
+        {(phase === "prep" || phase === "prep-ready") && (
           <div className="text-center">
             <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "rgba(212,160,83,0.12)", border: "2px solid rgba(212,160,83,0.25)" }}>
               <Flag size={40} className="text-amber-400" />
             </div>
-            <p className="text-lg text-white font-bold mb-3">Chuẩn bị cho đồng đội và thống nhất cách diễn đạt từ khóa.</p>
+            <p className="text-lg text-white font-bold mb-3">Người gợi ý có 30 giây để nhớ trọn gói từ khóa trước khi người đoán bắt đầu.</p>
             <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Giai đoạn thực hiện sẽ tự động bắt đầu sau 30 giây.
+              {phase === "prep"
+                ? "Đồng hồ đang chạy cho người gợi ý. Hết thời gian sẽ tự chuyển sang lượt người đoán."
+                : "Nhấn bắt đầu khi cả nhóm đã sẵn sàng vào giai đoạn ghi nhớ."}
             </p>
             <div className="mb-6 rounded-2xl border border-white/10 bg-slate-900/50 p-4">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-300 mb-3">Vai trò lượt này</p>
@@ -247,10 +309,27 @@ export default function PvPMode() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {selectedPackage?.keywords.map((keyword) => (
-                <div key={keyword} className="p-3 rounded-xl text-center text-sm font-bold" style={{ background: "rgba(255,255,255,0.05)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div key={keyword} className="vn-safe-chip p-3 rounded-xl text-center text-sm font-bold" style={{ background: "rgba(255,255,255,0.05)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}>
                   {keyword}
                 </div>
               ))}
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={phase === "prep-ready" ? startPrepPhase : undefined}
+                disabled={phase === "prep"}
+                className="px-6 py-4 rounded-2xl font-black text-white inline-flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #db2777, #a855f7)" }}
+              >
+                <Play size={18} /> BẮT ĐẦU
+              </button>
+              <button
+                onClick={phase === "prep" ? toggleTimerRunning : undefined}
+                disabled={phase !== "prep"}
+                className="px-6 py-4 rounded-2xl font-black border border-white/10 bg-white/5 text-white disabled:opacity-50"
+              >
+                {phase === "prep" && !timerRunning ? "TIẾP TỤC" : "DỪNG"}
+              </button>
             </div>
           </div>
         )}
@@ -262,13 +341,44 @@ export default function PvPMode() {
             </div>
             <div className="min-h-[220px] rounded-3xl flex items-center justify-center mb-6 p-6" style={{ background: "linear-gradient(135deg, rgba(236,72,153,0.18), rgba(99,102,241,0.18))", border: "1px solid rgba(255,255,255,0.08)" }}>
               <span className="text-4xl sm:text-6xl font-black text-white tracking-wide">
-                {revealedKeywords ? currentKeyword : "?"}
+                {revealedKeywords ? currentKeyword : "Sẵn sàng mở từ khóa tiếp theo"}
               </span>
             </div>
             <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Dùng các nút điều khiển để hiện từ khóa, chuyển sang từ tiếp theo hoặc chơi lại gói hiện tại.
+              Hiện từ khóa hiện tại, để người đoán trả lời rồi chuyển sang từ tiếp theo.
             </p>
+            <div className="mb-6 rounded-2xl border border-white/10 bg-slate-900/50 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-300 mb-3">Các từ đã đi qua</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {revealedHistory.length > 0 ? (
+                  revealedHistory.map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="vn-safe-chip px-3 py-2 rounded-full text-xs font-bold"
+                      style={{ background: "rgba(255,255,255,0.06)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}
+                    >
+                      {keyword}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-slate-400">Chưa mở từ khóa nào.</span>
+                )}
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                disabled
+                className="px-6 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
+              >
+                <Play size={18} /> BẮT ĐẦU
+              </button>
+              <button
+                onClick={toggleTimerRunning}
+                className="px-6 py-4 rounded-2xl font-black border border-white/10 bg-white/5 text-white disabled:opacity-50"
+              >
+                {timerRunning ? "DỪNG" : "TIẾP TỤC"}
+              </button>
               <button
                 onClick={() => {
                   setRevealedKeywords(true);
@@ -278,12 +388,18 @@ export default function PvPMode() {
                     action: "reveal_keyword",
                   });
                 }}
-                className="px-6 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-2"
+                disabled={revealedKeywords || !timerRunning}
+                className="px-6 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-2 disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #db2777, #a855f7)" }}
               >
                 <Play size={18} /> Hiện Từ Khóa
               </button>
-              <button onClick={nextKeyword} className="px-6 py-4 rounded-2xl font-black text-white" style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}>
+              <button
+                onClick={nextKeyword}
+                disabled={!revealedKeywords || !timerRunning}
+                className="px-6 py-4 rounded-2xl font-black text-white disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
+              >
                 Từ Kế Tiếp
               </button>
               <button onClick={resetRound} className="px-6 py-4 rounded-2xl font-black" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
@@ -298,13 +414,17 @@ export default function PvPMode() {
             <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "rgba(34,197,94,0.12)", border: "2px solid rgba(34,197,94,0.25)" }}>
               <RefreshCw size={40} className="text-green-400" />
             </div>
-            <h2 className="text-3xl font-black text-green-400 mb-3">Đã Hết Thời Gian</h2>
+            <h2 className="vn-safe-heading text-3xl font-black text-green-400 mb-3">
+              {finishReason === "completed" ? "Đã Hoàn Thành Trọn Gói" : "Đã Hết Thời Gian"}
+            </h2>
             <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Gói chơi này đã khép lại. Bạn có thể chơi lại gói hiện tại hoặc chuyển sang một gói từ khóa khác.
+              {finishReason === "completed"
+                ? "Toàn bộ từ khóa trong gói đã được đi qua liên tiếp."
+                : "Gói chơi này đã khép lại khi đồng hồ người đoán về 0."}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
               {selectedPackage?.keywords.map((keyword) => (
-                <div key={keyword} className="p-3 rounded-xl text-center text-sm font-bold" style={{ background: "rgba(255,255,255,0.05)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div key={keyword} className="vn-safe-chip p-3 rounded-xl text-center text-sm font-bold" style={{ background: "rgba(255,255,255,0.05)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}>
                   {keyword}
                 </div>
               ))}

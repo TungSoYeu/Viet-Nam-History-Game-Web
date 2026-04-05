@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import { Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, User, Lock, Mail, BookOpen, MapPin } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, User, Lock, Mail, BookOpen, MapPin, Landmark } from 'lucide-react';
 import API_BASE_URL from '../config/api';
 import { useToast } from '../components/Toast';
+import { normalizeRole } from '../utils/roleUtils';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [adminCode, setAdminCode] = useState(''); 
+  const [selectedRole, setSelectedRole] = useState('student');
+  const [teacherCode, setTeacherCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
   const [formShake, setFormShake] = useState(false);
@@ -50,7 +52,7 @@ export default function Login() {
 
   const handleProvinceChange = (e) => {
     const provCode = e.target.value;
-    const province = provinces.find(p => p.code == provCode); 
+    const province = provinces.find((p) => String(p.code) === provCode);
     setSelectedProvince(province || null);
     const sortedDistricts = province?.districts 
       ? [...province.districts].sort((a, b) => {
@@ -65,7 +67,7 @@ export default function Login() {
 
   const handleDistrictChange = (e) => {
     const distCode = e.target.value;
-    const dist = districts.find(d => d.code == distCode);
+    const dist = districts.find((d) => String(d.code) === distCode);
     setSelectedDistrict(dist);
   };
 
@@ -101,6 +103,11 @@ export default function Login() {
       return;
     }
 
+    if (isRegister && selectedRole === 'teacher' && !teacherCode.trim()) {
+      showError("Vui lòng nhập mã giáo viên để đăng ký tài khoản giáo viên!");
+      return;
+    }
+
     setLoading(true);
     setFormError('');
     const endpoint = isRegister ? '/api/register' : '/api/login';
@@ -111,7 +118,7 @@ export default function Login() {
     }
 
     const payload = isRegister 
-        ? { username, email, password, adminCode: adminCode.trim(), fullName, dateOfBirth, school: fullSchoolInfo, province: selectedProvince?.name || '', city: selectedDistrict?.name || '' } 
+        ? { username, email, password, role: selectedRole, teacherCode: teacherCode.trim(), fullName, dateOfBirth, school: fullSchoolInfo, province: selectedProvince?.name || '', city: selectedDistrict?.name || '' } 
         : { username, password };
 
     fetch(`${API_BASE_URL}${endpoint}`, {
@@ -129,12 +136,13 @@ export default function Login() {
         setIsRegister(false);
         setRegisterStep(1);
       } else {
+        const normalizedRole = normalizeRole(data.role);
         localStorage.setItem('userId', data._id);
         localStorage.setItem('username', data.username);
-        localStorage.setItem('role', data.role);
+        localStorage.setItem('role', normalizedRole);
         if (data.token) localStorage.setItem('token', data.token);
         toast.success("Đăng nhập thành công!");
-        navigate(data.role === 'admin' ? '/admin' : '/home');
+        navigate(normalizedRole === 'teacher' ? '/courses' : '/home');
       }
     })
     .catch(err => {
@@ -153,12 +161,13 @@ export default function Login() {
     })
     .then(res => res.json())
     .then(data => {
+      const normalizedRole = normalizeRole(data.role);
       localStorage.setItem('userId', data._id);
       localStorage.setItem('username', data.username);
-      localStorage.setItem('role', data.role);
+      localStorage.setItem('role', normalizedRole);
       if (data.token) localStorage.setItem('token', data.token);
       toast.success("Đăng nhập Google thành công!");
-      navigate(data.role === 'admin' ? '/admin' : '/home');
+      navigate(normalizedRole === 'teacher' ? '/courses' : '/home');
     })
     .catch(err => toast.error("Lỗi đăng nhập Google: " + err.message))
     .finally(() => setLoading(false));
@@ -176,22 +185,29 @@ export default function Login() {
     setIsRegister(!isRegister);
     setRegisterStep(1);
     setFormError('');
+    setSelectedRole('student');
+    setTeacherCode('');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative" style={{ background: 'transparent' }}>
       {/* Decorative orbs */}
       <div className="absolute top-[-20%] right-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(212,160,83,0.4) 0%, transparent 70%)' }}></div>
       <div className="absolute bottom-[-20%] left-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(185,28,28,0.4) 0%, transparent 70%)' }}></div>
 
       <div className="relative z-10 w-full max-w-md animate-fade-in">
+        <div className={`rounded-3xl p-6 sm:p-8 transition-all shadow-2xl relative overflow-hidden ${formShake ? 'animate-shake' : ''}`} style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(212,160,83,0.3)', backdropFilter: 'blur(24px)' }}>
+          {/* Subtle inner glow */}
+          <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,160,83,0.6), transparent)' }}></div>
         {/* Logo */}
         <div className="text-center mb-6">
-          <span className="text-5xl">🏯</span>
-          <h1 className="text-2xl sm:text-3xl font-black mt-3" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-2 shadow-[0_0_20px_rgba(212,160,83,0.3)] mx-auto" style={{ background: 'linear-gradient(135deg, rgba(212,160,83,0.15), rgba(185,28,28,0.1))', border: '1px solid rgba(212,160,83,0.4)', textShadow: 'none' }}>
+            <Landmark size={32} style={{ color: '#d4a053' }} />
+          </div>
+          <h1 className="text-2xl sm:text-[28px] font-black mt-2 leading-tight drop-shadow-md" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #fceabb, #f8b500)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 2px 10px rgba(212,160,83,0.2)' }}>
             {isRegister ? "Ghi Danh Sử Sách" : "Danh Nhân Đất Việt"}
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="text-[14px] mt-2 font-medium tracking-wide" style={{ color: '#cbd5e1' }}>
             {isRegister 
               ? (registerStep === 1 ? "Bước 1/2 — Tài khoản" : "Bước 2/2 — Thông tin cá nhân")
               : "Đăng nhập để tiếp tục"
@@ -207,7 +223,7 @@ export default function Login() {
         </div>
 
         {/* Form Card */}
-        <div className={`rounded-2xl p-6 sm:p-8 transition-all ${formShake ? 'animate-shake' : ''}`} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)' }}>
+        <div>
           
           {/* Inline error */}
           {formError && (
@@ -256,17 +272,52 @@ export default function Login() {
                 </div>
 
                 {isRegister && (
-                  <div>
-                    <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
-                      <Mail size={13} /> Email (không bắt buộc)
-                    </label>
-                    <input 
-                      type="email" placeholder="Địa chỉ Email" value={email} 
-                      onChange={e => setEmail(e.target.value)} 
-                      className={inputFocusStyle} style={inputStyle}
-                      aria-label="Email"
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                        <Mail size={13} /> Email (không bắt buộc)
+                      </label>
+                      <input 
+                        type="email" placeholder="Địa chỉ Email" value={email} 
+                        onChange={e => setEmail(e.target.value)} 
+                        className={inputFocusStyle} style={inputStyle}
+                        aria-label="Email"
+                      />
+                    </div>
+                    <div>
+                      <label className="flex items-center gap-1.5 text-xs font-semibold mb-2" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                        <User size={13} /> Vai trò tài khoản
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          { id: 'teacher', title: 'Giáo viên', desc: 'Cần mã giáo viên để đăng ký' },
+                          { id: 'student', title: 'Học sinh', desc: 'Tham gia lớp, chơi và học' },
+                        ].map((option) => {
+                          const active = selectedRole === option.id;
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedRole(option.id);
+                                if (option.id !== 'teacher') {
+                                  setTeacherCode('');
+                                }
+                              }}
+                              className="rounded-2xl p-4 text-left transition"
+                              style={{
+                                background: active ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.05)',
+                                border: active ? '1.5px solid rgba(245,158,11,0.45)' : '1.5px solid rgba(255,255,255,0.08)',
+                              }}
+                            >
+                              <div className="text-sm font-black text-white">{option.title}</div>
+                              <div className="mt-1 text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>{option.desc}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
                 )}
               </>
             )}
@@ -324,13 +375,23 @@ export default function Login() {
                     aria-label="Tên trường học"
                   />
                 </div>
-                <input 
-                  type="password" placeholder="Mã Admin (nếu có)" value={adminCode} 
-                  onChange={e => setAdminCode(e.target.value)} 
-                  className={`${inputFocusStyle}`} 
-                  style={{ background: 'rgba(239,68,68,0.06)', border: '1.5px solid rgba(239,68,68,0.15)', color: 'white' }}
-                  aria-label="Mã Admin"
-                />
+                {selectedRole === 'teacher' && (
+                  <div>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                      <Lock size={13} /> Mã giáo viên
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Nhập mã giáo viên"
+                      value={teacherCode}
+                      onChange={e => setTeacherCode(e.target.value)}
+                      className={inputFocusStyle}
+                      style={{ background: 'rgba(239,68,68,0.06)', border: '1.5px solid rgba(239,68,68,0.15)', color: 'white' }}
+                      required
+                      aria-label="Mã giáo viên"
+                    />
+                  </div>
+                )}
               </>
             )}
 
@@ -386,10 +447,11 @@ export default function Login() {
         </div>
 
         {/* Switch auth mode */}
-        <div className="mt-6 text-center">
-          <button onClick={switchToRegister} className="text-sm font-semibold transition-colors hover:text-amber-300" style={{ color: 'rgba(212,160,83,0.7)' }}>
+        <div className="mt-8 text-center border-t border-white/5 pt-5 relative z-10 w-full">
+          <button onClick={switchToRegister} className="text-[13px] font-bold transition-all hover:text-white" style={{ color: 'rgba(212,160,83,0.85)', letterSpacing: '0.02em' }}>
             {isRegister ? "Đã có tài khoản? ← Đăng nhập" : "Chưa có tài khoản? Ghi danh →"}
           </button>
+        </div>
         </div>
       </div>
     </div>

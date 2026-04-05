@@ -7,6 +7,8 @@ import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
 import ParticlesBackground from '../components/animations/ParticlesBackground';
 import SkeletonLoader from '../components/SkeletonLoader';
+import { fetchClassroomLeaderboard } from '../services/classroomClient';
+import { getActiveClassroomId, getActiveClassroomName } from '../utils/classroomContext';
 
 // Danh sách các danh nhân tiêu biểu để làm avatar mặc định
 const HISTORICAL_AVATARS = [
@@ -20,30 +22,45 @@ const HISTORICAL_AVATARS = [
 
 export default function Leaderboard() {
   const navigate = useNavigate();
-  const [topUsers, setTopUsers] = useState([]);
+  const activeClassroomId = getActiveClassroomId();
+  const activeClassroomName = getActiveClassroomName();
+  const [globalUsers, setGlobalUsers] = useState([]);
+  const [classUsers, setClassUsers] = useState([]);
+  const [activeTab, setActiveTab] = useState(activeClassroomId ? 'class' : 'global');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/leaderboard`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          // Gán avatar danh nhân ngẫu nhiên nếu user không có avatar
-          const enrichedData = data.map((user, idx) => ({
-            ...user,
-            defaultAvatar: HISTORICAL_AVATARS[idx % HISTORICAL_AVATARS.length]
-          }));
-          setTopUsers(enrichedData);
-        } else {
-          setTopUsers([]);
-        }
+    let cancelled = false;
+
+    Promise.all([
+      fetch(`${API_BASE_URL}/api/leaderboard?limit=50`).then(res => res.json()),
+      activeClassroomId
+        ? fetchClassroomLeaderboard(activeClassroomId).then(res => res.users || [])
+        : Promise.resolve([]),
+    ])
+      .then(([globalPayload, classPayload]) => {
+        if (cancelled) return;
+        const enrich = (users) =>
+          Array.isArray(users)
+            ? users.map((user, idx) => ({
+                ...user,
+                defaultAvatar: HISTORICAL_AVATARS[idx % HISTORICAL_AVATARS.length],
+              }))
+            : [];
+
+        setGlobalUsers(enrich(globalPayload));
+        setClassUsers(enrich(classPayload));
         setLoading(false);
       })
       .catch(err => {
         console.error("Lỗi khi tải bảng xếp hạng:", err);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeClassroomId]);
 
   const getPodiumStyles = (index) => {
     switch (index) {
@@ -93,8 +110,9 @@ export default function Leaderboard() {
     </div>
   );
 
-  const podiumData = topUsers.slice(0, 3);
-  const runnerUpData = topUsers.slice(3, 10);
+  const displayUsers = activeTab === 'class' ? classUsers : globalUsers;
+  const podiumData = displayUsers.slice(0, 3);
+  const runnerUpData = displayUsers.slice(3, 10);
 
   const listContainerVariants = {
     hidden: { opacity: 0 },
@@ -133,6 +151,32 @@ export default function Leaderboard() {
             Bảng Phong Thần
           </h1>
           <div className="hidden sm:flex justify-end"></div>
+        </div>
+
+        <div className="w-full max-w-4xl mb-8 flex flex-wrap items-center justify-center gap-3 relative z-10">
+          {[
+            { id: 'global', label: 'Toàn Hệ Thống', hint: 'Xếp hạng mọi tài khoản' },
+            { id: 'class', label: activeClassroomName || 'Trong Lớp', hint: activeClassroomId ? 'Xếp hạng học sinh của lớp đang chọn' : 'Chọn lớp đang hoạt động để xem' },
+          ].map((tab) => {
+            const disabled = tab.id === 'class' && !activeClassroomId;
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                disabled={disabled}
+                onClick={() => setActiveTab(tab.id)}
+                className="rounded-2xl px-4 py-3 text-left transition disabled:opacity-50"
+                style={{
+                  background: active ? 'rgba(245,158,11,0.14)' : 'rgba(255,255,255,0.04)',
+                  border: active ? '1px solid rgba(245,158,11,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                <div className="text-sm font-black text-white">{tab.label}</div>
+                <div className="text-[11px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{tab.hint}</div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Podium Section (Top 3) */}

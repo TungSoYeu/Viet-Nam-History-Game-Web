@@ -4,6 +4,7 @@ import { Trophy, AlertCircle, Swords, ArrowLeft, ChevronRight } from 'lucide-rea
 import Questions from '../components/Questions';
 import PeriodSelector from '../components/PeriodSelector';
 import API_BASE_URL from '../config/api';
+import { buildApiHeaders, buildApiUrl } from '../utils/classroomContext';
 
 export default function SurvivalMode() {
   const navigate = useNavigate();
@@ -24,7 +25,9 @@ export default function SurvivalMode() {
         ? '/api/questions/all' 
         : `/api/questions/${selectedPeriod}`;
 
-    fetch(`${API_BASE_URL}${endpoint}`)
+    fetch(buildApiUrl(endpoint), {
+      headers: buildApiHeaders({ includeJson: false }),
+    })
       .then(res => res.json())
       .then(data => {
         // Shuffle and take only 10 questions for Challenge Mode
@@ -143,7 +146,7 @@ export default function SurvivalMode() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-transparent relative z-10">
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col">
         {/* Top Bar */}
         <div className="grid grid-cols-[1fr_auto_1fr] items-center mb-6">
@@ -167,7 +170,7 @@ export default function SurvivalMode() {
         </div>
 
         {/* Question Card */}
-        <div className="flex-1 flex flex-col rounded-2xl p-6 sm:p-8" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="flex-1 flex flex-col rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl" style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255,255,255,0.1)' }}>
           <div className="flex justify-between mb-6">
             <span className="text-xs font-bold uppercase" style={{ color: 'rgba(212,160,83,0.7)' }}>Thử thách #{currentIndex + 1}</span>
             <span className="score-badge gold">⭐ {score} XP</span>
@@ -179,9 +182,9 @@ export default function SurvivalMode() {
           {feedback && (
             <div className={`mt-6 p-5 rounded-xl border animate-fade-in ${feedback.correct ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
               <p className={`font-bold text-base mb-2 ${feedback.correct ? 'text-green-400' : 'text-red-400'}`}>{feedback.correct ? '✅' : '❌'} {feedback.message}</p>
-              {feedback.explanation && (
-                <p className="text-sm italic mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>"{feedback.explanation}"</p>
-              )}
+              <p className="text-sm italic mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Đáp án và giải thích sẽ chỉ được công bố khi hoàn thành chế độ.
+              </p>
               <button onClick={nextQuestion} className="btn-primary px-6 py-3 text-sm flex items-center gap-2 mx-auto">
                 Kế Tiếp <ChevronRight size={18} />
               </button>

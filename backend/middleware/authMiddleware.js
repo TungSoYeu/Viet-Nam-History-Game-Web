@@ -1,65 +1,105 @@
-// backend/middleware/authMiddleware.js
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const { normalizeRole } = require("../utils/roleUtils");
 
-// General auth middleware: verifies JWT and attaches userId to req
-exports.verifyToken = (req, res, next) => {
-    // Support both 'Authorization: Bearer <token>' header and legacy 'user-id' header
-    const authHeader = req.headers['authorization'];
-    const legacyUserId = req.headers['user-id'];
+function getTokenFromRequest(req) {
+  const authHeader = req.headers.authorization || "";
+  if (authHeader.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1];
+  }
+  return "";
+}
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.userId = decoded.userId;
-            req.userRole = decoded.role;
-            return next();
-        } catch (err) {
-            return res.status(401).json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
-        }
-    }
+async function resolveRequestUser(req, { required = true } = {}) {
+  const token = getTokenFromRequest(req);
+  const legacyUserId = req.headers["user-id"];
+  let userId = null;
+  let decodedRole = null;
 
-    // Fallback: accept legacy user-id header for backward compatibility
-    if (legacyUserId) {
-        req.userId = legacyUserId;
-        return next();
-    }
-
-    return res.status(401).json({ message: "Không tìm thấy thông tin xác thực!" });
-};
-
-// Admin-only middleware
-exports.isAdmin = async (req, res, next) => {
-    // First, run verifyToken logic
-    const authHeader = req.headers['authorization'];
-    const legacyUserId = req.headers['user-id'];
-    let userId = null;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            userId = decoded.userId;
-        } catch (err) {
-            return res.status(401).json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
-        }
-    } else if (legacyUserId) {
-        userId = legacyUserId;
-    }
-
-    if (!userId) return res.status(401).json({ message: "Không tìm thấy thông tin xác thực!" });
-
+  if (token) {
     try {
-        const user = await User.findById(userId);
-        
-        if (user && user.role === 'admin') {
-            req.userId = userId;
-            next();
-        } else {
-            res.status(403).json({ message: "Quyền truy cập bị từ chối. Chỉ dành cho Quản trị viên (Admin)." });
-        }
-    } catch (err) {
-        res.status(500).json({ message: "Lỗi hệ thống xác thực", error: err });
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userId = decoded.userId;
+      decodedRole = normalizeRole(decoded.role);
+    } catch (error) {
+      if (required) {
+        throw Object.assign(new Error("Token không hợp lệ hoặc đã hết hạn!"), {
+          statusCode: 401,
+        });
+      }
+      return null;
     }
-};
+  } else if (legacyUserId) {
+    userId = legacyUserId;
+  }
+
+  if (!userId) {
+    if (required) {
+      throw Object.assign(new Error("Không tìm thấy thông tin xác thực!"), {
+        statusCode: 401,
+      });
+    }
+    return null;
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    if (required) {
+      throw Object.assign(new Error("Người dùng không tồn tại!"), {
+        statusCode: 401,
+      });
+    }
+    return null;
+  }
+
+  const normalizedRole = normalizeRole(user.role || decodedRole);
+  if (user.role !== normalizedRole) {
+    user.role = normalizedRole;
+    await user.save();
+  }
+
+  req.user = user;
+  req.userId = user._id.toString();
+  req.userRole = normalizedRole;
+  return user;
+}
+
+function verifyToken(req, res, next) {
+  resolveRequestUser(req)
+    .then(() => next())
+    .catch((error) => {
+      res.status(error.statusCode || 500).json({ message: error.message });
+    });
+}
+
+function requireRole(...allowedRoles) {
+  const normalizedAllowedRoles = allowedRoles.map((role) => normalizeRole(role));
+
+  return async (req, res, next) => {
+    try {
+      const user = await resolveRequestUser(req);
+      if (!normalizedAllowedRoles.includes(normalizeRole(user.role))) {
+        return res.status(403).json({
+          message: "Quyền truy cập bị từ chối.",
+        });
+      }
+      return next();
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({ message: error.message });
+    }
+  };
+}
+
+async function resolveOptionalUser(req) {
+  return resolveRequestUser(req, { required: false });
+}
+
+module.exports = {
+  getTokenFromRequest,
+  isAdmin: requireRole("teacher"),
+  isTeacher: requireRole("teacher"),
+  requireRole,
+  resolveOptionalUser,
+  resolveRequestUser,
+  verifyToken,
+};

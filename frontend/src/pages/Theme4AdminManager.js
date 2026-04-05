@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Database,
@@ -21,6 +21,7 @@ import {
   updateAdminTheme4ModeItem,
   uploadAdminTheme4Image,
 } from "../services/theme4ContentClient";
+import { getActiveClassroomId, getActiveClassroomName } from "../utils/classroomContext";
 
 const CFG = {
   "turning-page": {
@@ -34,9 +35,9 @@ const CFG = {
     h: "Mỗi gói gồm tiêu đề và danh sách từ khóa để đồng đội gợi ý cho nhau.",
   },
   "historical-recognition": {
-    t: { id: "", type: "image", title: "", prompt: "", imageUrl: "", imageToFind: "", acceptedAnswers: [""], explanation: "" },
-    a: { acceptedAnswers: "" },
-    h: "Dùng ảnh tư liệu hoặc hệ từ khóa gợi ý tùy loại câu hỏi nhận diện.",
+    t: { id: "", type: "image", title: "", prompt: "", imageUrl: "", imageUrls: [""], imageToFind: "", acceptedAnswers: [""], explanation: "" },
+    a: { imageUrls: "", acceptedAnswers: "" },
+    h: "Có thể dùng một ảnh, nhiều ảnh tư liệu hoặc hệ từ khóa gợi ý tùy loại câu hỏi nhận diện.",
   },
   "connecting-history": {
     t: { id: "", title: "", instruction: "", pairs: [{ left: "", right: "", image: "" }], distractor: [""] },
@@ -49,9 +50,20 @@ const CFG = {
     h: "Mỗi ô chữ gồm từ khóa hàng dọc, chủ đề, các câu hỏi hàng ngang và đáp án chấp nhận.",
   },
   "historical-flow": {
-    t: { id: "", title: "", instruction: "", sentences: [{ id: "A", text: "", group: "context" }] },
+    t: {
+      id: "",
+      title: "",
+      instruction: "",
+      sentences: [
+        { id: "A", text: "", group: "context" },
+        { id: "B", text: "", group: "developments" },
+        { id: "C", text: "", group: "result" },
+        { id: "D", text: "", group: "legacy" },
+        { id: "E", text: "", group: "extra" },
+      ],
+    },
     a: { sentences: { id: "", text: "", group: "context" } },
-    h: "Trò chơi này hiện dùng một bộ dữ kiện duy nhất cho cả lượt chơi.",
+    h: "Mỗi mục là một câu của Dòng chảy lịch sử. `group` nhận `context`, `developments`, `result`, `legacy` hoặc `extra` cho dữ kiện thừa.",
   },
   "lightning-fast": {
     t: { content: "", options: ["", "", "", ""], correctAnswer: "", explanation: "" },
@@ -59,9 +71,9 @@ const CFG = {
     h: "Mỗi câu hỏi nhanh có 4 lựa chọn, 1 đáp án đúng và phần giải thích.",
   },
   "picture-puzzle": {
-    t: { images: [""], answer: "", acceptedAnswers: [""], explanation: "" },
+    t: { prompt: "", images: [""], answer: "", acceptedAnswers: [""], explanation: "" },
     a: { images: "", acceptedAnswers: "" },
-    h: "Mỗi câu gồm các ảnh gợi ý, đáp án đúng và các cách viết được chấp nhận.",
+    h: "Mỗi câu gồm prompt, các ảnh gợi ý, đáp án đúng và các cách viết được chấp nhận.",
   },
 };
 
@@ -72,6 +84,7 @@ const FIELD_LABELS = {
   type: "Kiểu câu hỏi",
   prompt: "Đề bài",
   imageUrl: "Đường dẫn ảnh",
+  imageUrls: "Các ảnh tư liệu",
   imageToFind: "Ảnh đáp án",
   answer: "Đáp án",
   acceptedAnswers: "Các đáp án chấp nhận",
@@ -111,6 +124,7 @@ const GROUP_OPTION_LABELS = {
   developments: "Diễn biến",
   result: "Kết quả - ý nghĩa",
   legacy: "Di sản",
+  extra: "Dữ kiện thừa",
 };
 
 const isPrimitive = (v) => v == null || ["string", "number", "boolean"].includes(typeof v);
@@ -148,6 +162,8 @@ const itemLabel = (modeId, item, idx) => {
 
 export default function Theme4AdminManager() {
   const navigate = useNavigate();
+  const activeClassroomId = getActiveClassroomId();
+  const activeClassroomName = getActiveClassroomName();
   const [content, setContent] = useState(null);
   const [selectedModeId, setSelectedModeId] = useState("");
   const [items, setItems] = useState([]);
@@ -161,10 +177,10 @@ export default function Theme4AdminManager() {
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
 
-  const modes = content?.modes || [];
+  const modes = useMemo(() => content?.modes || [], [content]);
   const mode = useMemo(() => modes.find((m) => m.id === selectedModeId) || null, [modes, selectedModeId]);
   const config = CFG[selectedModeId] || { t: {}, a: {}, h: "Chỉnh sửa dữ liệu và lưu trực tiếp vào MongoDB." };
-  const singleMode = selectedModeId === "historical-flow";
+  const singleMode = false;
 
   const loadContent = async () => {
     setLoadingPage(true);
@@ -206,15 +222,18 @@ export default function Theme4AdminManager() {
   };
 
   useEffect(() => {
-    loadContent();
-  }, []);
+    if (activeClassroomId) {
+      loadContent();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeClassroomId]);
 
   useEffect(() => {
     if (selectedModeId) {
       setNotice("");
       loadItems(selectedModeId);
     }
-  }, [selectedModeId]);
+  }, [selectedModeId, activeClassroomId]);
 
   const startCreate = () => {
     setEditingItemId("");
@@ -331,6 +350,7 @@ export default function Theme4AdminManager() {
             <option value="developments">{GROUP_OPTION_LABELS.developments}</option>
             <option value="result">{GROUP_OPTION_LABELS.result}</option>
             <option value="legacy">{GROUP_OPTION_LABELS.legacy}</option>
+            <option value="extra">{GROUP_OPTION_LABELS.extra}</option>
           </select>
         ) : longField ? (
           <textarea value={value || ""} onChange={(e) => updateField(path, e.target.value)} rows={3} className="mt-3 w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-sm font-semibold text-white outline-none" />
@@ -411,7 +431,18 @@ export default function Theme4AdminManager() {
     return renderPrimitive(value, path, field);
   };
 
-  if (loadingPage) return <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">Đang tải bảng quản trị Chủ đề 4...</div>;
+  if (!activeClassroomId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 px-6 text-center text-amber-300">
+        <div>
+          <div className="text-3xl font-black uppercase text-white">Chọn Lớp Trước Khi Soạn</div>
+          <p className="mt-4 text-sm text-slate-300">Hãy chọn một lớp đang hoạt động trong mục Quản Lý Khoá Học để chỉnh bộ câu hỏi Chủ đề 4 cho riêng lớp đó.</p>
+          <Link to="/courses" className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-amber-400 px-5 py-3 text-sm font-black uppercase text-slate-950">Đến Quản Lý Khoá Học</Link>
+        </div>
+      </div>
+    );
+  }
+  if (loadingPage) return <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">Đang tải bảng soạn Chủ đề 4...</div>;
   if (!content) return <div className="min-h-screen flex items-center justify-center bg-slate-950 px-6 text-center text-amber-300">{error || "Không tải được dữ liệu quản trị."}</div>;
 
   return (
@@ -419,9 +450,9 @@ export default function Theme4AdminManager() {
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
         <div className="grid gap-4 rounded-[28px] border border-white/10 bg-slate-900/85 p-5 shadow-2xl lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-300"><ShieldCheck size={16} /> Quản Trị MongoDB</div>
-            <h1 className="mt-4 text-3xl font-black uppercase tracking-[0.14em] text-white">Quản Trị Bộ Câu Hỏi Chủ Đề 4</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">Thêm, sửa, xóa dữ liệu theo biểu mẫu và lưu trực tiếp vào MongoDB. Các trường ảnh hỗ trợ tải từ máy tính lên máy chủ.</p>
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-300"><ShieldCheck size={16} /> Chủ Đề 4 Theo Lớp</div>
+            <h1 className="mt-4 text-3xl font-black uppercase tracking-[0.14em] text-white">Soạn Bộ Câu Hỏi Chủ Đề 4</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">Lớp đang chỉnh sửa: <span className="font-bold text-amber-300">{activeClassroomName || 'Chưa đặt tên'}</span>. Dữ liệu bạn lưu chỉ hiển thị cho thành viên của lớp này.</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <button onClick={() => navigate("/modes")} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-slate-800 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white"><ArrowLeft size={16} /> Về Chọn Chế Độ</button>

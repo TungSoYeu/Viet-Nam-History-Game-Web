@@ -27,15 +27,16 @@ export const theme4ModeGuides = {
   },
   recognition: {
     objective:
-      "Gồm hai hướng nhận diện: từ hình ảnh hoặc lược đồ sang từ khóa, và từ hệ thống từ khóa sang hình ảnh hay đối tượng lịch sử tương ứng.",
+      "Mode 3 được chia thành hai mode nhỏ: nhận diện từ khóa thông qua hình ảnh, lược đồ và nhận diện hình ảnh thông qua từ khóa.",
     rules: [
-      "Tổng cộng 10 nội dung nhận diện: 5 nội dung dựa trên hình ảnh hoặc lược đồ và 5 nội dung dựa trên hệ thống từ khóa gợi ý.",
+      "Khi vào mode 3, người chơi chọn 1 trong 2 mode nhỏ trước khi bắt đầu.",
+      "Mỗi mode nhỏ có 5 câu, mỗi câu 15 giây.",
       "Đối tượng cần nhận diện có thể là nhân vật, địa danh, sự kiện hoặc phong trào.",
       "Có thể phóng to ảnh hoặc lược đồ để quan sát chi tiết trước khi trả lời.",
     ],
     scoring: "Mỗi đáp án đúng nhận 10 XP; hết lượt hệ thống cộng tổng.",
     sample:
-      "Gợi ý: 'Phòng tuyến Như Nguyệt, Nam quốc sơn hà, Tiên phát chế nhân' -> học sinh nhận diện nhân vật Lý Thường Kiệt.",
+      "Ví dụ nhánh 1: xem lược đồ và hình ảnh để đoán 'Kháng chiến chống quân Tống (1075 - 1077)'. Ví dụ nhánh 2: đọc từ khóa 'Danh nhân văn hóa thế giới, Tâm công, Bình Ngô Sách' để nhận diện 'Nguyễn Trãi'.",
   },
   connecting: {
     objective:
@@ -88,7 +89,7 @@ export const theme4ModeGuides = {
     objective:
       "Quan sát 2 đến 4 hình ảnh, xác định từ khóa của từng hình rồi ghép thành một nội dung lịch sử hoàn chỉnh.",
     rules: [
-      "Trò chơi gồm 10 câu; mỗi câu có từ 2 đến 4 hình ảnh gợi ý.",
+      "Trò chơi gồm 11 câu; mỗi câu có từ 2 đến 4 hình ảnh gợi ý.",
       "Mỗi hình ảnh tương ứng với một từ khóa hoặc một tiếng trong đáp án.",
       "Người chơi cần ghép chúng thành tên sự kiện, phong trào, địa danh, nhân vật hoặc khái niệm hoàn chỉnh.",
     ],

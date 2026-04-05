@@ -26,10 +26,7 @@ export default function Questions({ question, onAnswer, feedback }) {
         let extraClass = '';
 
         if (feedback) {
-          const cleanAns = String(ans || "").toLowerCase().trim();
-          const cleanCorrect = String(question.correctAnswer || "").toLowerCase().trim();
-
-          if (cleanAns === cleanCorrect) {
+          if (ans === selectedOption && feedback.correct) {
             bgStyle = { background: 'rgba(34,197,94,0.12)', border: '1.5px solid rgba(34,197,94,0.4)' };
             textColor = '#86efac';
             labelBg = 'rgba(34,197,94,0.2)';

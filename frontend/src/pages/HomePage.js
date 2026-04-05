@@ -157,6 +157,17 @@ const iconPanels = [
   { icon: 'profile', label: 'Tiểu sử', component: User },
 ];
 
+const portraitFrameStyle = {
+  background:
+    'radial-gradient(circle at top, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 42%, rgba(10,10,10,0.72) 100%)',
+};
+
+const portraitImageStyle = {
+  objectFit: 'contain',
+  objectPosition: 'center center',
+  filter: 'brightness(1.12) saturate(1.08) contrast(1.03)',
+};
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -165,6 +176,8 @@ export default function HomePage() {
   const [showModal, setShowModal] = useState(false);
   const [infoModal, setInfoModal] = useState(null);
   const username = localStorage.getItem('username') || 'linh12345';
+  const rawRole = localStorage.getItem('role') || 'student';
+  const roleDisplay = (rawRole === 'teacher' || rawRole === 'GV') ? 'Giáo viên' : (rawRole === 'admin' ? 'Quản trị' : 'Học viên');
 
   const modalData = {
     sulieu: { title: "Kho Tàng Sử Liệu", icon: <BookOpen className="text-amber-400 mb-4" size={40} />, content: "Hệ thống lưu trữ hơn 1000+ tài liệu, thư tịch cổ, các câu chuyện lịch sử và hình ảnh chân thực về các thủ lĩnh hào hùng của dân tộc Việt Nam. Dữ liệu được biên soạn kỹ lưỡng dựa trên chính sử, giúp người chơi vừa giải trí vừa nắm bắt kiến thức một cách chuẩn xác nhất." },
@@ -203,9 +216,31 @@ export default function HomePage() {
   const currentHero = heroes[currentIndex];
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#0a0a0a' }}>
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        backgroundColor: '#0a0a0a',
+        backgroundImage: "url('/assets/images/background_homepage.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(135deg, rgba(11,16,28,0.18) 0%, rgba(15,20,30,0.3) 100%), url('/assets/images/background_homepage.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.9,
+          transform: 'scale(1.03)',
+        }}
+      />
+
       {/* Background - Blurred Gallery */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-[1]">
         {heroes.map((hero, idx) => {
           const isNear = Math.abs(idx - bgIndex) <= 1 || (idx === 0 && bgIndex === heroes.length - 1) || (bgIndex === 0 && idx === heroes.length - 1);
           return (
@@ -214,12 +249,13 @@ export default function HomePage() {
               className="absolute inset-0 w-full h-full"
               style={{
                 backgroundImage: isNear ? `url('${hero.image}')` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                opacity: idx === bgIndex ? 0.35 : 0,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+                opacity: idx === bgIndex ? 0.16 : 0,
                 transform: idx === bgIndex ? 'scale(1.1)' : 'scale(1)',
                 transition: 'opacity 1.5s ease-in-out, transform 6s linear',
-                filter: 'blur(25px) brightness(0.35) saturate(1.2)'
+                filter: 'blur(18px) brightness(0.8) saturate(1.08)'
               }}
             />
           );
@@ -228,10 +264,10 @@ export default function HomePage() {
 
       {/* Deep Glass Overlay */}
       <div 
-        className="absolute inset-0 z-5"
+        className="absolute inset-0 z-[2]"
         style={{ 
-          background: 'linear-gradient(135deg, rgba(10,10,10,0.88) 0%, rgba(20,20,30,0.78) 50%, rgba(10,10,10,0.92) 100%)',
-          backdropFilter: 'blur(35px)'
+          background: 'linear-gradient(135deg, rgba(8,10,18,0.34) 0%, rgba(18,22,34,0.28) 50%, rgba(8,10,18,0.4) 100%)',
+          backdropFilter: 'blur(8px)'
         }}
       />
 
@@ -279,10 +315,10 @@ export default function HomePage() {
           transition={{ duration: 0.6 }}
           className="rounded-3xl overflow-hidden"
           style={{ 
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 25px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(40px)'
+            background: 'linear-gradient(135deg, rgba(25,28,38,0.46) 0%, rgba(28,30,42,0.38) 100%)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: '0 25px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(16px)'
           }}
         >
           {/* Header Section */}
@@ -344,7 +380,7 @@ export default function HomePage() {
                   {username}
                 </p>
                 <p className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                  Học viên
+                  {roleDisplay}
                 </p>
               </div>
             </div>
@@ -372,14 +408,14 @@ export default function HomePage() {
                   <div className="absolute inset-8 border rounded-lg opacity-50" style={{ borderColor: 'rgba(212,160,83,0.15)' }} />
                   
                   <div className="p-6 flex items-center justify-center">
-                    <div className="relative w-full">
+                    <div className="relative w-full rounded-xl overflow-hidden" style={portraitFrameStyle}>
                       <img 
                         src={currentHero.image} 
                         alt={currentHero.name}
                         loading="eager"
-                        className="w-full h-80 object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-80 rounded-xl transition-transform duration-500 group-hover:scale-[1.02]"
                         style={{ 
-                          filter: 'brightness(1.15) saturate(1.1) contrast(1.05)',
+                          ...portraitImageStyle,
                           boxShadow: '0 25px 80px rgba(0,0,0,0.6)'
                         }}
                       />
@@ -443,7 +479,7 @@ export default function HomePage() {
                       <div 
                         className="w-10 h-14 rounded-lg overflow-hidden"
                         style={{ 
-                          background: 'rgba(255,255,255,0.08)',
+                          ...portraitFrameStyle,
                           border: hero.id === currentHero.id ? '2px solid #d4a053' : '1px solid rgba(255,255,255,0.15)',
                           boxShadow: hero.id === currentHero.id ? '0 0 15px rgba(212,160,83,0.4)' : 'none'
                         }}
@@ -452,7 +488,8 @@ export default function HomePage() {
                           src={hero.image} 
                           alt={hero.name}
                           loading="lazy"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full"
+                          style={portraitImageStyle}
                         />
                       </div>
                     </motion.button>
@@ -584,12 +621,12 @@ export default function HomePage() {
               </button>
 
               <div className="flex">
-                <div className="w-2/5 relative">
+                <div className="w-2/5 relative flex items-center justify-center p-3" style={portraitFrameStyle}>
                   <img 
                     src={currentHero.image} 
                     alt={currentHero.name}
-                    className="w-full h-full object-cover"
-                    style={{ filter: 'brightness(1.1) saturate(1.05)' }}
+                    className="w-full h-full"
+                    style={portraitImageStyle}
                   />
                   <div 
                     className="absolute inset-0"

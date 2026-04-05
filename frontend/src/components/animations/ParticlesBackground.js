@@ -55,7 +55,7 @@ const ParticlesBackground = ({ type = "dust" }) => {
         id="tsparticles"
         options={type === "dust" ? dustOptions : embersOptions}
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
           width: "100%",

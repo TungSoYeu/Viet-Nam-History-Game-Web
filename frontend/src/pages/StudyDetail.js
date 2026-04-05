@@ -1,35 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import API_BASE_URL from '../config/api';
 import SkeletonLoader from '../components/SkeletonLoader';
+import { buildApiHeaders, buildApiUrl } from '../utils/classroomContext';
 
 function FlashcardItem({ card }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const parts = card.back.split('BẠN CÓ BIẾT:');
   const mainAnswer = parts[0];
   const funFact = parts[1];
+  const toggleFlip = () => setIsFlipped((value) => !value);
 
   return (
     <div 
-      className={`flashcard-container h-80 perspective-1000 ${isFlipped ? 'flipped' : ''}`}
-      onClick={() => setIsFlipped(!isFlipped)}
+      className={`flashcard-container ${isFlipped ? 'flipped' : ''}`}
+      onClick={toggleFlip}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleFlip();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isFlipped}
     >
-      <div className="relative w-full h-full transform-style-3d">
+      <div className="flashcard-inner">
         {/* Front */}
-        <div className="flashcard-front p-8 backface-hidden shadow-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
+        <div className="flashcard-face flashcard-front p-8 shadow-xl parchment-panel" style={{ borderRadius: '1rem' }}>
           <div className="w-12 h-1 mb-6 opacity-30" style={{ background: 'rgba(212,160,83,0.8)' }}></div>
-          <h3 className="text-xl sm:text-2xl riddle-text text-center font-serif italic text-white">
+          <h3 className="text-xl sm:text-2xl riddle-text text-center font-serif italic parchment-text-strong">
             "{card.front}"
           </h3>
           <div className="w-12 h-1 mt-6 opacity-30" style={{ background: 'rgba(212,160,83,0.8)' }}></div>
-          <div className="absolute bottom-4 text-[10px] uppercase tracking-widest font-bold" style={{ color: 'rgba(212,160,83,0.4)' }}>
+          <div className="absolute bottom-4 text-[10px] uppercase tracking-widest font-bold" style={{ color: 'rgba(240,212,138,0.7)' }}>
             Chạm để lật mở bí mật
           </div>
         </div>
         
         {/* Back */}
-        <div className="flashcard-back p-8 backface-hidden shadow-2xl overflow-y-auto" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
+        <div className="flashcard-face flashcard-back p-8 shadow-2xl overflow-y-auto parchment-panel" style={{ borderRadius: '1rem' }}>
           <div className="text-center mb-4">
               <span className="text-[10px] uppercase tracking-tighter opacity-60 mb-1 block text-gray-400">Lời giải</span>
               <h4 className="text-2xl back-answer text-amber-400 font-black">{mainAnswer}</h4>
@@ -55,7 +65,9 @@ export default function StudyDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/lessons`)
+    fetch(buildApiUrl('/api/lessons'), {
+      headers: buildApiHeaders({ includeJson: false }),
+    })
       .then(res => res.json())
       .then(data => {
         const current = data.find(l => l._id === lessonId);
@@ -79,13 +91,13 @@ export default function StudyDetail() {
 
   return (
     <div className="study-page min-h-screen flex flex-col">
-      <div className="study-header flex flex-col items-center">
+      <div className="study-header parchment-panel max-w-4xl w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] mx-auto rounded-[28px] flex flex-col items-center">
         <button onClick={() => navigate('/timeline')} className="btn-primary px-4 py-2 text-sm shrink-0">📜 Quay lại</button>
         <h1 className="study-title text-xl sm:text-2xl md:text-3xl font-bold text-center" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{lesson.title}</h1>
-        <div className="hidden sm:flex justify-end pr-2 text-xs font-bold text-slate-400">Đọc Hiểu</div>
+        <div className="hidden sm:flex justify-end pr-2 text-xs font-bold parchment-text-soft">Đọc Hiểu</div>
       </div>
 
-      <div className="study-tabs flex px-4 sm:px-6 mb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="study-tabs parchment-panel-soft flex mx-4 sm:mx-6 px-4 sm:px-6 mb-4 rounded-2xl" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <button 
           onClick={() => setActiveTab('wiki')}
           className={`flex-1 sm:flex-none px-4 sm:px-8 py-3 font-bold transition text-sm sm:text-base ${activeTab === 'wiki' ? 'text-amber-400' : 'text-gray-500 hover:text-gray-300'}`}
@@ -102,7 +114,7 @@ export default function StudyDetail() {
         </button>
       </div>
 
-      <div className="study-content flex-1 mx-4 sm:mx-6 mb-4 p-6 sm:p-8 overflow-y-auto rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <div className="study-content parchment-panel flex-1 mx-4 sm:mx-6 mb-4 p-6 sm:p-8 overflow-y-auto rounded-2xl">
         {activeTab === 'wiki' ? (
           <div className="wiki-content prose prose-invert max-w-none">
             {lesson.wiki?.content ? (
