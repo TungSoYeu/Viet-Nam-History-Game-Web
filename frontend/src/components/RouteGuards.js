@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { isTeacherRole, normalizeRole } from '../utils/roleUtils';
 
 // Protects routes that require authentication
 export function AuthGuard({ children }) {
@@ -10,15 +11,17 @@ export function AuthGuard({ children }) {
   return children;
 }
 
-// Protects admin-only routes
-export function AdminGuard({ children }) {
+// Protects teacher-only routes
+export function TeacherGuard({ children }) {
   const userId = localStorage.getItem('userId');
-  const role = localStorage.getItem('role');
+  const role = normalizeRole(localStorage.getItem('role'));
   if (!userId) {
     return <Navigate to="/" replace />;
   }
-  if (role !== 'admin') {
+  if (!isTeacherRole(role)) {
     return <Navigate to="/home" replace />;
   }
   return children;
 }
+
+export const AdminGuard = TeacherGuard;

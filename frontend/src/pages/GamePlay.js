@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Questions from '../components/Questions';
 import API_BASE_URL from '../config/api';
+import { buildApiHeaders, buildApiUrl } from '../utils/classroomContext';
 
 export default function GamePlay() {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ export default function GamePlay() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/questions/${lessonId}`)
+    fetch(buildApiUrl(`/api/questions/${lessonId}`), {
+      headers: buildApiHeaders({ includeJson: false }),
+    })
       .then(res => res.json())
       .then(data => {
         setQuestions(data.sort(() => Math.random() - 0.5));
@@ -102,14 +105,12 @@ export default function GamePlay() {
         {feedback && (
           <div className={`mt-8 p-6 rounded-lg w-full transition-all border-2 ${feedback.correct ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
             <p className="font-bold text-xl mb-2">{feedback.message}</p>
-            {feedback.explanation && (
               <p className="mb-6 italic text-gray-700 leading-relaxed">
-                <span className="font-bold">Sử ký ghi lại:</span> "{feedback.explanation}"
+                Đáp án và phần giải thích sẽ chỉ được công bố khi hoàn thành lượt chơi.
               </p>
-            )}
-            <button 
-              onClick={nextQuestion}
-              className="px-8 py-3 bg-amber-700 text-white rounded-lg font-bold hover:bg-amber-800 transition shadow-lg"
+              <button 
+                onClick={nextQuestion}
+                className="px-8 py-3 bg-amber-700 text-white rounded-lg font-bold hover:bg-amber-800 transition shadow-lg"
             >
               Tiếp Theo ➔
             </button>

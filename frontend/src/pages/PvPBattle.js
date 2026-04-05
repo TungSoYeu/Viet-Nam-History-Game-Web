@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Questions from '../components/Questions';
@@ -12,7 +12,7 @@ export default function PvPBattle() {
   const location = useLocation();
   const { challengeId, questions: initialQuestions } = location.state || {};
   
-  const [questions, setQuestions] = useState(initialQuestions || []);
+  const [questions] = useState(initialQuestions || []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [startTime] = useState(Date.now());
@@ -142,14 +142,12 @@ export default function PvPBattle() {
                   <p className="font-black text-xl mb-2 flex items-center gap-2">
                     {feedback.correct ? "✓ CHÍNH XÁC!" : "✗ SAI RỒI!"}
                   </p>
-                  {feedback.explanation && (
                     <p className="mb-4 italic opacity-80 leading-relaxed text-sm">
-                      <span className="font-bold text-amber-400">Sử ký:</span> "{feedback.explanation}"
+                      Đáp án và phần giải thích sẽ chỉ được công bố khi kết thúc trận đấu.
                     </p>
-                  )}
-                  <BouncyButton onClick={nextQuestion} className="w-full sm:w-auto">
-                    <div className="px-8 py-3 bg-white text-slate-900 rounded-xl font-black uppercase tracking-wider text-sm">
-                      Tiếp Theo ➔
+                    <BouncyButton onClick={nextQuestion} className="w-full sm:w-auto">
+                      <div className="px-8 py-3 bg-white text-slate-900 rounded-xl font-black uppercase tracking-wider text-sm">
+                        Tiếp Theo ➔
                     </div>
                   </BouncyButton>
                 </motion.div>

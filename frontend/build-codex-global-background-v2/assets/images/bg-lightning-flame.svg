@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="150" y1="70" x2="1460" y2="850" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1D4ED8"/>
+      <stop offset="0.45" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#7C2D12"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 210) rotate(90) scale(220 220)">
+      <stop stop-color="#F59E0B" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="900" rx="48" fill="url(#bg)"/>
+  <rect width="1600" height="900" rx="48" fill="url(#sun)"/>
+
+  <circle cx="310" cy="730" r="230" fill="#60A5FA" fill-opacity="0.08"/>
+  <circle cx="1290" cy="164" r="186" fill="#FB923C" fill-opacity="0.09"/>
+
+  <g opacity="0.86">
+    <circle cx="494" cy="398" r="198" stroke="#93C5FD" stroke-opacity="0.18" stroke-width="26"/>
+    <circle cx="494" cy="398" r="136" stroke="#F8FAFC" stroke-opacity="0.12" stroke-width="4"/>
+    <path d="M494 300v44M582 398h-44M494 496v-44M406 398h44" stroke="#F8FAFC" stroke-opacity="0.14" stroke-width="12" stroke-linecap="round"/>
+    <path d="M494 398l74-84" stroke="#F59E0B" stroke-width="18" stroke-linecap="round"/>
+    <circle cx="494" cy="398" r="18" fill="#F59E0B"/>
+  </g>
+
+  <g opacity="0.92">
+    <path d="M930 650c-6-88 34-162 118-232l-18 104c53-30 103-52 153-52-10 39-38 78-84 117 46 4 89 18 127 48-56 17-100 44-134 84-42 50-96 76-162 76-78 0-130-52-130-145Z" fill="#F97316" fill-opacity="0.22" stroke="#FDBA74" stroke-opacity="0.34" stroke-width="3"/>
+    <path d="M966 686c-4-60 20-111 80-165l-10 73c37-22 74-37 109-37-7 27-28 55-61 82 33 4 64 14 91 36-40 13-71 32-95 60-29 33-68 50-115 50-56 0-99-37-99-99Z" fill="#FB923C" fill-opacity="0.3"/>
+  </g>
+
+  <g opacity="0.74">
+    <path d="M1010 184l-76 138h70l-48 116 162-188h-88l54-66Z" fill="#FCD34D" fill-opacity="0.75"/>
+    <path d="M1188 242l-54 100h49l-34 86 118-142h-64l40-44Z" fill="#FCD34D" fill-opacity="0.56"/>
+  </g>
+
+  <path d="M176 198c198 14 388 14 570 0M184 248c176 12 342 12 500 0M192 298c142 10 272 10 390 0" stroke="#F8FAFC" stroke-opacity="0.08" stroke-width="10" stroke-linecap="round"/>
+
+  <rect x="96" y="96" width="1408" height="708" rx="38" stroke="#F8FAFC" stroke-opacity="0.08" stroke-width="2"/>
+</svg>

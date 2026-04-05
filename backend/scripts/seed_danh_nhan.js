@@ -11,7 +11,10 @@ const Chronological = require('../models/Chronological');
 
 const seedData = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/history_game';
+    const mongoUri = process.env.MONGO_URI;
+    if (!mongoUri) {
+      throw new Error("Biến môi trường MONGO_URI chưa được thiết lập. Vui lòng kiểm tra file .env");
+    }
     await mongoose.connect(mongoUri);
     console.log("🚀 Lấy năng lượng từ 13 vị anh hùng... (Kết nối Database)");
 

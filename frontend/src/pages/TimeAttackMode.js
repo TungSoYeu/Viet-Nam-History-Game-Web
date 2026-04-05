@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Flame, ChevronRight, Clock3, Trophy, Bolt } from "lucide-react";
+import { ArrowLeft, Flame, ChevronRight, Clock3, Trophy, Bolt, Play } from "lucide-react";
 import { lightningFastQuestions } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
@@ -10,8 +10,11 @@ import {
   shuffleArray,
 } from "../utils/gameHelpers";
 
-/** 60 giây theo mô tả + 10 giây nhịp “thêm” cho lớp vừa kịp 30 câu */
-const SESSION_TIME = 70;
+/* eslint-disable react-hooks/exhaustive-deps */
+
+const PREP_TIME = 20;
+const PLAY_TIME = 60;
+const SESSION_TIME = PLAY_TIME;
 const TOTAL_QUESTIONS = 30;
 const STREAK_FLAME_SLOTS = 10;
 const MODE_ID = "lightning-fast";
@@ -28,6 +31,7 @@ export default function TimeAttackMode() {
       : lightningFastQuestions;
   const targetQuestionCount = Math.min(TOTAL_QUESTIONS, activeQuestionBank.length);
   const [timeLeft, setTimeLeft] = useState(SESSION_TIME);
+  const [prepTimeLeft, setPrepTimeLeft] = useState(PREP_TIME);
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -37,51 +41,93 @@ export default function TimeAttackMode() {
   const [finished, setFinished] = useState(false);
   const [xpSaved, setXpSaved] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [phase, setPhase] = useState("intro");
+  const [timerRunning, setTimerRunning] = useState(false);
   const startedAtRef = useRef(Date.now());
+  const sessionActiveRef = useRef(false);
+  const autoAdvanceRef = useRef(null);
 
   const currentQuestion = questions[currentIndex];
 
   const buildQuestionSet = () =>
     shuffleArray(activeQuestionBank).slice(0, targetQuestionCount);
 
+  const endSession = (payload) => {
+    if (!sessionActiveRef.current) return;
+    logGameTelemetry(MODE_ID, "session_end", payload);
+    sessionActiveRef.current = false;
+  };
+
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceRef.current) {
+        window.clearTimeout(autoAdvanceRef.current);
+      }
+    };
+  }, []);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (loading || targetQuestionCount === 0) return;
 
-    resetModeSessionId(MODE_ID);
-    startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", { totalQuestions: targetQuestionCount });
+    sessionActiveRef.current = false;
     setQuestions(buildQuestionSet());
     setCurrentIndex(0);
-    setTimeLeft(SESSION_TIME);
+    setTimeLeft(PLAY_TIME);
+    setPrepTimeLeft(PREP_TIME);
     setScore(0);
     setStreak(0);
     setBestStreak(0);
     setFeedback(null);
     setFinished(false);
     setXpSaved(false);
+    setHasStarted(false);
+    setPhase("intro");
+    setTimerRunning(false);
     setSessionReady(true);
   }, [loading, targetQuestionCount, activeQuestionBank]);
 
 
   useEffect(() => {
-    if (finished) return;
+    if (!timerRunning || finished) return;
 
-    if (timeLeft <= 0) {
-      setFinished(true);
-      return;
+    if (phase === "prep") {
+      if (prepTimeLeft <= 0) {
+        setTimerRunning(false);
+        setPhase("play-ready");
+        return;
+      }
+
+      const timer = window.setTimeout(() => {
+        setPrepTimeLeft((prev) => prev - 1);
+      }, 1000);
+
+      return () => window.clearTimeout(timer);
     }
 
-    const timer = window.setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
+    if (phase === "play") {
+      if (timeLeft <= 0) {
+        setTimerRunning(false);
+        setFinished(true);
+        setPhase("finished");
+        return;
+      }
 
-    return () => window.clearInterval(timer);
-  }, [finished, timeLeft]);
+      const timer = window.setTimeout(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [finished, phase, prepTimeLeft, timeLeft, timerRunning]);
 
 
   useEffect(() => {
-    if (finished && !xpSaved) {
-      logGameTelemetry(MODE_ID, "session_end", {
+    if (finished && phase === "finished" && !xpSaved) {
+      endSession({
         solved: true,
         score,
         bestStreak,
@@ -90,21 +136,84 @@ export default function TimeAttackMode() {
       saveXp(score);
       setXpSaved(true);
     }
-  }, [bestStreak, finished, score, xpSaved]);
+  }, [bestStreak, finished, phase, score, xpSaved]);
+
+  const startMode = () => {
+    if (phase === "intro") {
+      resetModeSessionId(MODE_ID);
+      startedAtRef.current = Date.now();
+      sessionActiveRef.current = true;
+      logGameTelemetry(MODE_ID, "session_start", {
+        totalQuestions: targetQuestionCount,
+        prepSeconds: PREP_TIME,
+        playSeconds: PLAY_TIME,
+      });
+      setQuestions(buildQuestionSet());
+      setCurrentIndex(0);
+      setPrepTimeLeft(PREP_TIME);
+      setTimeLeft(PLAY_TIME);
+      setScore(0);
+      setStreak(0);
+      setBestStreak(0);
+      setFeedback(null);
+      setFinished(false);
+      setXpSaved(false);
+      setHasStarted(false);
+      setPhase("prep");
+      setTimerRunning(true);
+      return;
+    }
+
+    if (phase === "prep") {
+      setTimerRunning(true);
+      return;
+    }
+
+    if (phase === "play-ready") {
+      setFeedback(null);
+      setHasStarted(true);
+      setPhase("play");
+      setTimeLeft(PLAY_TIME);
+      setTimerRunning(true);
+      return;
+    }
+
+    if (phase === "play") {
+      setTimerRunning(true);
+    }
+  };
+
+  const stopMode = () => {
+    if (autoAdvanceRef.current) {
+      window.clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
+    setTimerRunning(false);
+  };
+
+  const toggleRunState = () => {
+    if (timerRunning) {
+      stopMode();
+      return;
+    }
+    startMode();
+  };
 
   const handleExit = async () => {
-    logGameTelemetry(MODE_ID, "session_end", {
+    endSession({
       solved: false,
       score,
       bestStreak,
       durationMs: Date.now() - startedAtRef.current,
     });
-    if (!finished && score > 0) await saveXp(score);
+    if ((phase === "prep" || phase === "play" || phase === "play-ready") && !finished && score > 0) {
+      await saveXp(score);
+    }
     navigate("/modes");
   };
 
   const handleAnswer = (option) => {
-    if (!currentQuestion || feedback) return;
+    if (!hasStarted || phase !== "play" || !timerRunning || !currentQuestion || feedback) return;
     const correct = option === currentQuestion.correctAnswer;
 
     logGameTelemetry(MODE_ID, "answer_submitted", {
@@ -130,7 +239,7 @@ export default function TimeAttackMode() {
       });
       
       // Auto advance after correct answer in "Nhanh như chớp" to keep pace
-      setTimeout(nextQuestion, 600);
+      autoAdvanceRef.current = window.setTimeout(nextQuestion, 600);
       return;
     }
 
@@ -146,8 +255,14 @@ export default function TimeAttackMode() {
   };
 
   const nextQuestion = () => {
+    if (autoAdvanceRef.current) {
+      window.clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
     if (currentIndex === questions.length - 1) {
+      setTimerRunning(false);
       setFinished(true);
+      setPhase("finished");
       return;
     }
 
@@ -156,28 +271,26 @@ export default function TimeAttackMode() {
   };
 
   const restartMode = () => {
-    logGameTelemetry(MODE_ID, "session_end", {
+    endSession({
       solved: false,
       score,
       bestStreak,
       durationMs: Date.now() - startedAtRef.current,
       reason: "restart",
     });
-    resetModeSessionId(MODE_ID);
-    startedAtRef.current = Date.now();
-    logGameTelemetry(MODE_ID, "session_start", {
-      totalQuestions: targetQuestionCount,
-      replay: true,
-    });
     setQuestions(buildQuestionSet());
     setCurrentIndex(0);
-    setTimeLeft(SESSION_TIME);
+    setTimeLeft(PLAY_TIME);
+    setPrepTimeLeft(PREP_TIME);
     setScore(0);
     setStreak(0);
     setBestStreak(0);
     setFeedback(null);
     setFinished(false);
     setXpSaved(false);
+    setHasStarted(false);
+    setPhase("intro");
+    setTimerRunning(false);
     setSessionReady(true);
   };
 
@@ -189,7 +302,78 @@ export default function TimeAttackMode() {
     );
   }
 
-  if (!currentQuestion && !finished) {
+  if ((phase === "intro" || phase === "prep" || phase === "play-ready") && !finished) {
+    return (
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center">
+        <div className="w-full max-w-3xl rounded-[32px] border border-amber-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
+            <Bolt size={38} />
+          </div>
+          <h1 className="vn-safe-heading mt-5 text-3xl sm:text-4xl font-black tracking-[0.08em] text-amber-300">
+            Nhanh như chớp
+          </h1>
+          <p className="mt-4 text-slate-300">
+            {phase === "play-ready"
+              ? "Lần 2: bấm BẮT ĐẦU để vào trò chơi. Chỉ từ lúc này câu hỏi mới hiện ra và 60 giây mới bắt đầu chạy."
+              : "Lần 1: bấm BẮT ĐẦU để chạy 20 giây chuẩn bị. Hết 20 giây hệ thống sẽ tách sang màn bắt đầu lần 2, không gộp chung thời gian."}
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-5">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                Số Câu
+              </div>
+              <div className="mt-2 text-3xl font-black text-white">{targetQuestionCount}</div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-5">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                {phase === "play-ready" ? "Lần 2" : "Lần 1"}
+              </div>
+              <div className="mt-2 text-3xl font-black text-amber-300">
+                {phase === "prep" ? `${prepTimeLeft}s` : phase === "play-ready" ? `${PLAY_TIME}s` : `${PREP_TIME}s`}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-5">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                Điều Khiển
+              </div>
+              <div className="mt-2 text-lg font-black text-white">
+                {timerRunning ? "Đang chạy" : phase === "play-ready" ? "Chờ bắt đầu lần 2" : "Bắt đầu thủ công"}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={startMode}
+              disabled={timerRunning || phase === "prep"}
+              className="flex-1 rounded-2xl bg-amber-500 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
+            >
+              <span className="inline-flex items-center gap-2">
+                <Play size={18} />
+                BẮT ĐẦU
+              </span>
+            </button>
+            <button
+              onClick={toggleRunState}
+              disabled={phase === "intro" || phase === "play-ready"}
+              className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black text-white transition hover:bg-slate-700 disabled:opacity-50"
+            >
+              {timerRunning ? "DỪNG" : phase === "prep" || phase === "play" ? "TIẾP TỤC" : "DỪNG"}
+            </button>
+            <button
+              onClick={() => navigate("/modes")}
+              className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black text-white transition hover:bg-slate-700"
+            >
+              Về Chủ Đề 4
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentQuestion && phase === "play" && !finished) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
@@ -197,18 +381,18 @@ export default function TimeAttackMode() {
     );
   }
 
-  if (finished) {
+  if (finished || phase === "finished") {
     return (
       <div className="min-h-screen bg-[radial-gradient(circle_at_top,#451a03_0%,#020617_68%)] px-4 py-8 text-white flex items-center justify-center">
         <div className="w-full max-w-3xl rounded-[32px] border border-amber-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
             <Trophy size={40} />
           </div>
-          <h1 className="mt-5 text-3xl sm:text-4xl font-black uppercase tracking-[0.18em] text-amber-300">
-            Nhanh Như Chớp
+          <h1 className="vn-safe-heading mt-5 text-3xl sm:text-4xl font-black tracking-[0.08em] text-amber-300">
+            Nhanh như chớp
           </h1>
           <p className="mt-4 text-slate-300">
-            Bạn đã hoàn thành tối đa {targetQuestionCount} câu nhận biết trong nhịp thời gian nhanh của chế độ này, với chuỗi lửa theo số câu đúng liên tiếp.
+            Bạn đã hoàn thành lượt hỏi đáp nhanh với 2 pha tách biệt: 20 giây chuẩn bị và 60 giây vào trò chơi.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -270,9 +454,9 @@ export default function TimeAttackMode() {
           <div className="text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-amber-300">
               <Bolt size={16} />
-              Nhanh Như Chớp
+              Nhanh như chớp
             </div>
-            <h1 className="mt-3 text-2xl sm:text-3xl font-black uppercase tracking-[0.18em] text-white">
+            <h1 className="vn-safe-heading mt-3 text-2xl sm:text-3xl font-black tracking-[0.08em] text-white">
               Hỏi Nhanh, Đáp Nhanh
             </h1>
           </div>
@@ -298,25 +482,42 @@ export default function TimeAttackMode() {
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
             <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-              Đồng Hồ Thời Gian
-            </div>
-
-            <div className="mt-6 flex flex-col items-center">
-              <div className="relative flex h-44 w-44 items-center justify-center rounded-full border-[10px] border-amber-400/20 bg-slate-950">
-                <div className="absolute inset-4 rounded-full border border-white/10" />
-                <div className="text-center">
-                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
-                    <Clock3 size={20} />
-                  </div>
-                  <div className="text-5xl font-black text-amber-300">{timeLeft}</div>
-                  <div className="mt-1 text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                    Giây
-                  </div>
-                </div>
-              </div>
+              Hai Mốc Thời Gian
             </div>
 
             <div className="mt-6 space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
+                <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                  Lần 1: Chuẩn bị
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-3xl font-black text-amber-300">
+                  <Clock3 size={20} />
+                  {prepTimeLeft}s / {PREP_TIME}s
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
+                <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                  Lần 2: Vào game
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-3xl font-black text-amber-300">
+                  <Clock3 size={20} />
+                  {timeLeft}s / {PLAY_TIME}s
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  disabled
+                  className="rounded-2xl bg-amber-500 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
+                >
+                  BẮT ĐẦU
+                </button>
+                <button
+                  onClick={toggleRunState}
+                  className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black text-white transition hover:bg-slate-700 disabled:opacity-50"
+                >
+                  {timerRunning ? "DỪNG" : "TIẾP TỤC"}
+                </button>
+              </div>
               <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
                 <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
                   Chuỗi lửa
@@ -352,17 +553,16 @@ export default function TimeAttackMode() {
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {currentQuestion.options.map((option, index) => {
-                  const isCorrect = option === currentQuestion.correctAnswer;
                   const isChosen = feedback?.selectedOption === option;
 
                   return (
                     <button
                       key={option}
                       onClick={() => handleAnswer(option)}
-                      disabled={Boolean(feedback)}
-                      className={`rounded-2xl border p-4 text-left transition ${
+                      disabled={Boolean(feedback) || !timerRunning}
+                      className={`rounded-2xl border p-4 text-left transition disabled:opacity-50 ${
                         feedback
-                          ? isCorrect
+                          ? isChosen && feedback.correct
                             ? "border-emerald-400/30 bg-emerald-500/15 text-emerald-100"
                             : isChosen
                               ? "border-rose-400/30 bg-rose-500/15 text-rose-100"
@@ -389,13 +589,7 @@ export default function TimeAttackMode() {
                 >
                   <div className="text-lg font-black text-white">{feedback.message}</div>
                   <div className="mt-2 text-sm text-slate-300">
-                    Đáp án đúng:{" "}
-                    <span className="font-bold text-amber-300">
-                      {feedback.answer}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-sm text-slate-300">
-                    {feedback.explanation}
+                    Đáp án và giải thích sẽ chỉ được công bố khi kết thúc chế độ.
                   </div>
                   {feedback.correct && (
                     <div className="mt-3 text-sm font-bold text-emerald-300">

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { normalizeRole } = require('../utils/roleUtils');
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -25,7 +26,7 @@ const userSchema = new mongoose.Schema({
     tier: { type: String, enum: ['bronze', 'silver', 'gold'], default: 'bronze' }
   }],
   unlockedTerritories: [{ type: String }],
-  role: { type: String, enum: ['user', 'admin'], default: 'user' }
+  role: { type: String, enum: ['student', 'teacher', 'user', 'admin'], default: 'student' }
 }, { timestamps: true });
 
 // Hash password before saving
@@ -39,6 +40,10 @@ userSchema.pre('save', async function() {
 userSchema.methods.comparePassword = async function(candidatePassword) {
   if (!this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.methods.getNormalizedRole = function() {
+  return normalizeRole(this.role);
 };
 
 module.exports = mongoose.model('User', userSchema);
