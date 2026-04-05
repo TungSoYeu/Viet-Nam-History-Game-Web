@@ -25,7 +25,24 @@ const questionSchema = new mongoose.Schema({
   location: { type: String, default: null }, // Ví dụ: 'ChiLang', 'BachDang', 'DienBienPhu'
   
   // Độ khó (tùy chọn)
-  difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' }
+  difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
+  visibilityScope: {
+    type: String,
+    enum: ['global', 'class'],
+    default: 'global'
+  },
+  classroomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Classroom',
+    default: null,
+    index: true
+  },
+  ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Question', questionSchema);

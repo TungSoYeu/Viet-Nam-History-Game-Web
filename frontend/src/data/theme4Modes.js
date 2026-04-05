@@ -1,23 +1,23 @@
 export const theme4Modes = [
   {
     id: "turning-page",
-    name: "Lật Mở Trang Sử",
-    desc: "Mở 10 bức ảnh bí ẩn qua 40 dữ kiện của Chủ đề 4.",
+    name: "Lật mở trang sử",
+    desc: "Mỗi ảnh có 4 từ khóa, 4 câu hỏi và các lượt đoán nhanh theo thời gian.",
     longDesc:
-      "Mỗi bức ảnh là một ẩn số lịch sử gắn với anh hùng dân tộc, nhân vật lịch sử, di tích hoặc địa danh tiêu biểu trước năm 1945. Ảnh được chia thành lưới 2x2 với 4 mảnh ghép; học sinh giải đúng từng dữ kiện để lật mở ảnh và xác định chính xác đáp án.",
+      "Mỗi bức ảnh là một ẩn số lịch sử. Học sinh lần lượt mở 4 từ khóa qua 4 câu hỏi riêng biệt; mỗi lần mở được một từ khóa cũng đồng thời lật ra một góc của hình ảnh, sau đó có thêm 5 giây để đưa ra dự đoán như cách chơi gợi mở của Olympia.",
     path: "/reveal-picture",
     bgImage: "/assets/images/bg-reveal-history.svg",
     gradient:
       "linear-gradient(135deg, rgba(79, 70, 229, 0.8), rgba(99, 102, 241, 0.8))",
-    stats: "10 ảnh bí ẩn | 40 dữ kiện",
+    stats: "10 ảnh | 4 từ khóa/ảnh",
     rewardText: "Tối đa 100 XP",
   },
   {
     id: "understanding-teammates",
-    name: "Hiểu Ý Đồng Đội",
-    desc: "5 gói đoán ý với 50 từ khóa lịch sử trọng tâm.",
+    name: "Hiểu ý đồng đội",
+    desc: "5 gói tổng hợp từ khóa với 30s chuẩn bị và 60s đoán.",
     longDesc:
-      "Đây là một trò chơi tương tác trực tiếp giữa học sinh. Mỗi gói có 10 từ khóa thuộc các nhóm: nhân vật lịch sử, sự kiện hoặc phong trào, địa danh hoặc trận đánh, và khái niệm hay thuật ngữ quan trọng của Chủ đề 4.",
+      "Đây là trò chơi tương tác trực tiếp giữa học sinh theo cặp hoặc nhóm nhỏ. Mỗi gói gồm 10 từ khóa tổng hợp, được trộn nhiều dạng nội dung lịch sử để người gợi ý ghi nhớ trong 30 giây và người đoán trả lời liên tục trong 60 giây.",
     path: "/pvp",
     bgImage: "/assets/images/bg-pvp-teamwork.svg",
     gradient:
@@ -27,23 +27,23 @@ export const theme4Modes = [
   },
   {
     id: "historical-recognition",
-    name: "Nhận Diện Lịch Sử",
-    desc: "Nhận diện từ khóa từ hình ảnh và ngược lại.",
+    name: "Nhận diện lịch sử",
+    desc: "Gồm 2 mode nhỏ: hình ảnh, lược đồ -> từ khóa và từ khóa -> hình ảnh.",
     longDesc:
-      "Trò chơi gồm 2 hướng nhận diện: quan sát hình ảnh hoặc lược đồ để tìm từ khóa, và dựa vào hệ thống từ khóa gợi ý để xác định hình ảnh, nhân vật, địa danh hay sự kiện tương ứng. Tổng cộng có 10 nội dung nhận diện.",
+      "Mode 3 được tách thành 2 mode nhỏ riêng. Người chơi chọn một nhánh trước khi bắt đầu: quan sát hình ảnh hoặc lược đồ để nhận diện từ khóa lịch sử, hoặc đọc hệ thống từ khóa gợi ý để nhận diện đúng hình ảnh, nhân vật, địa danh hay sự kiện tương ứng.",
     path: "/guess-character",
     bgImage: "/assets/images/bg-recognition-scan.svg",
     gradient:
       "linear-gradient(135deg, rgba(13, 148, 136, 0.8), rgba(20, 184, 166, 0.8))",
-    stats: "10 nội dung | 2 hướng",
+    stats: "2 mode nhỏ | 5 câu/mode",
     rewardText: "10 XP / đáp án đúng",
   },
   {
     id: "connecting-history",
-    name: "Kết Nối Lịch Sử",
-    desc: "Nối hình ảnh - thông tin và thông tin - thông tin.",
+    name: "Kết nối lịch sử",
+    desc: "Kéo thả các thẻ dữ kiện rồi bấm hoàn thành mới chấm đúng sai.",
     longDesc:
-      "Gồm 10 câu kết nối: 5 câu nối hình ảnh với thông tin phù hợp và 5 câu nối thông tin với thông tin. Mỗi câu thường có 5 đáp án đúng và 1 phương án nhiễu để tăng yêu cầu phân tích.",
+      "Gồm 10 lượt kết nối: 5 lượt nối hình ảnh với thông tin phù hợp và 5 lượt nối thông tin với thông tin. Người chơi kéo thả toàn bộ thẻ trong thời gian giới hạn rồi bấm hoàn thành để hệ thống chấm một lượt.",
     path: "/matching",
     bgImage: "/assets/images/bg-matching-links.svg",
     gradient:
@@ -53,10 +53,10 @@ export const theme4Modes = [
   },
   {
     id: "crossword-decoding",
-    name: "Giải Mã Ô Chữ",
-    desc: "Giải hàng ngang để tìm từ khóa trung tâm hàng dọc.",
+    name: "Giải mã ô chữ",
+    desc: "Bảng ô chữ kiểu Olympia với các phần Ô chữ 1, Ô chữ 2...",
     longDesc:
-      "Trò chơi gồm 5 từ khóa hàng dọc. Mỗi từ khóa có từ 5 đến 10 câu hỏi hàng ngang; mỗi câu trả lời đúng sẽ mở thêm dữ kiện để học sinh suy luận ra từ khóa trung tâm.",
+      "Trò chơi gồm 5 phần ô chữ. Mỗi phần có các câu hỏi hàng ngang theo nhịp 15 giây, hiển thị dưới dạng bảng ô chữ để học sinh dần mở các ký tự của từ khóa hàng dọc.",
     path: "/millionaire",
     bgImage: "/assets/images/bg-crossword-amber.svg",
     gradient:
@@ -66,7 +66,7 @@ export const theme4Modes = [
   },
   {
     id: "historical-flow",
-    name: "Dòng Chảy Lịch Sử",
+    name: "Dòng chảy lịch sử",
     desc: "Phân loại dữ kiện vào đúng dòng chảy của sự kiện lịch sử.",
     longDesc:
       "Học sinh nhận diện và kéo thả các dữ kiện vào 4 nhóm: Bối cảnh, Diễn biến, Kết quả - Ý nghĩa và Di sản để lại. Trò chơi giúp tái hiện tiến trình sự kiện lịch sử một cách có hệ thống.",
@@ -79,7 +79,7 @@ export const theme4Modes = [
   },
   {
     id: "lightning-fast",
-    name: "Nhanh Như Chớp",
+    name: "Nhanh như chớp",
     desc: "30 câu nhận biết với đồng hồ đếm ngược và chuỗi lửa.",
     longDesc:
       "Giữ cấu trúc hỏi nhanh liên tiếp như chế độ cũ, đồng thời thêm nhịp thời gian 10 giây và chuỗi lửa theo số câu đúng liên tiếp để tăng áp lực phản xạ và độ sinh động khi chơi.",
@@ -92,15 +92,15 @@ export const theme4Modes = [
   },
   {
     id: "picture-puzzle",
-    name: "Đuổi Hình Bắt Chữ",
-    desc: "Ghép từ khóa từ 2-4 hình ảnh để ra đáp án lịch sử.",
+    name: "Đuổi hình bắt chữ",
+    desc: "Quan sát 2-4 hình và ghép đáp án trong 15 giây mỗi câu.",
     longDesc:
-      "Mỗi câu gồm từ 2 đến 4 hình ảnh. Học sinh xác định từ khóa của từng hình rồi ghép lại để tạo thành một nội dung lịch sử hoàn chỉnh như sự kiện, phong trào, địa danh, nhân vật hoặc khái niệm.",
+      "Mỗi câu gồm từ 2 đến 4 hình ảnh. Học sinh bấm bắt đầu để mở lượt 15 giây, xác định từ khóa của từng hình rồi ghép lại thành một nội dung lịch sử hoàn chỉnh như sự kiện, phong trào, địa danh, nhân vật hoặc khái niệm.",
     path: "/territory-map",
     bgImage: "/assets/images/bg-picture-puzzle.svg",
     gradient:
       "linear-gradient(135deg, rgba(234, 88, 12, 0.8), rgba(249, 115, 22, 0.8))",
-    stats: "10 câu | 2-4 hình/câu",
+    stats: "11 câu | 2-4 hình/câu",
     rewardText: "10 XP / đáp án đúng",
   },
 ];

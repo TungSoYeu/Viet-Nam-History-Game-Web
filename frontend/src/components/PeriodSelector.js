@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Zap } from 'lucide-react';
-import API_BASE_URL from '../config/api';
+import { buildApiHeaders, buildApiUrl } from '../utils/classroomContext';
 
 export default function PeriodSelector({ onSelect, onBack, title, description }) {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/lessons`)
+    fetch(buildApiUrl('/api/lessons'), {
+      headers: buildApiHeaders({ includeJson: false }),
+    })
       .then(res => res.json())
       .then(data => {
         setLessons(data);

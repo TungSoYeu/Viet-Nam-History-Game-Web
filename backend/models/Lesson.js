@@ -5,6 +5,23 @@ const lessonSchema = new mongoose.Schema({
   description: { type: String },
   order: { type: Number, required: true },
   imageUrl: { type: String },
+  visibilityScope: {
+    type: String,
+    enum: ['global', 'class'],
+    default: 'global'
+  },
+  classroomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Classroom',
+    default: null,
+    index: true
+  },
+  ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true
+  },
   
   // Khu vực Học tập (Royal Library)
   wiki: {

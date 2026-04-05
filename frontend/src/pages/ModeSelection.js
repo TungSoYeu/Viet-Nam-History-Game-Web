@@ -137,11 +137,26 @@ export default function ModeSelection() {
         <ParticlesBackground type="dust" />
         <div className="responsive-container py-8 sm:py-12 relative z-10">
           {/* Header */}
-          <header className="mb-8 text-center mt-4">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(212,160,83,0.8)' }}>Chủ đề 4</p>
-            <h1 className="historical-title mb-2 text-white" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Chiến Tranh Bảo Vệ Tổ Quốc</h1>
-            <p className="text-sm max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Bộ trò chơi của Bài 7 và Bài 8 với số lượng câu hỏi cố định, hình ảnh lịch sử chính thống và lược đồ nhận diện.
+          <header className="parchment-panel max-w-4xl mx-auto mb-8 mt-4 rounded-[32px] px-6 py-7 text-center sm:px-10 sm:py-8">
+            <div className="mb-3 flex justify-center">
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em]"
+                style={{
+                  color: 'rgba(240, 212, 138, 0.9)',
+                  background: 'rgba(18, 20, 28, 0.28)',
+                  border: '1px solid rgba(255, 248, 220, 0.12)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+                }}
+              >
+                <BookOpen size={14} strokeWidth={1.8} />
+                <span>Chủ đề 4</span>
+              </div>
+            </div>
+            <h1 className="historical-title mb-3 text-white drop-shadow-md" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Chiến tranh Bảo vệ Tổ quốc và giải phóng dân tộc
+            </h1>
+            <p className="parchment-text-soft text-sm max-w-2xl mx-auto leading-7 sm:text-base">
+              Trước Cách mạng tháng Tám năm 1945. Bộ trò chơi của Bài 7 và Bài 8 với số lượng câu hỏi cố định, hình ảnh lịch sử chính thống và lược đồ nhận diện.
             </p>
           </header>
 

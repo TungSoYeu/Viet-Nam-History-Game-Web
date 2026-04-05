@@ -12,9 +12,13 @@ const {
   updateTheme4ModeItem,
 } = require("../services/theme4ContentService");
 
+function getTheme4Options(req) {
+  return req.theme4Options || {};
+}
+
 exports.getTheme4Content = async (req, res) => {
   try {
-    const content = await getTheme4Content();
+    const content = await getTheme4Content(getTheme4Options(req));
     res.json(content);
   } catch (error) {
     res.status(500).json({ message: "Unable to load Theme 4 content", error: error.message });
@@ -23,7 +27,7 @@ exports.getTheme4Content = async (req, res) => {
 
 exports.getTheme4Modes = async (req, res) => {
   try {
-    const content = await getTheme4Content();
+    const content = await getTheme4Content(getTheme4Options(req));
     res.json({
       theme: content.theme,
       lessons: content.lessons,
@@ -38,7 +42,7 @@ exports.getTheme4Modes = async (req, res) => {
 
 exports.getTheme4Mode = async (req, res) => {
   try {
-    const content = await getTheme4Content();
+    const content = await getTheme4Content(getTheme4Options(req));
     const mode = (content.modes || []).find((item) => item.id === req.params.modeId);
 
     if (!mode) {
@@ -72,7 +76,7 @@ exports.replaceTheme4Content = async (req, res) => {
       });
     }
 
-    const saved = await replaceTheme4Content(nextContent);
+    const saved = await replaceTheme4Content(nextContent, getTheme4Options(req));
     res.json({ success: true, content: saved });
   } catch (error) {
     res.status(500).json({ message: "Unable to save Theme 4 content", error: error.message });
@@ -81,7 +85,7 @@ exports.replaceTheme4Content = async (req, res) => {
 
 exports.syncTheme4Defaults = async (req, res) => {
   try {
-    const saved = await syncDefaultTheme4Content();
+    const saved = await syncDefaultTheme4Content(getTheme4Options(req));
     res.json({ success: true, content: saved });
   } catch (error) {
     res.status(500).json({ message: "Unable to sync Theme 4 defaults", error: error.message });
@@ -90,7 +94,7 @@ exports.syncTheme4Defaults = async (req, res) => {
 
 exports.getTheme4ModeItems = async (req, res) => {
   try {
-    const content = await getTheme4Content();
+    const content = await getTheme4Content(getTheme4Options(req));
     const mode = (content.modes || []).find((item) => item.id === req.params.modeId);
 
     if (!mode) {
@@ -117,7 +121,11 @@ exports.getTheme4ModeItems = async (req, res) => {
 
 exports.createTheme4ModeItem = async (req, res) => {
   try {
-    const item = await createTheme4ModeItem(req.params.modeId, req.body?.item || req.body);
+    const item = await createTheme4ModeItem(
+      req.params.modeId,
+      req.body?.item || req.body,
+      getTheme4Options(req)
+    );
     return res.json({ success: true, item });
   } catch (error) {
     return res.status(500).json({
@@ -133,7 +141,8 @@ exports.updateTheme4ModeItem = async (req, res) => {
     const item = await updateTheme4ModeItem(
       req.params.modeId,
       req.params.itemId,
-      req.body?.item || req.body
+      req.body?.item || req.body,
+      getTheme4Options(req)
     );
     return res.json({ success: true, item });
   } catch (error) {
@@ -147,7 +156,11 @@ exports.updateTheme4ModeItem = async (req, res) => {
 
 exports.deleteTheme4ModeItem = async (req, res) => {
   try {
-    const items = await deleteTheme4ModeItem(req.params.modeId, req.params.itemId);
+    const items = await deleteTheme4ModeItem(
+      req.params.modeId,
+      req.params.itemId,
+      getTheme4Options(req)
+    );
     return res.json({ success: true, items });
   } catch (error) {
     return res.status(500).json({

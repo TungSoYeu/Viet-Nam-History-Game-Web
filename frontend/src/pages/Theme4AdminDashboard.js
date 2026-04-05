@@ -23,12 +23,12 @@ const FALLBACK_MODE_DATA_KEYS = {
   "historical-recognition": "historicalRecognitionItems",
   "connecting-history": "connectingHistoryRounds",
   "crossword-decoding": "crosswordSets",
-  "historical-flow": "historicalFlowSet",
+  "historical-flow": "historicalFlowSets",
   "lightning-fast": "lightningFastQuestions",
   "picture-puzzle": "picturePuzzleItems",
 };
 
-const SINGLE_VALUE_MODE_IDS = new Set(["historical-flow"]);
+const SINGLE_VALUE_MODE_IDS = new Set([]);
 
 const MODE_EDITOR_CONFIG = {
   "turning-page": {
@@ -100,7 +100,7 @@ const MODE_EDITOR_CONFIG = {
   },
   "historical-flow": {
     helper:
-      "Mode này hiện dùng 1 bộ dữ kiện duy nhất. Mỗi sentence cần `id`, `text` và `group` thuộc `context`, `developments`, `result`, `legacy`.",
+      "Mỗi câu gồm nhiều `sentences`. `group` có thể là `context`, `developments`, `result`, `legacy` hoặc `extra` cho dữ kiện thừa gây nhiễu.",
     template: {
       id: "flow-new",
       title: "Tiến trình mới",
@@ -110,6 +110,7 @@ const MODE_EDITOR_CONFIG = {
         { id: "B", text: "", group: "developments" },
         { id: "C", text: "", group: "result" },
         { id: "D", text: "", group: "legacy" },
+        { id: "E", text: "", group: "extra" },
       ],
     },
   },
@@ -125,8 +126,9 @@ const MODE_EDITOR_CONFIG = {
   },
   "picture-puzzle": {
     helper:
-      "Mỗi câu ghép hình cần mảng `images`, `answer`, `acceptedAnswers` và `explanation`.",
+      "Mỗi câu ghép hình cần `prompt`, mảng `images`, `answer`, `acceptedAnswers` và `explanation`.",
     template: {
+      prompt: "",
       images: [""],
       answer: "",
       acceptedAnswers: [""],
@@ -183,7 +185,7 @@ function getModeItemLabel(modeId, item, index) {
     case "crossword-decoding":
       return item.title || item.keyword || `Ô chữ ${index + 1}`;
     case "historical-flow":
-      return item.title || "Bộ dòng chảy";
+      return item.title || `Câu dòng chảy ${index + 1}`;
     case "lightning-fast":
       return item.content || `Câu nhanh ${index + 1}`;
     case "picture-puzzle":

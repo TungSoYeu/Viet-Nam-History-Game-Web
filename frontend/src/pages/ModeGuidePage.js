@@ -42,6 +42,12 @@ export default function ModeGuidePage() {
   const mode = theme4Modes.find((item) => item.id === modeId);
   const guide = getTheme4ModeGuide(modeId);
   const Icon = iconMap[modeId] || ImageIcon;
+  const startButtonLabel =
+    modeId === "historical-recognition" ? "Chọn Mode Nhỏ" : "Bắt Đầu Trò Chơi";
+  const readinessText =
+    modeId === "historical-recognition"
+      ? "Sau bước này, bạn sẽ chọn 1 trong 2 mode nhỏ của Nhận diện lịch sử trước khi vào câu hỏi."
+      : "Trang này là bước đệm trước khi vào màn chơi. Sau khi đọc xong mục tiêu, cách tính điểm, luật chơi và ví dụ mẫu, bạn có thể vào chơi ngay.";
 
   if (!mode || !guide) {
     return (
@@ -107,7 +113,7 @@ export default function ModeGuidePage() {
                   <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-slate-900/50 text-white">
                     <Icon size={30} />
                   </div>
-                  <h1 className="text-3xl font-black uppercase tracking-[0.16em] sm:text-4xl">{mode.name}</h1>
+                  <h1 className="vn-safe-heading text-3xl font-black tracking-[0.08em] sm:text-4xl">{mode.name}</h1>
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-100/90 sm:text-base">
                     {mode.longDesc}
                   </p>
@@ -198,7 +204,7 @@ export default function ModeGuidePage() {
                 <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-300">Sẵn Sàng</div>
                 <h2 className="mt-3 text-2xl font-black text-white">Bắt đầu khi đã nắm luật chơi</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
-                  Trang này là bước đệm trước khi vào màn chơi. Sau khi đọc xong mục tiêu, cách tính điểm, luật chơi và ví dụ mẫu, bạn có thể vào chơi ngay.
+                  {readinessText}
                 </p>
 
                 <div className="mt-6 flex flex-col gap-3">
@@ -207,7 +213,7 @@ export default function ModeGuidePage() {
                     className="rounded-2xl px-5 py-4 text-base font-black uppercase tracking-[0.16em] text-white"
                     style={{ background: mode.gradient }}
                   >
-                    Bắt Đầu Trò Chơi
+                    {startButtonLabel}
                   </button>
                   <button
                     onClick={() => navigate("/modes")}

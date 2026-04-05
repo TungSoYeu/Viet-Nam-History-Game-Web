@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 import './App.css';
 import Navbar from './components/Navbar';
-import { AuthGuard, AdminGuard } from './components/RouteGuards';
+import { AuthGuard, TeacherGuard } from './components/RouteGuards';
 import { ToastProvider } from './components/Toast';
 
 import Login from './pages/Login';
@@ -26,18 +26,29 @@ import Leaderboard from './pages/Leaderboard';
 import ChronologicalMode from './pages/ChronologicalMode';
 import MillionaireMode from './pages/MillionaireMode';
 import GuessCharacterMode from './pages/GuessCharacterMode';
-import RevealPictureMode from './pages/RevealPictureMode';
+import RevealPictureMode from './pages/RevealPictureModeOlympia';
+import AdminDashboard from './pages/AdminDashboard';
+import CourseManagement from './pages/CourseManagement';
 import NotFound from './pages/NotFound';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import FullscreenGameWrapper from './components/FullscreenGameWrapper';
 
-// Thành phần chứa các Route để có thể sử dụng useLocation()
+const gameRoutes = ['/survival', '/time-attack', '/matching', '/pvp', '/chronological', '/millionaire', '/territory-map', '/guess-character', '/reveal-picture'];
+
 function AppContent() {
   const location = useLocation();
+  const isGameRoute = gameRoutes.some(route => location.pathname === route || location.pathname.startsWith(route + '/'));
 
   return (
     <div className="App">
-      <Navbar />
-      <main className="app-content">
+      <div
+        className="app-global-bg"
+        aria-hidden="true"
+        style={{ backgroundImage: "url('/assets/images/background_homepage.jpg')" }}
+      />
+      <div className="app-global-overlay" aria-hidden="true" />
+      {!isGameRoute && <Navbar />}
+      <main className={`app-content${isGameRoute ? ' fullscreen-mode' : ''}`}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<LandingPage />} />
@@ -49,19 +60,22 @@ function AppContent() {
             <Route path="/timeline" element={<AuthGuard><Timeline /></AuthGuard>} />
             <Route path="/study/:lessonId" element={<AuthGuard><StudyDetail /></AuthGuard>} />
             <Route path="/play/:lessonId" element={<AuthGuard><GamePlay /></AuthGuard>} />
-            <Route path="/survival" element={<AuthGuard><SurvivalMode /></AuthGuard>} />
-            <Route path="/time-attack" element={<AuthGuard><TimeAttackMode /></AuthGuard>} />
-            <Route path="/matching" element={<AuthGuard><MatchingMode /></AuthGuard>} />
-            <Route path="/pvp" element={<AuthGuard><PvPMode /></AuthGuard>} />
-            <Route path="/pvp/battle" element={<AuthGuard><PvPBattle /></AuthGuard>} />
-            <Route path="/territory-map" element={<AuthGuard><TerritoryMap /></AuthGuard>} />
+            <Route path="/survival" element={<AuthGuard><FullscreenGameWrapper><SurvivalMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/time-attack" element={<AuthGuard><FullscreenGameWrapper><TimeAttackMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/matching" element={<AuthGuard><FullscreenGameWrapper><MatchingMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/pvp" element={<AuthGuard><FullscreenGameWrapper><PvPMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/pvp/battle" element={<AuthGuard><FullscreenGameWrapper><PvPBattle /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/territory-map" element={<AuthGuard><FullscreenGameWrapper><TerritoryMap /></FullscreenGameWrapper></AuthGuard>} />
             <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
-            <Route path="/admin" element={<AdminGuard><Theme4AdminManager /></AdminGuard>} />
+            <Route path="/courses" element={<AuthGuard><CourseManagement /></AuthGuard>} />
+            <Route path="/teacher/content" element={<TeacherGuard><AdminDashboard /></TeacherGuard>} />
+            <Route path="/teacher/theme4" element={<TeacherGuard><Theme4AdminManager /></TeacherGuard>} />
+            <Route path="/admin" element={<TeacherGuard><Theme4AdminManager /></TeacherGuard>} />
             <Route path="/leaderboard" element={<AuthGuard><Leaderboard /></AuthGuard>} />
-            <Route path="/chronological" element={<AuthGuard><ChronologicalMode /></AuthGuard>} />
-            <Route path="/millionaire" element={<AuthGuard><MillionaireMode /></AuthGuard>} />
-            <Route path="/guess-character" element={<AuthGuard><GuessCharacterMode /></AuthGuard>} />
-            <Route path="/reveal-picture" element={<AuthGuard><RevealPictureMode /></AuthGuard>} />
+            <Route path="/chronological" element={<AuthGuard><FullscreenGameWrapper><ChronologicalMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/millionaire" element={<AuthGuard><FullscreenGameWrapper><MillionaireMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/guess-character" element={<AuthGuard><FullscreenGameWrapper><GuessCharacterMode /></FullscreenGameWrapper></AuthGuard>} />
+            <Route path="/reveal-picture" element={<AuthGuard><FullscreenGameWrapper><RevealPictureMode /></FullscreenGameWrapper></AuthGuard>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
@@ -71,7 +85,7 @@ function AppContent() {
 }
 
 function App() {
-  const GOOGLE_CLIENT_ID = "943924493757-no7i1gd695lqsogvc8u90bguhkcl77pv.apps.googleusercontent.com"; 
+  const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "943924493757-no7i1gd695lqsogvc8u90bguhkcl77pv.apps.googleusercontent.com"; 
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

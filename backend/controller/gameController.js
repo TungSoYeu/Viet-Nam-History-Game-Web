@@ -239,7 +239,9 @@ exports.getRandomChronological = async (req, res) => {
         const data = await Chronological.aggregate([{ $sample: { size: 1 } }]);
         if (data.length === 0) {
             const theme4Content = await getTheme4Content();
-            const flow = theme4Content?.gameData?.historicalFlowSet;
+            const flow = Array.isArray(theme4Content?.gameData?.historicalFlowSets)
+                ? theme4Content.gameData.historicalFlowSets[0]
+                : theme4Content?.gameData?.historicalFlowSet;
 
             if (!flow) return res.status(200).json({ events: [] });
 

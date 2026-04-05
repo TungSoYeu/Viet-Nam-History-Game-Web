@@ -198,8 +198,8 @@ export default function RevealPictureMode() {
           }}
         >
           <CheckCircle size={64} className="text-green-400 mx-auto mb-4" />
-          <h2 className="text-3xl md:text-4xl font-black text-amber-400 mb-4 uppercase">
-            Lật Mở Trang Sử Thành Công
+          <h2 className="vn-safe-heading text-3xl md:text-4xl font-black text-amber-400 mb-4">
+            Lật mở trang sử thành công
           </h2>
           <p className="text-xl font-bold text-white mb-6">
             Đáp án là <span className="text-amber-500 uppercase">{pictureData.answer}</span>
@@ -248,14 +248,14 @@ export default function RevealPictureMode() {
           </button>
         </div>
         <h1
-          className="text-lg sm:text-2xl md:text-3xl font-black uppercase tracking-widest text-center flex items-center justify-center gap-2 drop-shadow-md text-white"
+          className="vn-safe-heading text-lg sm:text-2xl md:text-3xl font-black tracking-[0.08em] text-center flex items-center justify-center gap-2 drop-shadow-md text-white"
           style={{
             background: "linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}
         >
-          <ImageIcon size={24} className="text-amber-500 hidden sm:block" /> Lật Mở Trang Sử
+          <ImageIcon size={24} className="text-amber-500 hidden sm:block" /> Lật mở trang sử
         </h1>
         <div className="flex justify-end">
           <div
@@ -307,7 +307,7 @@ export default function RevealPictureMode() {
               <div
                 key={index}
                 onClick={() => handleTileClick(index)}
-                className={`border origin-center flex items-center justify-center transition-all duration-700 cursor-pointer shadow-lg backdrop-blur-md ${
+                className={`border origin-center flex items-center justify-center transition-all duration-700 cursor-pointer shadow-lg ${
                   revealedTiles.includes(index)
                     ? "opacity-0 pointer-events-none scale-0 rotate-[360deg]"
                     : "hover:scale-[1.02] hover:z-10 hover:shadow-2xl"
@@ -315,9 +315,9 @@ export default function RevealPictureMode() {
                 style={
                   !revealedTiles.includes(index)
                     ? {
-                        background: "linear-gradient(135deg, rgba(30,58,138,0.95) 0%, rgba(15,23,42,0.98) 100%)",
-                        borderColor: "rgba(212,160,83,0.5)",
-                        boxShadow: "inset 0 0 30px rgba(0,0,0,0.8)",
+                        background: "linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)",
+                        borderColor: "#8f7346",
+                        boxShadow: "inset 0 0 36px rgba(0,0,0,0.92)",
                       }
                     : {}
                 }
@@ -372,7 +372,7 @@ export default function RevealPictureMode() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-rose-300">Phản hồi</p>
               <p className="mt-2 text-sm text-white">{guessFeedback.explanation}</p>
               <p className="mt-2 text-sm text-slate-300">
-                Đáp án chuẩn: <span className="font-black text-amber-300">{guessFeedback.answer}</span>
+                Đáp án chỉ được công bố khi kết thúc hình này.
               </p>
             </div>
           ) : null}
@@ -429,7 +429,7 @@ export default function RevealPictureMode() {
                   {tileFeedback.correct ? "Phản hồi: Chính xác" : "Phản hồi: Chưa đúng"}
                 </p>
                 <p className="mt-2 text-sm text-slate-200">
-                  Đáp án chuẩn: <span className="font-black text-amber-300">{tileFeedback.answer}</span>
+                  Ô hình đã được mở, nhưng đáp án câu hỏi chỉ công bố khi kết thúc lượt chơi.
                 </p>
                 <button
                   onClick={() => {

@@ -10,8 +10,8 @@ const BACKGROUND_IMAGES = [
   "/assets/images/vinh_ha_long.png",
   "/assets/images/co_do_hue.png",
   "/assets/images/ho_guom.png",
-  "/assets/images/van_mieu_quoc_tu_giam.png",
-  "/assets/images/pho_co_hoi_an.png"
+  "/assets/images/pho_co_hoi_an.png",
+  "/assets/images/van_mieu_quoc_tu_giam.png"
 ];
 
 export default function LandingPage() {
@@ -34,7 +34,7 @@ export default function LandingPage() {
         <ParticlesBackground type="dust" />
         
         {/* 1. Animated Background Carousel Layer */}
-        <div className="absolute inset-0 z-0 bg-slate-900">
+        <div className="fixed inset-0 z-0 pointer-events-none">
           {BACKGROUND_IMAGES.map((imgUrl, idx) => {
             const isNear = Math.abs(idx - currentImageIndex) <= 1 || (idx === 0 && currentImageIndex === BACKGROUND_IMAGES.length - 1) || (currentImageIndex === 0 && idx === BACKGROUND_IMAGES.length - 1);
             return (
@@ -46,7 +46,7 @@ export default function LandingPage() {
                   opacity: idx === currentImageIndex ? 1 : 0,
                   transform: idx === currentImageIndex ? 'scale(1.05)' : 'scale(1)',
                   transition: 'opacity 1s ease-in-out, transform 5s linear',
-                  filter: 'brightness(0.8) saturate(1.2)'
+                  filter: 'brightness(0.92) saturate(1.05)'
                 }}
               />
             );
@@ -55,9 +55,9 @@ export default function LandingPage() {
 
         {/* 2. Unified Vignette / Dark Glass Overlay Layer */}
         <div 
-          className="absolute inset-0 z-10" 
+          className="fixed inset-0 z-10 pointer-events-none"
           style={{ 
-            background: 'radial-gradient(circle at center, rgba(15, 23, 42, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%)',
+            background: 'radial-gradient(circle at center, rgba(15, 23, 42, 0.16) 0%, rgba(15, 23, 42, 0.62) 100%)',
             backdropFilter: 'blur(2px)'
           }}
         ></div>

@@ -1,9 +1,10 @@
 const Theme4Content = require("../models/Theme4Content");
+const Theme4ClassContent = require("../models/Theme4ClassContent");
 const { theme4Content } = require("../data/theme4DefaultContent");
 const { randomUUID } = require("crypto");
 
 const THEME4_SINGLETON_KEY = "theme4";
-const SINGLE_VALUE_MODE_IDS = new Set(["historical-flow"]);
+const SINGLE_VALUE_MODE_IDS = new Set([]);
 
 const modeDataKeys = {
   "turning-page": "revealPictureSets",
@@ -11,7 +12,7 @@ const modeDataKeys = {
   "historical-recognition": "historicalRecognitionItems",
   "connecting-history": "connectingHistoryRounds",
   "crossword-decoding": "crosswordSets",
-  "historical-flow": "historicalFlowSet",
+  "historical-flow": "historicalFlowSets",
   "lightning-fast": "lightningFastQuestions",
   "picture-puzzle": "picturePuzzleItems",
 };
@@ -89,33 +90,69 @@ function normalizeTheme4Content(content) {
   return normalized;
 }
 
-async function getTheme4Content() {
-  const document = await Theme4Content.findOne({
+function withMeta(content, meta = {}) {
+  return {
+    ...content,
+    meta: {
+      ...(content?.meta || {}),
+      ...meta,
+    },
+  };
+}
+
+async function findTheme4Document(options = {}) {
+  const classroomId = options.classroomId ? String(options.classroomId) : "";
+
+  if (classroomId) {
+    return Theme4ClassContent.findOne({ classroomId }).lean();
+  }
+
+  return Theme4Content.findOne({
     singletonKey: THEME4_SINGLETON_KEY,
   }).lean();
+}
+
+async function getTheme4Content(options = {}) {
+  const classroomId = options.classroomId ? String(options.classroomId) : "";
+  const document = await findTheme4Document(options);
 
   if (document?.content) {
-    return {
-      ...document.content,
-      meta: {
-        ...(document.content.meta || {}),
-        source: "database",
-        updatedAt: document.updatedAt,
-      },
-    };
+    return withMeta(document.content, {
+      source: classroomId ? "classroom" : "database",
+      classroomId: classroomId || null,
+      updatedAt: document.updatedAt,
+    });
   }
 
   const fallback = cloneDefaultContent();
-  fallback.meta = {
-    ...(fallback.meta || {}),
-    source: "default",
-  };
-
-  return fallback;
+  return withMeta(fallback, {
+    source: classroomId ? "classroom-default" : "default",
+    classroomId: classroomId || null,
+  });
 }
 
-async function replaceTheme4Content(content) {
+async function replaceTheme4Content(content, options = {}) {
   const normalizedContent = normalizeTheme4Content(content);
+  const classroomId = options.classroomId ? String(options.classroomId) : "";
+
+  if (classroomId) {
+    const saved = await Theme4ClassContent.findOneAndUpdate(
+      { classroomId },
+      {
+        classroomId,
+        teacherId: options.teacherId || null,
+        content: normalizedContent,
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    ).lean();
+
+    return saved.content;
+  }
+
   const saved = await Theme4Content.findOneAndUpdate(
     { singletonKey: THEME4_SINGLETON_KEY },
     {
@@ -132,18 +169,16 @@ async function replaceTheme4Content(content) {
   return saved.content;
 }
 
-async function syncDefaultTheme4Content() {
-  return replaceTheme4Content(cloneDefaultContent());
+async function syncDefaultTheme4Content(options = {}) {
+  return replaceTheme4Content(cloneDefaultContent(), options);
 }
 
 function getModeDataKey(modeId) {
   return modeDataKeys[modeId] || null;
 }
 
-async function getTheme4ContentForWrite() {
-  const document = await Theme4Content.findOne({
-    singletonKey: THEME4_SINGLETON_KEY,
-  }).lean();
+async function getTheme4ContentForWrite(options = {}) {
+  const document = await findTheme4Document(options);
 
   if (document?.content) {
     return normalizeTheme4Content(document.content);
@@ -172,14 +207,14 @@ function getModeItems(content, modeId) {
   return [];
 }
 
-async function createTheme4ModeItem(modeId, item) {
+async function createTheme4ModeItem(modeId, item, options = {}) {
   const dataKey = getModeDataKey(modeId);
 
   if (!dataKey) {
     throw new Error("Theme 4 mode không hợp lệ.");
   }
 
-  const content = await getTheme4ContentForWrite();
+  const content = await getTheme4ContentForWrite(options);
   const nextItem = ensureModeItemAdminId(JSON.parse(JSON.stringify(item || {})));
 
   if (SINGLE_VALUE_MODE_IDS.has(modeId)) {
@@ -192,20 +227,20 @@ async function createTheme4ModeItem(modeId, item) {
     content.gameData[dataKey] = currentItems;
   }
 
-  const savedContent = await replaceTheme4Content(content);
+  const savedContent = await replaceTheme4Content(content, options);
   const savedItems = getModeItems(savedContent, modeId);
 
   return savedItems.find((savedItem) => savedItem._adminId === nextItem._adminId) || nextItem;
 }
 
-async function updateTheme4ModeItem(modeId, itemId, item) {
+async function updateTheme4ModeItem(modeId, itemId, item, options = {}) {
   const dataKey = getModeDataKey(modeId);
 
   if (!dataKey) {
     throw new Error("Theme 4 mode không hợp lệ.");
   }
 
-  const content = await getTheme4ContentForWrite();
+  const content = await getTheme4ContentForWrite(options);
   const nextItem = ensureModeItemAdminId({
     ...(JSON.parse(JSON.stringify(item || {}))),
     _adminId: itemId,
@@ -234,20 +269,20 @@ async function updateTheme4ModeItem(modeId, itemId, item) {
     content.gameData[dataKey] = currentItems;
   }
 
-  const savedContent = await replaceTheme4Content(content);
+  const savedContent = await replaceTheme4Content(content, options);
   const savedItems = getModeItems(savedContent, modeId);
 
   return savedItems.find((savedItem) => savedItem._adminId === itemId) || nextItem;
 }
 
-async function deleteTheme4ModeItem(modeId, itemId) {
+async function deleteTheme4ModeItem(modeId, itemId, options = {}) {
   const dataKey = getModeDataKey(modeId);
 
   if (!dataKey) {
     throw new Error("Theme 4 mode không hợp lệ.");
   }
 
-  const content = await getTheme4ContentForWrite();
+  const content = await getTheme4ContentForWrite(options);
 
   if (SINGLE_VALUE_MODE_IDS.has(modeId)) {
     const currentItem = content.gameData[dataKey];
@@ -272,7 +307,7 @@ async function deleteTheme4ModeItem(modeId, itemId) {
     content.gameData[dataKey] = nextItems;
   }
 
-  const savedContent = await replaceTheme4Content(content);
+  const savedContent = await replaceTheme4Content(content, options);
   return getModeItems(savedContent, modeId);
 }
 

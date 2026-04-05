@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
-import API_BASE_URL from '../config/api';
+import { buildApiHeaders, buildApiUrl, getActiveClassroomId, getActiveClassroomName } from '../utils/classroomContext';
+import { isTeacherRole } from '../utils/roleUtils';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const activeClassroomId = getActiveClassroomId();
+  const activeClassroomName = getActiveClassroomName();
   const [lessons, setLessons] = useState([]);
   const [activeTab, setActiveTab] = useState('question');
   const [loading, setLoading] = useState(false);
@@ -52,16 +55,21 @@ export default function AdminDashboard() {
   const [revQuestions, setRevQuestions] = useState(Array(9).fill({ q: '', a: '' }));
 
   useEffect(() => {
-    if (localStorage.getItem('role') !== 'admin') {
+    if (!isTeacherRole(localStorage.getItem('role'))) {
       navigate('/modes');
+      return;
+    }
+    if (!activeClassroomId) {
       return;
     }
     fetchLessons();
     fetchListData();
-  }, [navigate, activeTab]);
+  }, [navigate, activeTab, activeClassroomId]);
 
   const fetchLessons = () => {
-    fetch(`${API_BASE_URL}/api/lessons`)
+    fetch(buildApiUrl('/api/lessons'), {
+      headers: buildApiHeaders({ includeJson: false }),
+    })
       .then(res => res.json())
       .then(data => setLessons(data));
   };
@@ -69,15 +77,17 @@ export default function AdminDashboard() {
   const fetchListData = () => {
     let url = '';
     switch(activeTab) {
-        case 'question': url = `${API_BASE_URL}/api/questions/all`; break;
-        case 'matching': url = `${API_BASE_URL}/api/matching/all`; break;
-        case 'chrono': url = `${API_BASE_URL}/api/chronological/all`; break; // Giả định có route này
-        case 'character': url = `${API_BASE_URL}/api/guess-character/all`; break;
-        case 'reveal': url = `${API_BASE_URL}/api/reveal-picture/all`; break;
-        case 'lesson': url = `${API_BASE_URL}/api/lessons`; break;
+        case 'question': url = buildApiUrl('/api/questions/all'); break;
+        case 'matching': url = buildApiUrl('/api/matching/all'); break;
+        case 'chrono': url = buildApiUrl('/api/chronological/all'); break;
+        case 'character': url = buildApiUrl('/api/guess-character/all'); break;
+        case 'reveal': url = buildApiUrl('/api/reveal-picture/all'); break;
+        case 'lesson': url = buildApiUrl('/api/lessons'); break;
         default: return;
     }
-    fetch(url)
+    fetch(url, {
+      headers: buildApiHeaders({ includeJson: false }),
+    })
       .then(res => res.json())
       .then(data => setListData(Array.isArray(data) ? data : []))
       .catch(err => console.error("Fetch error:", err));
@@ -95,10 +105,13 @@ export default function AdminDashboard() {
 
   const handleSubmit = (e, type) => {
     e.preventDefault();
+    if (!activeClassroomId) {
+      alert('Hãy chọn lớp đang hoạt động trước khi soạn nội dung.');
+      return;
+    }
     setLoading(true);
-    const userId = localStorage.getItem('userId');
     
-    let url = `${API_BASE_URL}/api/admin/${type}`;
+    let url = buildApiUrl(`/api/teacher/${type}`);
     if (editId) url += `/${editId}`;
 
     let body = {};
@@ -111,7 +124,7 @@ export default function AdminDashboard() {
 
     fetch(url, {
         method: editId ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json', 'user-id': userId },
+        headers: buildApiHeaders(),
         body: JSON.stringify(body)
     })
     .then(res => res.json())
@@ -151,12 +164,11 @@ export default function AdminDashboard() {
 
   const handleDelete = (id) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa bản ghi này?")) return;
-    const userId = localStorage.getItem('userId');
     const modelMap = { question: 'questions', lesson: 'lessons', matching: 'matching', chrono: 'chronological', character: 'guess-character', reveal: 'reveal-picture' };
     
-    fetch(`${API_BASE_URL}/api/admin/${modelMap[activeTab]}/${id}`, {
+    fetch(buildApiUrl(`/api/teacher/${modelMap[activeTab]}/${id}`), {
         method: 'DELETE',
-        headers: { 'user-id': userId }
+        headers: buildApiHeaders({ includeJson: false })
     })
     .then(res => res.json())
     .then(data => {
@@ -167,11 +179,30 @@ export default function AdminDashboard() {
     });
   };
 
+  if (!activeClassroomId) {
+    return (
+      <div className="p-6 min-h-screen bg-amber-50 flex items-center justify-center">
+        <div className="max-w-xl text-center bg-white rounded-2xl border border-amber-200 shadow-lg p-8">
+          <h1 className="text-3xl font-black text-amber-900 uppercase">Soạn Nội Dung Theo Lớp</h1>
+          <p className="mt-4 text-amber-800">
+            Bạn cần chọn một lớp đang hoạt động trước khi tạo câu hỏi, bài học và dữ liệu trò chơi.
+          </p>
+          <Link to="/courses" className="inline-block mt-6 btn-historical px-6 py-3">
+            Vào Quản Lý Khoá Học
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 md:p-8 min-h-screen bg-amber-50">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-8 border-b-4 border-amber-900 pb-4">
-            <h1 className="text-3xl font-black text-amber-900 uppercase">Hệ Thống Quản Trị</h1>
+            <div>
+              <h1 className="text-3xl font-black text-amber-900 uppercase">Soạn Nội Dung Lớp Học</h1>
+              <p className="mt-1 text-sm text-amber-700">Lớp đang chọn: <span className="font-bold">{activeClassroomName || 'Chưa đặt tên'}</span></p>
+            </div>
             <button onClick={() => navigate('/modes')} className="btn-historical">Rời Sử Quán</button>
         </header>
 
