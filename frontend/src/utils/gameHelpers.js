@@ -20,11 +20,10 @@ export function matchesAnswer(userAnswer, acceptedAnswers = []) {
 
   return acceptedAnswers.some((answer) => {
     const cleanAnswer = normalizeText(answer);
-    return (
-      cleanUser === cleanAnswer ||
-      cleanUser.includes(cleanAnswer) ||
-      cleanAnswer.includes(cleanUser)
-    );
+    if (!cleanAnswer) return false;
+
+    // Yêu cầu gõ chính xác hoàn toàn (strict match)
+    return cleanUser === cleanAnswer;
   });
 }
 
