@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, BookOpen, Shield, Crown, User, ChevronRight, MapPin, Clock, Trophy, Star, History, Sword } from 'lucide-react';
 import API_BASE_URL from '../config/api';
+import { useApiData } from '../hooks/useApiData';
 
 const heroes = [
   {
@@ -170,7 +171,6 @@ const portraitImageStyle = {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bgIndex, setBgIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -185,15 +185,8 @@ export default function HomePage() {
     timeline: { title: "Dòng Chảy Thời Gian", icon: <History className="text-amber-400 mb-4" size={40} />, content: "Sơ đồ mốc thời gian liền mạch từ thời dựng nước Hùng Vương, các triều đại kỳ vĩ như Đinh, Lê, Lý, Trần, Hậu Lê đến thời kỳ kháng chiến chống Đế quốc, Thực dân. Người xem sẽ dễ dàng nắm bắt các diễn biến nối tiếp nhau." }
   };
 
-  useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      fetch(`${API_BASE_URL}/api/user/${userId}`)
-        .then(res => res.json())
-        .then(data => setUser(data))
-        .catch(err => console.error('Error fetching user:', err));
-    }
-  }, []);
+  const userId = localStorage.getItem('userId');
+  const { data: user } = useApiData(userId ? `${API_BASE_URL}/api/user/${userId}` : null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -433,25 +426,13 @@ export default function HomePage() {
                   </div>
                 </motion.div>
 
-                {/* Pagination Dots */}
-                <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mt-6">
-                  {heroes.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentIndex(idx)}
-                      className="transition-all duration-300"
-                    >
-                      <div 
-                        className="rounded-full"
-                        style={{ 
-                          width: idx === currentIndex ? '24px' : '8px',
-                          height: '8px',
-                          background: idx === currentIndex ? '#d4a053' : 'rgba(255,255,255,0.3)',
-                          boxShadow: idx === currentIndex ? '0 0 10px rgba(212,160,83,0.6)' : 'none'
-                        }}
-                      />
-                    </button>
-                  ))}
+                {/* Numeric Pagination Indicator */}
+                <div className="flex justify-center mt-6">
+                  <div className="px-4 py-1.5 rounded-full backdrop-blur-sm text-xs font-bold tracking-widest text-amber-500"
+                    style={{ background: 'rgba(212,160,83,0.1)', border: '1px solid rgba(212,160,83,0.2)' }}
+                  >
+                    {currentIndex + 1} / {heroes.length}
+                  </div>
                 </div>
               </div>
 

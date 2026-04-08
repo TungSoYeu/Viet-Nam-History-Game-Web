@@ -85,7 +85,7 @@ function AppContent() {
 }
 
 function App() {
-  const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "943924493757-no7i1gd695lqsogvc8u90bguhkcl77pv.apps.googleusercontent.com"; 
+  const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || ""; 
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

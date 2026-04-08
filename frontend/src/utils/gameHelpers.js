@@ -30,12 +30,16 @@ export function matchesAnswer(userAnswer, acceptedAnswers = []) {
 
 export async function saveXp(xp) {
   const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
   if (!userId || !xp || xp <= 0) return;
 
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    
     await fetch(`${API_BASE_URL}/api/user/add-xp`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ userId, xp }),
     });
   } catch (error) {

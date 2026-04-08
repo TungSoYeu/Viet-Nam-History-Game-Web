@@ -9,6 +9,13 @@ const { OAuth2Client } = require('google-auth-library');
 const { put } = require('@vercel/blob');
 
 const router = express.Router();
+const authRoutes = require('./authRoutes');
+const userRoutes = require('./userRoutes');
+const classroomRoutes = require('./classroomRoutes');
+
+router.use('/', authRoutes);
+router.use('/user', userRoutes);
+router.use('/classrooms', classroomRoutes);
 const gameController = require('../controller/gameController');
 const theme4Controller = require('../controllers/theme4Controller');
 const Chronological = require('../models/Chronological');
@@ -502,7 +509,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Đường dẫn đổi mật khẩu
-router.patch('/user/change-password', async (req, res) => {
+router.patch('/user/change-password', verifyToken, async (req, res) => {
     const { userId, oldPassword, newPassword } = req.body;
     try {
         const user = await User.findById(userId);
@@ -556,8 +563,22 @@ router.post('/user/link-google', async (req, res) => {
     }
 });
 
-// Diagnostic route
-router.get('/ping', (req, res) => res.json({ message: "API is working", time: new Date() }));
+// Diagnostic / Health Check route
+router.get('/ping', (req, res) => {
+    const dbState = mongoose.connection.readyState;
+    const dbStatus = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+    const mem = process.memoryUsage();
+    res.json({
+        message: "API is working",
+        time: new Date(),
+        db: dbStatus[dbState] || 'unknown',
+        memory: {
+            rss: Math.round(mem.rss / 1024 / 1024) + 'MB',
+            heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + 'MB',
+        },
+        uptime: Math.round(process.uptime()) + 's',
+    });
+});
 
 // Theme 4 public content routes
 router.get('/theme4/content', withOptionalClassroomAccess, theme4Controller.getTheme4Content);
@@ -587,7 +608,7 @@ router.post('/telemetry/events', async (req, res) => {
 });
 
 // Đường dẫn cập nhật Avatar
-router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) => {
+router.patch('/user/update-avatar', verifyToken, upload.single('avatar'), async (req, res) => {
     const userId = req.body.userId;
     console.log("Avatar update requested for userId:", userId);
     
@@ -643,7 +664,7 @@ router.patch('/user/update-avatar', upload.single('avatar'), async (req, res) =>
 });
 
 // Đường dẫn cập nhật thông tin cá nhân
-router.patch('/user/update-info', async (req, res) => {
+router.patch('/user/update-info', verifyToken, async (req, res) => {
     const { userId, fullName, email, dateOfBirth, school, province, city } = req.body;
     console.log("Updating info for userId:", userId);
     
@@ -893,7 +914,7 @@ router.get('/classrooms/:id/leaderboard', verifyToken, async (req, res) => {
     );
 });
 
-router.get('/teacher/telemetry/summary', isTeacher, async (req, res) => {
+async function telemetrySummaryHandler(req, res) {
     try {
         const days = Math.max(1, Number(req.query.days) || 7);
         const modeId = req.query.modeId ? String(req.query.modeId).trim() : '';
@@ -975,91 +996,10 @@ router.get('/teacher/telemetry/summary', isTeacher, async (req, res) => {
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }
-});
+}
 
-router.get('/admin/telemetry/summary', isTeacher, async (req, res) => {
-    try {
-        const days = Math.max(1, Number(req.query.days) || 7);
-        const modeId = req.query.modeId ? String(req.query.modeId).trim() : '';
-        const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-
-        const match = { createdAt: { $gte: startDate } };
-        if (modeId) match.modeId = modeId;
-
-        const [eventCounts, answerAccuracy, sessionDurations] = await Promise.all([
-            TelemetryEvent.aggregate([
-                { $match: match },
-                {
-                    $group: {
-                        _id: { modeId: '$modeId', eventType: '$eventType' },
-                        count: { $sum: 1 },
-                    },
-                },
-                { $sort: { '_id.modeId': 1, '_id.eventType': 1 } },
-            ]),
-            TelemetryEvent.aggregate([
-                { $match: { ...match, eventType: 'answer_submitted' } },
-                {
-                    $group: {
-                        _id: '$modeId',
-                        total: { $sum: 1 },
-                        correct: {
-                            $sum: {
-                                $cond: [{ $eq: ['$payload.correct', true] }, 1, 0],
-                            },
-                        },
-                    },
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        modeId: '$_id',
-                        total: 1,
-                        correct: 1,
-                        accuracy: {
-                            $cond: [
-                                { $eq: ['$total', 0] },
-                                0,
-                                { $round: [{ $multiply: [{ $divide: ['$correct', '$total'] }, 100] }, 2] },
-                            ],
-                        },
-                    },
-                },
-                { $sort: { modeId: 1 } },
-            ]),
-            TelemetryEvent.aggregate([
-                { $match: { ...match, eventType: 'session_end' } },
-                {
-                    $group: {
-                        _id: '$modeId',
-                        sessions: { $sum: 1 },
-                        avgDurationMs: { $avg: '$payload.durationMs' },
-                    },
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        modeId: '$_id',
-                        sessions: 1,
-                        avgDurationMs: { $round: ['$avgDurationMs', 0] },
-                    },
-                },
-                { $sort: { modeId: 1 } },
-            ]),
-        ]);
-
-        return res.json({
-            success: true,
-            windowDays: days,
-            modeFilter: modeId || null,
-            eventCounts,
-            answerAccuracy,
-            sessionDurations,
-        });
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
-    }
-});
+router.get('/teacher/telemetry/summary', isTeacher, telemetrySummaryHandler);
+router.get('/admin/telemetry/summary', isTeacher, telemetrySummaryHandler);
 
 ['/teacher', '/admin'].forEach((prefix) => {
     router.post(`${prefix}/questions`, isTeacher, requireOwnedClassroom, async (req, res) => {
@@ -1314,7 +1254,7 @@ router.get('/questions/:lessonId', async (req, res) => {
   }
 });
 
-router.post('/submit-answer', gameController.checkAnswer);
+router.post('/submit-answer', verifyToken, gameController.checkAnswer);
 
 // User Profile Routes
 router.get('/user/:userId', async (req, res) => {
@@ -1407,7 +1347,7 @@ router.get('/territory/questions/:location', gameController.getQuestionsByLocati
 router.post('/territory/unlock', gameController.unlockTerritory);
 
 // User Experience Route
-router.post('/user/add-xp', gameController.addExperience);
+router.post('/user/add-xp', verifyToken, gameController.addExperience);
 
 // New Modes Routes
 router.get('/chronological/random', gameController.getRandomChronological);

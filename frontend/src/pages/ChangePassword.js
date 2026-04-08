@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
+import { getAuthHeaders } from '../utils/authFetch';
 
 export default function ChangePassword() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function ChangePassword() {
 
     fetch(`${API_BASE_URL}/api/user/change-password`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ userId, oldPassword, newPassword })
     })
     .then(res => res.json())
