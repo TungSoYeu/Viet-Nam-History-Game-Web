@@ -15,8 +15,6 @@ const userSchema = new mongoose.Schema({
   avatar: { type: String, default: null },
   // Điểm kinh nghiệm (XP)
   experience: { type: Number, default: 0 },
-  // Chuỗi ngày đăng nhập/chơi liên tục
-  streak: { type: Number, default: 0 },
   lastLoginDate: { type: Date, default: null },
   // Các triều đại đã mở khóa (Mode 1)
   unlockedDynasties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],

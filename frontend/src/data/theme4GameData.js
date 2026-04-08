@@ -10,10 +10,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Hai Bà Trưng", "Trưng Trắc và Trưng Nhị", "Trưng Trắc Trưng Nhị"],
     caption: "Hai vị nữ anh hùng mở đầu cao trào đấu tranh thời Bắc thuộc.",
     questions: [
-      { q: "Cuộc khởi nghĩa do Hai Bà Trưng lãnh đạo diễn ra trong khoảng thời gian nào?", a: "Năm 40 - 43" },
-      { q: "Hai Bà Trưng là hình tượng tiêu biểu cho lực lượng lãnh đạo nào trong lịch sử dân tộc?", a: "Phụ nữ" },
-      { q: "Quê hương và căn cứ khởi nghĩa gắn với Hai Bà Trưng là ở đâu?", a: "Mê Linh" },
-      { q: "Hình tượng chiến đấu nổi tiếng gắn với Hai Bà Trưng trong dân gian là gì?", a: "Cưỡi voi" },
+      { q: "Cuộc đấu tranh vũ trang đầu tiên trong thời kì Bắc thuộc bùng nổ vào thời gian nào?", a: "Năm 40.", hint: "Năm 40 - 43" },
+      { q: "Cuộc đấu tranh diễn ra khi đất nước mất độc lập được gọi là?", a: "Khởi nghĩa", hint: "Phụ nữ" },
+      { q: "Chiến thắng vang đội của cuộc khởi nghĩa năm 40 là những chiến thắng ở đâu?", a: "Mê Linh, Cổ Loa, Luy Lâu.", hint: "Mê Linh" },
+      { q: "Ai là người chỉ huy quân Hán sang đàn áp cuộc khởi nghĩa Hai Bà Trưng vào năm 43?", a: "Mã Viện.", hint: "Cưỡi voi" },
     ],
   },
   {
@@ -22,10 +22,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Vua Ngô Quyền", "Ngô Quyền", "Ngô Vương Quyền"],
     caption: "Người kết thúc hơn một nghìn năm Bắc thuộc bằng chiến thắng Bạch Đằng.",
     questions: [
-      { q: "Chiến thắng Bạch Đằng của Ngô Quyền diễn ra vào năm nào?", a: "Năm 938" },
-      { q: "Ngô Quyền thường được sử sách tôn vinh là gì đối với nền độc lập dân tộc?", a: "Tổ trung hưng" },
-      { q: "Chiến thắng lừng lẫy của Ngô Quyền gắn với con sông nào?", a: "Sông Bạch Đằng" },
-      { q: "Ngô Quyền đã mở ra điều gì cho quốc gia sau khi giành lại độc lập?", a: "Triều đại đầu tiên" },
+      { q: "Cuộc kháng chiến chống quân Nam Hán diễn ra vào thời gian nào?", a: "Năm 938", hint: "Năm 938" },
+      { q: "Kế sách dùng cọc nhọn đóng xuống sông để chế ngự thuyền của địch lần đầu được sử dụng trong cuộc kháng chiến nào của Việt Nam?", a: "Chống quân Nam Hán (thế kỉ X)", hint: "Tổ trung hưng" },
+      { q: "Trong lịch sử chiến tranh bảo vệ Tổ quốc của Việt Nam (thế kỉ X – XV), dòng sông nào sau đây ba lần ghi dấu ấn chiến thắng quân xâm lược?", a: "Sông Bạch Đằng", hint: "Sông Bạch Đằng" },
+      { q: "Ai là người chỉ huy quân Nam Hán xâm lược nước ta?", a: "Lưu Hoằng Tháo", hint: "Triều đại đầu tiên" },
     ],
   },
   {
@@ -34,10 +34,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Vua Lê Đại Hành", "Lê Đại Hành", "Lê Hoàn"],
     caption: "Vị vua đánh bại quân Tống và củng cố nền độc lập Đại Cồ Việt.",
     questions: [
-      { q: "Cuộc kháng chiến chống Tống do Lê Hoàn lãnh đạo diễn ra vào năm nào?", a: "Năm 981" },
-      { q: "Một lần nữa quân dân Đại Cồ Việt làm nên chiến thắng lớn trên con sông nào?", a: "Sông Bạch Đằng" },
-      { q: "Nghi lễ nhà vua trực tiếp xuống ruộng cày để khuyến nông dưới thời Lê Đại Hành gọi là gì?", a: "Lễ Tịch điền" },
-      { q: "Ai đã trao long bào để Lê Hoàn lên ngôi, cùng triều đình lãnh đạo kháng chiến?", a: "Dương Vân Nga" },
+      { q: "Cuộc kháng chiến chống quân Tống diễn ra vào thời gian nào?", a: "Năm 981", hint: "Năm 981" },
+      { q: "Trong lịch sử chiến tranh bảo vệ Tổ quốc của Việt Nam (thế kỉ X – XV), dòng sông nào sau đây ba lần ghi dấu ấn chiến thắng quân xâm lược?", a: "Sông Bạch Đằng", hint: "Sông Bạch Đằng" },
+      { q: "Lễ hội nào được các triều đại phong kiến Việt Nam tổ chức hằng năm nhằm khuyến khích nhân dân đẩy mạnh sản xuất nông nghiệp", a: "Lễ Tịch điền", hint: "Lễ Tịch điền" },
+      { q: "Ai là người chỉ huy quân Tống xâm lược Đại Cồ Việt vào đầu năm 981?", a: "Hầu Nhân Bảo", hint: "Dương Vân Nga" },
     ],
   },
   {
@@ -46,10 +46,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Lý Thường Kiệt"],
     caption: "Danh tướng thời Lý với chiến lược chủ động đánh Tống.",
     questions: [
-      { q: "Kế sách quân sự nổi tiếng của nhà Lý trong kháng chiến chống Tống là gì?", a: "Tiên phát chế nhân" },
-      { q: "Cuộc kháng chiến chống Tống thời Lý diễn ra trong khoảng thời gian nào?", a: "1075 - 1077" },
-      { q: "Trận quyết chiến chiến lược tiêu biểu gắn với Lý Thường Kiệt là trận nào?", a: "Trận Như Nguyệt" },
-      { q: "Nhà Lý đã chọn biện pháp nào để kết thúc chiến tranh khi quân Tống lâm vào thế bế tắc?", a: "Giảng hòa" },
+      { q: "Kế sách nào được nhà Lý sử dụng trong cuộc kháng chiến chống quân Tống (thế kỉ XI)?", a: "Kế sách: “Tiên phát chế nhân”", hint: "Tiên phát chế nhân" },
+      { q: "Cuộc kháng chiến chống Tống diễn ra vào khoảng thời gian nào?", a: "1075 - 1077", hint: "1075 - 1077" },
+      { q: "Trận quyết chiến chiến lược nào sau đây diễn ra trong cuộc kháng chiến chống quân xâm lược Tống thời Lý?", a: "Trận Như Nguyệt ", hint: "Trận Như Nguyệt" },
+      { q: "Khi quân Tống rơi vào thế bế tắc, khó khăn thì nhà Lý đã chọn biện pháp nào để kết thúc chiến tranh?", a: "Giảng hòa", hint: "Giảng hòa" },
     ],
   },
   {
@@ -58,10 +58,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Hưng Đạo Đại Vương", "Trần Hưng Đạo", "Trần Quốc Tuấn", "Hưng Đạo Vương"],
     caption: "Vị quốc công tiết chế ba lần chỉ huy kháng chiến chống Mông - Nguyên.",
     questions: [
-      { q: "Ba lần kháng chiến chống Mông - Nguyên dưới sự chỉ huy của Trần Quốc Tuấn diễn ra vào thế kỉ nào?", a: "Thế kỉ XIII" },
-      { q: "Tư tưởng giữ nước nổi tiếng của Trần Hưng Đạo là gì?", a: "Khoan thư sức dân" },
-      { q: "Nhận định nào của Trần Hưng Đạo thể hiện thế chủ động của quân dân nhà Trần trong kháng chiến?", a: "Năm nay đánh giặc nhàn" },
-      { q: "Nhân dân tôn xưng Trần Hưng Đạo bằng danh hiệu thiêng liêng nào?", a: "Đức thánh Trần" },
+      { q: "Ba lần kháng chiến chống quân Mông - Nguyên của nhà Trần diễn ra vào các khoảng thời gian nào?", a: "1258; 1285; 1287-1288.", hint: "Thế kỉ XIII" },
+      { q: "Điền từ còn thiếu vào chỗ trống: \n“....., làm kế sâu rễ bền gốc là thượng sách giữ nước.”", a: "Khoan thư sức dân.", hint: "Khoan thư sức dân" },
+      { q: "Trong cuộc kháng chiến chống quân Mông Nguyên (1258 - 1288), nhà Trần sử dụng kế sách nào xuyên suốt trong cuộc kháng chiến?", a: "kế “Thanh dã”.", hint: "“Năm nay đánh giặc nhàn”" },
+      { q: "Hãy kể tên những thắng lợi lớn trong cuộc kháng chiến chống quân Mông - Nguyên lần thứ hai (1285)?", a: "Tây Kết, Hàm Tử (Hưng Yên); Chương Dương, Thăng Long (Hà Nội); Vạn Kiếp (Hải Dương cũ).", hint: "Đức thánh Trần" },
     ],
   },
   {
@@ -70,10 +70,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Vua Lê Thái Tổ", "Lê Thái Tổ", "Lê Lợi", "Bình Định Vương"],
     caption: "Người lãnh đạo khởi nghĩa Lam Sơn và lập nên triều Hậu Lê.",
     questions: [
-      { q: "Khởi nghĩa Lam Sơn diễn ra vào thế kỉ nào?", a: "Thế kỉ XV" },
-      { q: "Hình ảnh trả gươm nổi tiếng gắn với Lê Lợi được lưu truyền qua truyền thuyết nào?", a: "Truyền thuyết Hồ Gươm" },
-      { q: "Sự kiện tập hợp những người đầu tiên cùng Lê Lợi mưu việc lớn được gọi là gì?", a: "Hội thề Lũng Nhai" },
-      { q: "Lê Lợi thường được sử sách nhắc đến với vai trò khôi phục cơ nghiệp quốc gia qua danh xưng nào?", a: "Tổ trung hưng" },
+      { q: "Cuộc khởi nghĩa Lam Sơn diễn ra vào khoảng thời gian nào?", a: "1418 - 1427.", hint: "Thế kỉ XV" },
+      { q: "Điểm khác biệt cơ bản về bối cảnh của cuộc khởi nghĩa Lam Sơn so với các cuộc đấu tranh ở các thế kỉ X - XIV là gì?", a: "Đất nước bị mất độc lập, bị nhà Minh đô hộ.", hint: "Truyền thuyết Hồ Gươm" },
+      { q: "Những thắng lợi mang tính quyết định trong khởi nghĩa Lam Sơn là?", a: "Trận Tốt Động - Chúc Động; Trận Chi Lăng - Xương Giang.", hint: "Hội thề Lũng Nhai" },
+      { q: "Khởi nghĩa Lam Sơn mang tính chất gì?", a: "Chiến tranh giải phóng dân tộc.", hint: "Tổ trung hưng" },
     ],
   },
   {
@@ -82,10 +82,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Hoàng đế Quang Trung", "Quang Trung", "Nguyễn Huệ", "Vua Quang Trung"],
     caption: "Người anh hùng Tây Sơn đại phá quân Thanh mùa xuân Kỷ Dậu.",
     questions: [
-      { q: "Phong trào Tây Sơn bùng nổ vào khoảng thời gian nào?", a: "Thế kỉ XVIII" },
-      { q: "Quang Trung thường được nhân dân gọi bằng hình tượng nào?", a: "Anh hùng áo vải" },
-      { q: "Từ ngữ nào mô tả đặc điểm nổi bật của cuộc hành quân ra Bắc đại phá quân Thanh của Quang Trung?", a: "Thần tốc" },
-      { q: "Phong trào Tây Sơn dưới sự lãnh đạo của Quang Trung có thể khái quát bằng phẩm chất nào trước các kẻ thù xâm lược?", a: "Bất bại" },
+      { q: "Phong trào Tây Sơn nổ ra vào khoảng thời gian nào?", a: "cuối thế kỉ XVIII", hint: "Thế kỉ XVIII" },
+      { q: "Trong thời gian đầu dấy binh khởi nghĩa, ba anh em Tây Sơn đã sử dụng khẩu hiệu nào để tập hợp lực lượng?", a: "“Lấy của nhà giàu chia cho người nghèo”.", hint: "Anh hùng áo vải" },
+      { q: "Hãy điền từ còn thiếu vào chỗ trống: \n“Đánh cho Sử tri…chi hữu chủ”.", a: "Nam quốc anh hùng.", hint: "Thần tốc" },
+      { q: "Phong trào Tây Sơn đã đánh bại những kẻ thù xâm lược nào?", a: "Quân Xiêm, quân Thanh", hint: "Bất bại" },
     ],
   },
   {
@@ -94,10 +94,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Lũy Thầy"],
     caption: "Công trình quân sự nổi tiếng ở Quảng Bình gắn với Đào Duy Từ.",
     questions: [
-      { q: "Lũy Thầy trong lịch sử được biết đến trước hết là một loại công trình gì?", a: "Công trình phòng thủ" },
-      { q: "Lũy Thầy gắn với giai đoạn đất nước ở trạng thái nào giữa Đàng Trong và Đàng Ngoài?", a: "Chia cắt" },
-      { q: "Ai là người thiết kế và chỉ đạo xây dựng Lũy Thầy?", a: "Đào Duy Từ" },
-      { q: "Lũy Thầy thuộc địa phận tỉnh nào hiện nay?", a: "Quảng Bình" },
+      { q: "Cuộc chiến tranh Trịnh - Nguyễn diễn ra trong khoảng thời gian nào?", a: "1627 - 1672", hint: "Công trình phòng thủ" },
+      { q: "Năm 1777, nghĩa quân Tây Sơn giành được thắng lợi quan trọng nào sau đây?", a: "Lật đổ chúa Nguyễn", hint: "Chia cắt" },
+      { q: "Trong các thế kỉ XVII – XVIII, con sông nào sau đây trở thành ranh giới chia cắt lãnh thổ Đại Việt thành Đàng Trong và Đàng Ngoài?", a: "Sông Gianh.", hint: "Đào Duy Từ" },
+      { q: "“Tây Sơn tam kiệt” là tên gọi ba nhân vật lịch sử nào?", a: "Nguyễn Nhạc, Nguyễn Huệ, Nguyễn Lữ", hint: "Quảng Bình" },
     ],
   },
   {
@@ -106,10 +106,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Gò Đống Đa", "Đống Đa"],
     caption: "Di tích gắn với chiến thắng Ngọc Hồi - Đống Đa mùa xuân 1789.",
     questions: [
-      { q: "Gò Đống Đa hiện nay được xếp vào loại địa điểm lịch sử nào?", a: "Di tích" },
-      { q: "Chiến thắng Đống Đa của Quang Trung gắn với mốc thời gian nào trong dịp đầu xuân?", a: "Mùng 5 Tết" },
-      { q: "Gò Đống Đa thường được nhắc đến như biểu tượng gì đối với quân Thanh xâm lược?", a: "Mồ chôn quân Thanh" },
-      { q: "Gò Đống Đa nằm ở thành phố nào hiện nay?", a: "Hà Nội" },
+      { q: "“Người anh hùng áo vải” là để nói về hình tượng vị anh hùng dân tộc nào trong lịch sử dân tộc?", a: "Nguyễn Huệ - Quang Trung", hint: "Di tích" },
+      { q: "Tháng 12/1788 diễn ra sự kiện lịch sử nào của phong trào Tây Sơn?", a: "Nguyễn Huệ lên ngôi hoàng đế, lấy niên hiệu là Quang Trung, tiến quân ra Bắc.", hint: "Mùng 5 Tết" },
+      { q: "Thắng lợi quyết định trong kháng chiến chống quân Thanh (1789) là?", a: "Chiến thắng Ngọc Hồi - Đống Đa.", hint: "Mồ chôn quân Thanh" },
+      { q: "Phong trào nào đặt cơ sở cho việc thống nhất quốc gia vào cuối thế kỉ XVIII?", a: "Phong trào Tây Sơn", hint: "Hà Nội" },
     ],
   },
   {
@@ -118,10 +118,10 @@ export const revealPictureSets = [
     acceptedAnswers: ["Trận Nhật Tảo", "Nhật Tảo"],
     caption: "Chiến công đốt tàu Hy Vọng của Nguyễn Trung Trực trong kháng chiến chống Pháp.",
     questions: [
-      { q: "Trận Nhật Tảo diễn ra vào năm nào?", a: "1861" },
-      { q: "Người lãnh đạo trận đánh đốt tàu ở Nhật Tảo là ai?", a: "Nguyễn Trung Trực" },
-      { q: "Tên chiếc tàu Pháp bị nghĩa quân đốt cháy trong trận Nhật Tảo là gì?", a: "Tàu Hy Vọng" },
-      { q: "Nhật Tảo là chiến công tiêu biểu thuộc loại sự kiện nào trong chống Pháp nửa sau thế kỉ XIX?", a: "Trận đánh" },
+      { q: "Cuộc kháng chiến nào không thành công vào nửa sau thế kỉ XIX?", a: "Kháng chiến chống thực dân Pháp (18881- 1884)", hint: "1861" },
+      { q: "“Bao giờ người Tây nhổ hết cỏ nước Nam, thì mới hết người Nam đánh Tây” là câu nói nổi tiếng của ai?", a: "Nguyễn Trung Trực", hint: "Nguyễn Trung Trực" },
+      { q: "Sự kiện mở đầu cho quá trình Pháp xâm lược Việt Nam là?", a: "Ngày 1/9/1858, liên quân Pháp - Tây Ban Nha nổ súng tấn công Đà Nẵng.", hint: "Tàu Hy Vọng" },
+      { q: "Sự kiện nào đánh dấu Pháp hoàn thành cơ bản cuộc xâm lược Việt Nam vào nửa sau thế kỉ XIX?", a: "Hiệp ước Hác - măng (1883) và Hiệp ước Pa-tơ-nốt (1884) được kí kết.", hint: "Trận đánh" },
     ],
   },
 ];

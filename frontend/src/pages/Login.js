@@ -1,11 +1,13 @@
 // frontend/src/pages/Login.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, User, Lock, Mail, BookOpen, MapPin, Landmark } from 'lucide-react';
 import API_BASE_URL from '../config/api';
 import { useToast } from '../components/Toast';
 import { normalizeRole } from '../utils/roleUtils';
+import Button from '../components/Button';
+import { useProvinces } from '../hooks/useProvinces';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,30 +27,23 @@ export default function Login() {
   const [formShake, setFormShake] = useState(false);
 
   // --- STATE CHO ĐỊA CHỈ TRƯỜNG ---
-  const [provinces, setProvinces] = useState([]);
+  const { provinces: rawProvinces } = useProvinces();
   const [districts, setDistricts] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [schoolName, setSchoolName] = useState('');
 
-  // Lấy dữ liệu Tỉnh/Thành từ API
-  useEffect(() => {
-    const getSortName = (name) => {
-      return name.replace(/^(Thành phố|Tỉnh|Quận|Huyện|Thị xã|Thị trấn)\s+/i, '').trim();
-    };
+  const getSortName = (name) => {
+    return name.replace(/^(Thành phố|Tỉnh|Quận|Huyện|Thị xã|Thị trấn)\s+/i, '').trim();
+  };
 
-    fetch('https://provinces.open-api.vn/api/?depth=2')
-      .then(res => res.json())
-      .then(data => {
-        const sortedProvinces = [...data].sort((a, b) => {
-          const nameA = getSortName(a.name);
-          const nameB = getSortName(b.name);
-          return nameA.localeCompare(nameB, 'vi', { sensitivity: 'base' });
-        });
-        setProvinces(sortedProvinces);
-      })
-      .catch(err => console.error("Lỗi lấy dữ liệu tỉnh thành:", err));
-  }, []);
+  const provinces = useMemo(() => {
+    return [...rawProvinces].sort((a, b) => {
+      const nameA = getSortName(a.name);
+      const nameB = getSortName(b.name);
+      return nameA.localeCompare(nameB, 'vi', { sensitivity: 'base' });
+    });
+  }, [rawProvinces]);
 
   const handleProvinceChange = (e) => {
     const provCode = e.target.value;
@@ -56,7 +51,6 @@ export default function Login() {
     setSelectedProvince(province || null);
     const sortedDistricts = province?.districts 
       ? [...province.districts].sort((a, b) => {
-          const getSortName = (name) => name.replace(/^(Thành phố|Tỉnh|Quận|Huyện|Thị xã|Thị trấn)\s+/i, '').trim();
           return getSortName(a.name).localeCompare(getSortName(b.name), 'vi', { sensitivity: 'base' });
         })
       : [];
@@ -80,11 +74,19 @@ export default function Login() {
 
   const handleNextStep = () => {
     if (!username.trim() || !password.trim()) {
-      showError("Vui lòng điền tên đăng nhập và mật mã!");
+      showError("Vui lòng điền tên đăng nhập và mật khẩu!");
       return;
     }
-    if (password.trim().length < 3) {
-      showError("Mật mã phải có ít nhất 3 ký tự!");
+    if (username.trim().length < 3 || username.trim().length > 20) {
+      showError("Tên đăng nhập phải từ 3-20 ký tự!");
+      return;
+    }
+    if (password.trim().length < 6) {
+      showError("Mật khẩu phải có ít nhất 6 ký tự!");
+      return;
+    }
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email)) {
+      showError("Email không hợp lệ!");
       return;
     }
     setFormError('');
@@ -400,20 +402,23 @@ export default function Login() {
               {isRegister && registerStep === 2 && (
                 <button 
                   type="button" onClick={() => setRegisterStep(1)}
-                  className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-full font-bold text-sm transition-all hover:bg-white/10"
+                  className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
                   aria-label="Quay lại bước 1"
                 >
                   <ArrowLeft size={18} />
                 </button>
               )}
-              <button 
+              <Button 
                 type="submit" disabled={loading} 
-                className="btn-primary flex-1 text-base py-3.5 font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-60"
+                variant="primary"
+                fullWidth
+                size="md"
+                className="py-3.5 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
-                    <Loader2 size={20} className="animate-spinner" />
+                    <Loader2 size={20} className="animate-spin" />
                     <span>Đang xử lý...</span>
                   </>
                 ) : isRegister ? (
@@ -424,7 +429,7 @@ export default function Login() {
                     </>
                   ) : "Ghi Danh"
                 ) : "⚔️ Vào Thành"}
-              </button>
+              </Button>
             </div>
           </form>
 

@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 
 // Load env vars (only when running locally, Vercel uses dashboard env vars)
@@ -82,6 +83,28 @@ app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
+// Rate Limiting
+const generalLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Quá nhiều yêu cầu. Vui lòng thử lại sau.' },
+});
+
+const authLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Quá nhiều lần đăng nhập. Vui lòng thử lại sau 1 phút.' },
+});
+
+app.use('/api', generalLimiter);
+app.use('/api/login', authLimiter);
+app.use('/api/register', authLimiter);
+app.use('/api/google-login', authLimiter);
+
 // Middleware: Yêu cầu kết nối DB trước khi xử lý request (Rất quan trọng cho Vercel Serverless)
 app.use(async (req, res, next) => {
     try {
@@ -120,9 +143,10 @@ if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
+    const isProduction = process.env.NODE_ENV === 'production';
     res.status(err.status || 500).json({
         success: false,
-        message: err.message || "Lỗi máy chủ nội bộ"
+        message: isProduction ? "Lỗi máy chủ nội bộ" : (err.message || "Lỗi máy chủ nội bộ")
     });
 });
 
