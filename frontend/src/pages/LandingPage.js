@@ -76,7 +76,7 @@ export default function LandingPage() {
 
           {/* Title */}
           <h1 className="text-5xl sm:text-6xl font-black mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 50%, #f0d48a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Hành Trình Lịch Sử 11
+            Danh Nhân Đất Việt 
           </h1>
 
           {/* Tagline */}
@@ -100,7 +100,7 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap justify-center gap-3 mt-10">
             {[
-              { icon: <BookOpen size={14} />, text: '9 Chế Độ Chơi' },
+              { icon: <BookOpen size={14} />, text: '8 Chế Độ Chơi' },
               { icon: <Shield size={14} />, text: 'PvP Đối Kháng' },
               { icon: <Trophy size={14} />, text: 'Bảng Xếp Hạng' },
             ].map((f, i) => (

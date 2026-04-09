@@ -437,10 +437,11 @@ export default function RevealPictureModeOlympia() {
 
   return (
     <div
-      className="min-h-screen p-4 md:p-6 flex flex-col items-center"
+      className="h-screen flex flex-col overflow-hidden p-4 md:p-6"
       style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
     >
-      <div className="w-full max-w-6xl grid grid-cols-[1fr_auto_1fr] items-center mb-6 gap-2">
+      <div className="w-full max-w-6xl mx-auto flex flex-col h-full gap-4 min-h-0">
+        <div className="w-full flex-shrink-0 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
         <div className="flex justify-start">
           <button
             onClick={handleExit}
@@ -471,7 +472,7 @@ export default function RevealPictureModeOlympia() {
         </div>
       </div>
 
-      <div className="w-full max-w-6xl mb-6">
+      <div className="w-full flex-shrink-0">
         <div className="h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 transition-all duration-500"
@@ -480,8 +481,8 @@ export default function RevealPictureModeOlympia() {
         </div>
       </div>
 
-      <div className="w-full max-w-6xl grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
-        <div className="space-y-6">
+      <div className="w-full grid gap-4 xl:grid-cols-[1.02fr_0.98fr] flex-1 min-h-0 pb-4">
+        <div className="custom-scrollbar overflow-y-auto flex flex-col gap-4 pr-1">
           <div
             className="relative w-full rounded-3xl overflow-hidden shadow-2xl"
             style={{
@@ -550,8 +551,9 @@ export default function RevealPictureModeOlympia() {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+        <div className="flex flex-col gap-4 min-h-0 w-full h-full">
+          <div className="flex-1 min-h-[0] custom-scrollbar overflow-y-auto pr-1 pb-1">
+            <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
@@ -597,7 +599,9 @@ export default function RevealPictureModeOlympia() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+          </div>
+
+          <div className="flex-shrink-0 rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl">
             <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
               Điều Khiển Lượt Chơi
             </div>
@@ -816,5 +820,6 @@ export default function RevealPictureModeOlympia() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

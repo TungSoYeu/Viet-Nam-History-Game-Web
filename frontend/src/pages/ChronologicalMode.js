@@ -324,9 +324,9 @@ export default function ChronologicalMode() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-6 text-white sm:px-6">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <div className="grid gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
+    <div className="h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-4 text-white sm:px-6">
+      <div className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
+        <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">
             <button
               onClick={handleExit}
@@ -366,8 +366,8 @@ export default function ChronologicalMode() {
           </div>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+        <div className="grid flex-1 min-h-0 items-stretch gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)]">
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-4 sm:p-5 shadow-xl flex min-h-0 flex-col">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
@@ -387,7 +387,7 @@ export default function ChronologicalMode() {
               </button>
             </div>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-4">
+            <div className="mt-4 grid gap-3 sm:grid-cols-4">
               <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-4 text-center">
                 <div className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80 font-black">
                   Đồng hồ
@@ -418,103 +418,107 @@ export default function ChronologicalMode() {
               </button>
             </div>
 
-            {!roundStarted && !feedback ? (
-              <div className="mt-5 rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
-                Bộ dữ kiện đang được ẩn. Bấm{" "}
-                <span className="font-black text-sky-200">BẮT ĐẦU</span> để mở
-                câu {roundIndex + 1} và chạy 15 giây.
-              </div>
-            ) : (
-              <>
-                <div
-                  onDragOver={(event) => event.preventDefault()}
-                  onDrop={(event) => handleDrop(event, "")}
-                  className="mt-5 rounded-2xl border border-dashed border-white/10 bg-slate-950/50 px-4 py-3 text-center text-sm text-slate-400"
-                >
-                  Kéo dữ kiện thừa hoặc dữ kiện muốn bỏ ra khỏi hộp về vùng này.
+            <div className="mt-4 flex-1 min-h-0 flex flex-col gap-4">
+              {!roundStarted && !feedback ? (
+                <div className="flex flex-1 items-center justify-center rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
+                  Bộ dữ kiện đang được ẩn. Bấm{" "}
+                  <span className="mx-1 font-black text-sky-200">BẮT ĐẦU</span>
+                  để mở câu {roundIndex + 1} và chạy 15 giây.
                 </div>
+              ) : (
+                <>
+                  <div
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={(event) => handleDrop(event, "")}
+                    className="rounded-2xl border border-dashed border-white/10 bg-slate-950/50 px-4 py-3 text-center text-sm text-slate-400"
+                  >
+                    Kéo dữ kiện thừa hoặc dữ kiện muốn bỏ ra khỏi hộp về vùng này.
+                  </div>
 
-                <div className="mt-5 grid gap-4">
-                  {availableSentences.length > 0 ? (
-                    availableSentences.map((sentence) => (
-                      <div
-                        key={`${currentRound.id}-${sentence.id}`}
-                        draggable={timerRunning}
-                        onDragStart={(event) => handleDragStart(event, sentence.id)}
-                        className={`rounded-[24px] border p-4 ${
-                          incorrectIds.includes(sentence.id)
-                            ? "border-rose-400/40 bg-rose-500/10"
-                            : "border-white/10 bg-slate-950/60"
-                        } ${timerRunning ? "cursor-grab" : "opacity-70"}`}
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/15 text-sm font-black text-amber-300">
-                            {sentence.id}
-                          </div>
-                          <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
-                            Đang để ngoài
-                          </div>
-                        </div>
+                  <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto pr-1">
+                    {availableSentences.length > 0 ? (
+                      <div className="grid gap-3 lg:grid-cols-2">
+                        {availableSentences.map((sentence) => (
+                          <div
+                            key={`${currentRound.id}-${sentence.id}`}
+                            draggable={timerRunning}
+                            onDragStart={(event) => handleDragStart(event, sentence.id)}
+                            className={`rounded-[22px] border p-4 ${
+                              incorrectIds.includes(sentence.id)
+                                ? "border-rose-400/40 bg-rose-500/10"
+                                : "border-white/10 bg-slate-950/60"
+                            } ${timerRunning ? "cursor-grab" : "opacity-70"}`}
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/15 text-sm font-black text-amber-300">
+                                {sentence.id}
+                              </div>
+                              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                Đang để ngoài
+                              </div>
+                            </div>
 
-                        <div className="mt-4 text-base font-semibold leading-7 text-white">
-                          {sentence.text}
-                        </div>
+                            <div className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base">
+                              {sentence.text}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))
-                  ) : (
-                    <div className="rounded-[24px] border border-dashed border-white/10 bg-slate-950/40 px-4 py-6 text-center text-sm text-slate-400">
-                      Không còn dữ kiện nào ở ngoài. Kiểm tra lại để chắc rằng
-                      không có đáp án thừa bị đặt nhầm vào 4 dòng.
-                    </div>
-                  )}
+                    ) : (
+                      <div className="rounded-[24px] border border-dashed border-white/10 bg-slate-950/40 px-4 py-6 text-center text-sm text-slate-400">
+                        Không còn dữ kiện nào ở ngoài. Kiểm tra lại để chắc rằng
+                        không có đáp án thừa bị đặt nhầm vào 4 dòng.
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {feedback && (
+                <div
+                  className={`rounded-2xl border px-5 py-4 ${
+                    feedback.type === "success"
+                      ? "border-emerald-400/30 bg-emerald-500/10"
+                      : feedback.type === "warning"
+                        ? "border-amber-400/30 bg-amber-500/10"
+                        : "border-rose-400/30 bg-rose-500/10"
+                  }`}
+                >
+                  <div className="text-sm font-bold text-white">{feedback.text}</div>
                 </div>
-              </>
-            )}
+              )}
 
-            {feedback && (
-              <div
-                className={`mt-5 rounded-2xl border px-5 py-4 ${
-                  feedback.type === "success"
-                    ? "border-emerald-400/30 bg-emerald-500/10"
-                    : feedback.type === "warning"
-                      ? "border-amber-400/30 bg-amber-500/10"
-                      : "border-rose-400/30 bg-rose-500/10"
-                }`}
-              >
-                <div className="text-sm font-bold text-white">{feedback.text}</div>
-              </div>
-            )}
-
-            {roundSolved && !finished ? (
-              <button
-                onClick={moveNextRound}
-                className="mt-5 w-full rounded-2xl bg-emerald-500 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-emerald-400"
-              >
-                Sang Câu Tiếp Theo
-              </button>
-            ) : (
-              <button
-                onClick={() => checkArrangement(false)}
-                disabled={!roundStarted || !timerRunning || roundSolved}
-                className="mt-5 w-full rounded-2xl bg-amber-500 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
-              >
-                Kiểm Tra Kết Quả
-              </button>
-            )}
+              {roundSolved && !finished ? (
+                <button
+                  onClick={moveNextRound}
+                  className="w-full rounded-2xl bg-emerald-500 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-emerald-400"
+                >
+                  Sang Câu Tiếp Theo
+                </button>
+              ) : (
+                <button
+                  onClick={() => checkArrangement(false)}
+                  disabled={!roundStarted || !timerRunning || roundSolved}
+                  className="w-full rounded-2xl bg-amber-500 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
+                >
+                  Kiểm Tra Kết Quả
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-              <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                Bốn Dòng Lịch Sử
-              </div>
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-4 sm:p-5 shadow-xl flex min-h-0 flex-col gap-4">
+            <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
+              Bốn Dòng Lịch Sử
+            </div>
+            <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto pr-1">
               {!roundStarted && !feedback ? (
-                <div className="mt-4 rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
+                <div className="rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
                   Bốn dòng lịch sử sẽ chỉ hiện ra sau khi bấm{" "}
                   <span className="font-black text-sky-200">BẮT ĐẦU</span>.
                 </div>
               ) : (
-                <div className="mt-4 space-y-4">
+                <div className="space-y-3">
                   {groupedLines.map((line) => (
                     <div
                       key={line.id}
@@ -525,7 +529,7 @@ export default function ChronologicalMode() {
                           <div className="text-xs font-black uppercase tracking-[0.22em] text-amber-300/80">
                             {line.label}
                           </div>
-                          <div className="mt-1 text-lg font-bold text-white">
+                          <div className="mt-1 text-base font-bold text-white sm:text-lg">
                             {line.title}
                           </div>
                         </div>
@@ -535,7 +539,7 @@ export default function ChronologicalMode() {
                       </div>
 
                       <div
-                        className="mt-4 space-y-3 min-h-[120px]"
+                        className="mt-3 space-y-2 min-h-[92px]"
                         onDragOver={(event) => event.preventDefault()}
                         onDrop={(event) => handleDrop(event, line.id)}
                       >
@@ -571,11 +575,11 @@ export default function ChronologicalMode() {
               )}
             </div>
 
-            <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+            <div className="rounded-[24px] border border-white/10 bg-slate-950/50 p-4">
               <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
                 Tiến Độ {totalRounds} Câu
               </div>
-              <div className="mt-4 space-y-3">
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {activeHistoricalFlowSets.map((flowSet, index) => {
                   const isCurrent = index === roundIndex;
                   const isDone = index < roundIndex || (finished && index === roundIndex);

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, Lightbulb, Package, Target, Trophy } from "lucide-react";
+import { ArrowLeft, Lightbulb, Package, Target, Trophy } from "lucide-react";
 import { connectingHistoryRounds } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
@@ -308,37 +308,81 @@ export default function MatchingMode() {
 
   if (loading && !roundState.round) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent">
-        Đang tải dữ liệu kết nối...
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full border-4 border-amber-400/30 border-t-amber-400 animate-spin" />
+          <span className="text-sm font-bold text-amber-300 tracking-wide animate-pulse">Đang tải dữ liệu kết nối...</span>
+        </div>
       </div>
     );
   }
 
   if (!roundState.round) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-400 bg-transparent">
-        Chưa có vòng nối hợp lệ cho chế độ chơi này.
+      <div className="min-h-screen flex items-center justify-center text-center px-6 bg-transparent">
+        <div className="rounded-3xl border border-amber-400/20 bg-slate-900/80 p-8 max-w-md shadow-2xl">
+          <div className="text-5xl mb-4">📭</div>
+          <p className="text-lg font-bold text-amber-300">Chưa có vòng nối hợp lệ</p>
+          <p className="text-sm text-slate-400 mt-2">Hãy thử quay lại sau hoặc chọn chế độ chơi khác.</p>
+        </div>
       </div>
     );
   }
 
+  /* ── Timer visual helpers ── */
+  const timerPercent = roundStarted ? (timeLeft / ROUND_TIME) * 100 : 100;
+  const timerColor = timeLeft <= 5 ? "#ef4444" : timeLeft <= 10 ? "#f59e0b" : "#38bdf8";
+  const timerCircle = 2 * Math.PI * 18; // r=18
+
   if (isFinished) {
+    const totalPossible = activeConnectingRounds.length * 50;
+    const percent = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
     return (
       <div className="min-h-screen p-4 flex items-center justify-center bg-transparent">
-        <div className="max-w-md w-full p-8 rounded-3xl text-center backdrop-blur-xl shadow-2xl" style={{ background: "rgba(15, 23, 42, 0.85)", border: "1px solid rgba(255,255,255,0.1)" }}>
-          <Trophy size={72} className="text-amber-400 mx-auto mb-5" />
-          <h2 className="text-3xl font-black text-green-400 mb-3 uppercase">Hoàn Thành Kết Nối</h2>
-          <p className="text-white font-bold text-xl mb-3">Điểm: {score} XP</p>
-          <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.55)" }}>
-            Bạn đã hoàn thành toàn bộ {activeConnectingRounds.length} lượt nối của chế độ chơi này.
-          </p>
-          <div className="flex gap-3">
-            <button onClick={restart} className="flex-1 py-3 rounded-xl font-black text-white" style={{ background: "rgba(255,255,255,0.08)" }}>
-              Chơi Lại
-            </button>
-            <button onClick={handleExit} className="flex-1 py-3 rounded-xl font-black text-white" style={{ background: "linear-gradient(135deg, #d97706, #f59e0b)" }}>
-              Quay Lại
-            </button>
+        <div className="max-w-lg w-full rounded-[28px] text-center shadow-2xl overflow-hidden"
+          style={{ background: "linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(7,11,20,0.98) 100%)", border: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          {/* Confetti top strip */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 via-emerald-400 to-sky-400" />
+          <div className="p-8">
+            <div className="mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-5"
+              style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(16,185,129,0.15))", border: "2px solid rgba(251,191,36,0.3)" }}
+            >
+              <Trophy size={36} className="text-amber-400 drop-shadow-lg" />
+            </div>
+            <h2 className="vn-safe-heading text-2xl font-black uppercase tracking-wide"
+              style={{ background: "linear-gradient(135deg, #fbbf24, #34d399)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            >
+              Hoàn Thành Kết Nối
+            </h2>
+            <div className="mt-6 flex items-center justify-center gap-6">
+              <div className="text-center">
+                <div className="text-3xl font-black text-amber-300">{score}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">XP đạt được</div>
+              </div>
+              <div className="w-px h-12 bg-white/10" />
+              <div className="text-center">
+                <div className="text-3xl font-black text-emerald-300">{percent}%</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Chính xác</div>
+              </div>
+            </div>
+            <p className="text-xs mt-5 text-slate-400 leading-relaxed">
+              Bạn đã hoàn thành {activeConnectingRounds.length} lượt nối trong chế độ chơi.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button onClick={restart}
+                className="flex-1 py-3 rounded-2xl font-black text-sm text-white transition-all hover:scale-[1.02]"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+              >
+                Chơi Lại
+              </button>
+              <button onClick={handleExit}
+                className="flex-1 py-3 rounded-2xl font-black text-sm text-slate-950 transition-all hover:scale-[1.02]"
+                style={{ background: "linear-gradient(135deg, #fbbf24, #f59e0b)" }}
+              >
+                Quay Lại
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -346,253 +390,366 @@ export default function MatchingMode() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-6 bg-transparent relative z-10">
-      <div className="max-w-6xl mx-auto flex flex-col items-center">
-        <div className="w-full grid grid-cols-[1fr_auto_1fr] items-center mb-8 p-4 rounded-2xl shadow-xl border gap-2 backdrop-blur-xl" style={{ background: "rgba(15, 23, 42, 0.85)", borderColor: "rgba(255,255,255,0.1)" }}>
-          <div className="flex justify-start">
-            <button onClick={handleExit} className="btn-primary px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm flex items-center gap-1 md:gap-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition">
-              <ArrowLeft size={18} /> <span className="hidden sm:inline">Thoát</span>
-            </button>
+    <div className="h-screen flex flex-col p-2 sm:p-3 bg-transparent relative z-10 overflow-hidden">
+      <div className="max-w-[1280px] mx-auto flex flex-col h-full w-full min-h-0">
+
+        {/* ═══ HEADER BAR ═══ */}
+        <div className="flex-shrink-0 flex items-center gap-2 mb-2 p-2 sm:p-2.5 rounded-2xl"
+          style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}
+        >
+          <button onClick={handleExit}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 transition-all hover:bg-white/5 hover:text-white"
+          >
+            <ArrowLeft size={15} />
+            <span className="hidden sm:inline">Thoát</span>
+          </button>
+
+          <div className="flex-1 text-center">
+            <h2 className="vn-safe-heading text-sm sm:text-base font-black tracking-wide"
+              style={{ background: "linear-gradient(135deg, #f0d48a, #d4a053)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            >
+              Kết nối lịch sử
+            </h2>
           </div>
-          <h2 className="vn-safe-heading text-lg sm:text-2xl md:text-3xl font-black tracking-[0.08em] text-center text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)" }}>
-            Kết nối lịch sử
-          </h2>
-          <div className="flex justify-end">
-            <div className="text-sm md:text-xl font-black text-amber-400 px-3 py-1.5 md:px-4 md:py-2 rounded-lg" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              Điểm: {score}
+
+          {/* Mini timer circle */}
+          <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
+            <svg width="40" height="40" viewBox="0 0 40 40" className="absolute -rotate-90">
+              <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
+              <circle cx="20" cy="20" r="18" fill="none" stroke={timerColor} strokeWidth="2.5"
+                strokeDasharray={timerCircle} strokeDashoffset={timerCircle * (1 - timerPercent / 100)}
+                strokeLinecap="round" className="transition-all duration-1000"
+              />
+            </svg>
+            <span className="text-[11px] font-black" style={{ color: timerColor }}>
+              {roundStarted ? timeLeft : ROUND_TIME}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <div className="px-2 py-1 rounded-lg text-[11px] font-black text-slate-300"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              {roundIndex + 1}<span className="text-slate-500">/{activeConnectingRounds.length}</span>
+            </div>
+            <div className="px-2 py-1 rounded-lg text-[11px] font-black"
+              style={{ color: "#fbbf24", background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)" }}
+            >
+              {score} XP
             </div>
           </div>
         </div>
 
-        <div className="mb-8 text-center font-bold p-4 rounded-xl border w-full animate-fade-in flex flex-col sm:flex-row items-center justify-center gap-3 backdrop-blur-md shadow-lg" style={{ background: "rgba(212,160,83,0.1)", borderColor: "rgba(212,160,83,0.3)", color: "#f0d48a" }}>
-          <Lightbulb size={24} className="text-amber-400 drop-shadow-md" />
-          <span>
+        {/* ═══ INSTRUCTION + PROGRESS ═══ */}
+        <div className="flex-shrink-0 mb-1.5 flex items-center gap-2 px-3 py-1.5 rounded-xl"
+          style={{ background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.12)" }}
+        >
+          <Lightbulb size={14} className="text-amber-400 shrink-0" />
+          <span className="flex-1 text-xs font-bold text-amber-200/90 line-clamp-1">
             {roundState.round.title}. {roundState.round.instruction}
+          </span>
+          <span className="text-[10px] font-black text-amber-400/60 shrink-0">
+            {placedCount}/{roundState.cards.length}
           </span>
         </div>
 
-        <div className="mb-6 h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 transition-all duration-500"
-            style={{ width: `${((roundIndex + (review ? 1 : 0)) / activeConnectingRounds.length) * 100}%` }}
+        {/* Progress bar */}
+        <div className="flex-shrink-0 mb-2 h-1 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+          <div className="h-full rounded-full transition-all duration-700 ease-out"
+            style={{
+              width: `${((roundIndex + (review ? 1 : 0)) / activeConnectingRounds.length) * 100}%`,
+              background: "linear-gradient(90deg, #38bdf8, #34d399, #fbbf24)",
+            }}
           />
         </div>
 
+        {/* Notice */}
         {notice ? (
-          <div
-            className={`mb-4 w-full rounded-xl border px-4 py-3 text-sm font-bold ${
-              notice.type === "success"
-                ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-200"
-                : notice.type === "warning"
-                  ? "border-amber-400/30 bg-amber-500/10 text-amber-200"
-                  : "border-rose-400/30 bg-rose-500/10 text-rose-200"
-            }`}
-          >
+          <div className={`flex-shrink-0 mb-1.5 rounded-xl px-3 py-1.5 text-xs font-bold border ${
+            notice.type === "success"
+              ? "border-emerald-400/20 bg-emerald-500/8 text-emerald-300"
+              : notice.type === "warning"
+                ? "border-amber-400/20 bg-amber-500/8 text-amber-300"
+                : "border-rose-400/20 bg-rose-500/8 text-rose-300"
+          }`}>
             {notice.text}
           </div>
         ) : null}
 
-        <div className="mb-6 grid w-full gap-4 lg:grid-cols-[1fr_auto_auto]">
-          <div className="rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-4">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-black">
-              Tiến độ kéo thả
-            </div>
-            <div className="mt-2 text-lg font-black text-white">
-              {placedCount}/{roundState.cards.length} thẻ đã được đặt
-            </div>
-            <div className="mt-1 text-sm text-slate-300">
-              Kéo đủ toàn bộ thẻ rồi bấm <span className="font-black text-amber-300">Hoàn thành</span>.
-            </div>
-          </div>
-          <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-4 text-center">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80 font-black">
-              Đồng hồ
-            </div>
-            <div className="mt-2 flex items-center justify-center gap-2 text-2xl font-black text-amber-300">
-              <Clock3 size={20} />
-              {roundStarted ? `${timeLeft}s` : `${ROUND_TIME}s`}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-4 text-center">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-black">
-              Lượt
-            </div>
-            <div className="mt-2 text-2xl font-black text-white">
-              {roundIndex + 1}/{activeConnectingRounds.length}
-            </div>
-          </div>
-        </div>
-
+        {/* ═══ GAME AREA ═══ */}
         {!roundStarted && !review ? (
-          <div className="w-full rounded-[28px] border border-dashed border-sky-400/20 bg-sky-500/10 px-6 py-10 text-center">
-            <div className="text-xs font-black uppercase tracking-[0.22em] text-sky-200">
-              Bàn kéo thả sẽ mở sau khi bắt đầu
+          /* Pre-start state */
+          <div className="flex-1 flex items-center justify-center">
+            <div className="max-w-md w-full text-center p-8 rounded-3xl"
+              style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(56,189,248,0.12)", backdropFilter: "blur(12px)" }}
+            >
+              <div className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-4 rotate-3"
+                style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.15))", border: "1px solid rgba(56,189,248,0.2)" }}
+              >
+                <Package size={28} className="text-sky-400" />
+              </div>
+              <h3 className="text-lg font-black text-white mb-2">Sẵn sàng kết nối</h3>
+              <p className="text-sm text-slate-300 leading-relaxed mb-1">
+                Kéo thả các thẻ dữ kiện vào ô đáp án tương ứng trong <span className="font-black text-sky-300">{ROUND_TIME} giây</span>.
+              </p>
+              <p className="text-xs text-slate-500">
+                Mỗi cặp đúng = <span className="text-amber-400 font-black">+10 XP</span>
+              </p>
             </div>
-            <p className="mt-4 text-sm leading-7 text-slate-100">
-              Nhấn <span className="font-black text-sky-200">BẮT ĐẦU</span> để hiện các thẻ dữ kiện, ô đáp án và chạy 15 giây của lượt này.
-            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-[0.95fr_1.05fr] w-full gap-4 md:gap-8 items-start">
-            <div className="w-full p-3 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border backdrop-blur-xl" style={{ background: "rgba(15, 23, 42, 0.85)", borderColor: "rgba(255,255,255,0.1)" }}>
-              <h3 className="text-center font-black mb-4 md:mb-6 text-amber-400 uppercase tracking-widest border-b pb-2 md:pb-4 flex items-center justify-center gap-2 text-sm md:text-base" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
-                <Package size={24} /> Thẻ Dữ Kiện
-              </h3>
-              <div
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={(event) => handleDrop(event, "")}
-                className="mb-4 rounded-2xl border border-dashed border-white/15 bg-slate-900/60 px-4 py-3 text-center text-sm text-slate-300"
-              >
-                Kéo thẻ về đây nếu muốn bỏ khỏi ô đã đặt.
+          /* Active game board */
+          <div className="flex flex-col xl:flex-row w-full gap-2.5 flex-1 min-h-0 overflow-hidden">
+
+            {/* ── LEFT: Draggable cards ── */}
+            <div className="xl:w-[42%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+              style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+            >
+              <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                    style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.2))" }}
+                  >
+                    <Package size={13} className="text-amber-400" />
+                  </div>
+                  <span className="text-xs font-black text-amber-300 uppercase tracking-wider">Thẻ dữ kiện</span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ color: placedCount === roundState.cards.length ? "#34d399" : "#94a3b8", background: "rgba(255,255,255,0.04)" }}
+                >
+                  {availableCards.length} còn lại
+                </span>
               </div>
-              <div className="flex flex-col gap-4">
+
+              {/* Drop zone to return cards */}
+              <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, "")}
+                className="flex-shrink-0 mx-2.5 mt-2 rounded-lg border border-dashed px-2 py-1 text-center text-[10px] transition-colors"
+                style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.02)" }}
+              >
+                ↩ Kéo thẻ về đây để bỏ
+              </div>
+
+              {/* Cards list */}
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2.5 space-y-2">
                 {availableCards.length > 0 ? (
                   availableCards.map((item) => (
-                    <div
-                      key={item.id}
+                    <div key={item.id}
                       draggable={roundStarted && timerRunning && !review}
-                      onDragStart={(event) => handleDragStart(event, item.id)}
-                      className={`flex cursor-grab flex-col xl:flex-row items-center gap-3 p-3 md:p-4 rounded-xl md:rounded-2xl shadow-lg font-bold text-center xl:text-left transition-all duration-300 border ${
-                        roundStarted && timerRunning && !review ? "bg-[#16213e] text-white hover:bg-white/10" : "bg-slate-800 text-slate-400"
+                      onDragStart={(e) => handleDragStart(e, item.id)}
+                      className={`group flex items-center gap-3 p-3 rounded-xl cursor-grab active:cursor-grabbing transition-all duration-200 ${
+                        roundStarted && timerRunning && !review
+                          ? "hover:translate-x-1 hover:shadow-lg hover:shadow-amber-500/5"
+                          : "opacity-50 cursor-not-allowed"
                       }`}
-                      style={{ borderColor: "rgba(255,255,255,0.1)" }}
+                      style={{
+                        background: roundStarted && timerRunning && !review ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.01)",
+                        border: `1px solid ${roundStarted && timerRunning && !review ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.04)"}`,
+                      }}
                     >
                       {item.image ? (
-                        <div className="w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-xl overflow-hidden border border-white/20 shadow-md">
+                        <div className="w-12 h-12 shrink-0 rounded-lg overflow-hidden shadow-md"
+                          style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                        >
                           <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                         </div>
-                      ) : null}
-                      <span className="flex-1 text-sm md:text-base leading-snug md:leading-relaxed">{item.content}</span>
+                      ) : (
+                        <div className="w-12 h-12 shrink-0 rounded-lg flex items-center justify-center text-xl"
+                          style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.05))", border: "1px solid rgba(251,191,36,0.15)" }}
+                        >
+                          📜
+                        </div>
+                      )}
+                      <span className="flex-1 text-sm font-bold text-white/90 leading-snug">{item.content}</span>
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ background: "rgba(251,191,36,0.15)" }}
+                      >
+                        <span className="text-[10px] text-amber-400">→</span>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/60 px-4 py-6 text-center text-sm text-slate-400">
-                    Tất cả thẻ đã được đặt vào các ô đích.
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <div className="text-2xl mb-2">✅</div>
+                    <p className="text-xs text-emerald-300 font-bold">Đã đặt hết thẻ!</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Bấm Hoàn thành khi sẵn sàng</p>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="w-full flex flex-col gap-4 md:gap-5">
-              <h3 className="text-center font-black mb-1 text-green-400 uppercase tracking-widest border-b pb-2 md:pb-4 flex items-center justify-center gap-2 text-sm md:text-base" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
-                <Target size={24} className="hidden md:block" /> Ô Đáp Án
-              </h3>
-
-              {roundState.slots.map((slot) => {
-                const placedCard = getCardInSlot(slot.id);
-                const slotReview = review?.evaluation?.[slot.id];
-                const slotClass = review
-                  ? slotReview?.isCorrect
-                    ? "border-emerald-400/40 bg-emerald-500/10"
-                    : slotReview?.card || (!slotReview?.isDistractor && slotReview?.expected)
-                      ? "border-rose-400/40 bg-rose-500/10"
-                      : "border-white/10 bg-[#16213e]"
-                  : roundStarted && timerRunning
-                    ? "border-indigo-400 bg-indigo-900/40 border-dashed"
-                    : "border-white/10 bg-[#16213e]";
-
-                return (
-                  <div
-                    key={slot.id}
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={(event) => handleDrop(event, slot.id)}
-                    className={`relative p-4 md:p-6 rounded-xl md:rounded-2xl transition-all flex flex-col min-h-[120px] w-full text-center border-2 shadow-lg ${slotClass}`}
+            {/* ── RIGHT: Answer slots ── */}
+            <div className="xl:w-[58%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+              style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+            >
+              <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                    style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.2))" }}
                   >
-                    <span className="font-bold text-white/85 text-sm md:text-lg">{slot.content}</span>
-                    <div className="mt-4 flex-1">
-                      {placedCard ? (
-                        <div
-                          draggable={roundStarted && timerRunning && !review}
-                          onDragStart={(event) => handleDragStart(event, placedCard.id)}
-                          className="rounded-2xl border border-white/10 bg-slate-900/60 p-3 text-left"
-                        >
-                          {placedCard.image ? (
-                            <img src={placedCard.image} alt={placedCard.content} className="mb-3 h-16 w-16 rounded-lg object-cover border border-white/20 shadow-md" />
-                          ) : null}
-                          <div className="font-bold text-white">{placedCard.content}</div>
-                        </div>
-                      ) : (
-                        <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm text-slate-400">
-                          Thả thẻ vào đây
-                        </div>
-                      )}
-                    </div>
-
-                    {review && !slotReview?.isCorrect && !slotReview?.isDistractor && slotReview?.expected ? (
-                      <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-left text-sm text-amber-100">
-                        Đúng phải là: <span className="font-black">{slotReview.expected.content}</span>
-                      </div>
-                    ) : null}
+                    <Target size={13} className="text-emerald-400" />
                   </div>
-                );
-              })}
+                  <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">Ô đáp án</span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ color: "#94a3b8", background: "rgba(255,255,255,0.04)" }}
+                >
+                  {roundState.slots.length} ô
+                </span>
+              </div>
+
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2.5 space-y-2">
+                {roundState.slots.map((slot) => {
+                  const placedCard = getCardInSlot(slot.id);
+                  const slotReview = review?.evaluation?.[slot.id];
+
+                  let borderColor = "rgba(255,255,255,0.06)";
+                  let bgColor = "rgba(255,255,255,0.015)";
+                  let labelColor = "#e2e8f0";
+
+                  if (review) {
+                    if (slotReview?.isCorrect) {
+                      borderColor = "rgba(52,211,153,0.3)";
+                      bgColor = "rgba(52,211,153,0.06)";
+                      labelColor = "#6ee7b7";
+                    } else if (slotReview?.card || (!slotReview?.isDistractor && slotReview?.expected)) {
+                      borderColor = "rgba(248,113,113,0.3)";
+                      bgColor = "rgba(248,113,113,0.06)";
+                      labelColor = "#fca5a5";
+                    }
+                  } else if (roundStarted && timerRunning) {
+                    borderColor = "rgba(99,102,241,0.25)";
+                    bgColor = "rgba(99,102,241,0.04)";
+                  }
+
+                  return (
+                    <div key={slot.id}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => handleDrop(e, slot.id)}
+                      className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200"
+                      style={{ background: bgColor, border: `1.5px solid ${borderColor}` }}
+                    >
+                      {/* Slot label */}
+                      <div className="shrink-0 w-[38%] min-w-0">
+                        <span className="text-sm font-bold leading-snug block" style={{ color: labelColor }}>
+                          {slot.content}
+                        </span>
+                      </div>
+
+                      {/* Connector dot */}
+                      <div className="shrink-0 flex flex-col items-center gap-0.5">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: borderColor }} />
+                        <div className="w-px h-4" style={{ background: borderColor }} />
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: borderColor }} />
+                      </div>
+
+                      {/* Drop area */}
+                      <div className="flex-1 min-w-0">
+                        {placedCard ? (
+                          <div draggable={roundStarted && timerRunning && !review}
+                            onDragStart={(e) => handleDragStart(e, placedCard.id)}
+                            className="flex items-center gap-2.5 p-2 rounded-lg cursor-grab active:cursor-grabbing transition-all"
+                            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                          >
+                            {placedCard.image ? (
+                              <img src={placedCard.image} alt={placedCard.content}
+                                className="w-9 h-9 rounded-lg object-cover shrink-0"
+                                style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                              />
+                            ) : null}
+                            <span className="text-sm font-bold text-white/90 truncate">{placedCard.content}</span>
+                          </div>
+                        ) : (
+                          <div className="rounded-lg border border-dashed py-3 text-center text-xs transition-colors"
+                            style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.2)" }}
+                          >
+                            Thả thẻ vào đây
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Review indicator */}
+                      {review && slotReview ? (
+                        <div className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px]"
+                          style={{
+                            background: slotReview.isCorrect ? "rgba(52,211,153,0.15)" : slotReview.isDistractor ? "transparent" : "rgba(248,113,113,0.15)",
+                          }}
+                        >
+                          {slotReview.isCorrect ? "✓" : slotReview.isDistractor ? "" : "✗"}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
 
-        <div className="mt-6 w-full">
+        {/* ═══ BOTTOM ACTION BAR ═══ */}
+        <div className="flex-shrink-0 mt-2 flex items-center gap-2 p-2 rounded-2xl"
+          style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}
+        >
           {!review ? (
             !roundStarted ? (
-              <div className="grid gap-3 sm:grid-cols-3">
-                <button
-                  onClick={startRound}
-                  className="rounded-2xl bg-sky-400 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-300 sm:col-span-2"
+              <>
+                <button onClick={startRound}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.01]"
+                  style={{ background: "linear-gradient(135deg, #38bdf8, #818cf8)", color: "#0f172a" }}
                 >
-                  BẮT ĐẦU
+                  ▶ Bắt Đầu
                 </button>
-                <button
-                  disabled
-                  className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-white/50"
+                <button disabled
+                  className="px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
+                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
                 >
-                  DỪNG
+                  Dừng
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="space-y-3">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <button
-                    disabled
-                    className="rounded-2xl bg-sky-400 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-300 disabled:opacity-50 sm:col-span-2"
-                  >
-                    BẮT ĐẦU
-                  </button>
-                  <button
-                    onClick={toggleTimerRunning}
-                    className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                  >
-                    {timerRunning ? "DỪNG" : "TIẾP TỤC"}
-                  </button>
-                </div>
-                <button
-                  onClick={() => submitRound(false)}
-                  disabled={!timerRunning || !allCardsPlaced}
-                  className="w-full rounded-2xl bg-amber-500 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition disabled:cursor-not-allowed disabled:opacity-50 hover:bg-amber-400"
+              <>
+                <button onClick={toggleTimerRunning}
+                  className="px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
                 >
-                  Hoàn Thành
+                  {timerRunning ? "⏸ Dừng" : "▶ Tiếp"}
                 </button>
-              </div>
+                <button onClick={() => submitRound(false)}
+                  disabled={!timerRunning || !allCardsPlaced}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.01] disabled:opacity-40 disabled:hover:scale-100"
+                  style={{ background: allCardsPlaced ? "linear-gradient(135deg, #fbbf24, #f59e0b)" : "rgba(251,191,36,0.15)", color: allCardsPlaced ? "#0f172a" : "#fbbf24" }}
+                >
+                  Hoàn Thành ({placedCount}/{roundState.cards.length})
+                </button>
+              </>
             )
           ) : (
-            <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
-              <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
-                Kết quả lượt chơi
+            <>
+              <div className="flex-1 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: review.correctCount === roundState.cards.length ? "rgba(52,211,153,0.15)" : "rgba(251,191,36,0.15)" }}
+                >
+                  <span className="text-sm">{review.correctCount === roundState.cards.length ? "🎉" : "📊"}</span>
+                </div>
+                <div>
+                  <div className="text-xs font-black text-white">
+                    Đúng {review.correctCount}/{roundState.cards.length} cặp
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    {review.timeUp ? "Hết giờ — tự chấm" : "Đã chấm điểm"}
+                  </div>
+                </div>
               </div>
-              <div className="mt-3 text-lg font-black text-white">
-                Đúng {review.correctCount}/{roundState.cards.length} cặp
-              </div>
-              <div className="mt-2 text-sm text-slate-300">
-                {review.timeUp ? "Lượt này đã được chấm vì hết giờ." : "Lượt này được chấm sau khi bấm Hoàn thành."}
-              </div>
-              <button
-                onClick={moveNext}
-                className="mt-5 w-full rounded-2xl bg-emerald-500 px-5 py-4 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-emerald-400"
+              <button onClick={moveNext}
+                className="px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.02]"
+                style={{ background: "linear-gradient(135deg, #34d399, #10b981)", color: "#0f172a" }}
               >
-                {roundIndex === activeConnectingRounds.length - 1 ? "Kết Thúc Chế Độ" : "Lượt Kế Tiếp"}
+                {roundIndex === activeConnectingRounds.length - 1 ? "Kết Thúc" : "Lượt Tiếp →"}
               </button>
-            </div>
+            </>
           )}
         </div>
       </div>
     </div>
   );
 }
+

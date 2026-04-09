@@ -86,7 +86,7 @@ export default function RevealPictureMode() {
   if (loading && !pictureData) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-500"
+        className="h-screen flex items-center justify-center text-2xl font-bold text-amber-500 overflow-hidden flex-col"
         style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
       >
         Đang tải dữ liệu trang sử...
@@ -97,7 +97,7 @@ export default function RevealPictureMode() {
   if (!pictureData) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-500"
+        className="h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-500 overflow-hidden flex-col"
         style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
       >
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
@@ -186,7 +186,7 @@ export default function RevealPictureMode() {
   if (isFinished) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center p-4"
+        className="h-screen flex flex-col items-center justify-center p-4 overflow-hidden"
         style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
       >
         <div
@@ -235,48 +235,49 @@ export default function RevealPictureMode() {
 
   return (
     <div
-      className="min-h-screen p-4 md:p-8 flex flex-col items-center"
+      className="h-screen flex flex-col overflow-hidden p-4 md:p-6"
       style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
     >
-      <div className="w-full max-w-5xl grid grid-cols-[1fr_auto_1fr] items-center mb-6 gap-2">
-        <div className="flex justify-start">
-          <button
-            onClick={handleExit}
-            className="btn-primary px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+      <div className="w-full max-w-6xl mx-auto flex flex-col h-full gap-4 min-h-0">
+        <div className="w-full flex-shrink-0 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div className="flex justify-start">
+            <button
+              onClick={handleExit}
+              className="btn-primary px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+            >
+              <ArrowLeft size={16} /> <span className="hidden sm:inline">Thoát</span>
+            </button>
+          </div>
+          <h1
+            className="vn-safe-heading text-lg sm:text-2xl md:text-3xl font-black tracking-[0.08em] text-center flex items-center justify-center gap-2 drop-shadow-md text-white"
+            style={{
+              background: "linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
           >
-            <ArrowLeft size={16} /> <span className="hidden sm:inline">Thoát</span>
-          </button>
-        </div>
-        <h1
-          className="vn-safe-heading text-lg sm:text-2xl md:text-3xl font-black tracking-[0.08em] text-center flex items-center justify-center gap-2 drop-shadow-md text-white"
-          style={{
-            background: "linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          <ImageIcon size={24} className="text-amber-500 hidden sm:block" /> Lật mở trang sử
-        </h1>
-        <div className="flex justify-end">
-          <div
-            className="text-xs sm:text-sm md:text-lg font-bold text-amber-400 px-3 py-1.5 md:px-4 md:py-2 rounded-lg"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
-          >
-            {tileQuestions.length} câu hỏi
+            <ImageIcon size={24} className="text-amber-500 hidden sm:block" /> Lật mở trang sử
+          </h1>
+          <div className="flex justify-end">
+            <div
+              className="text-xs sm:text-sm md:text-lg font-bold text-amber-400 px-3 py-1.5 md:px-4 md:py-2 rounded-lg"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+            >
+              {tileQuestions.length} câu hỏi
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="w-full max-w-5xl mb-6">
-        <div className="h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 transition-all duration-500"
-            style={{ width: `${(revealedTiles.length / GRID_SIZE) * 100}%` }}
-          />
+        <div className="w-full flex-shrink-0">
+          <div className="h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 transition-all duration-500"
+              style={{ width: `${(revealedTiles.length / GRID_SIZE) * 100}%` }}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-5xl">
+        <div className="flex flex-col md:flex-row gap-6 w-full flex-1 min-h-0 custom-scrollbar overflow-y-auto pb-4 pr-1">
         <div
           className="flex-1 relative w-full rounded-3xl overflow-hidden shadow-2xl"
           style={{
@@ -377,6 +378,7 @@ export default function RevealPictureMode() {
             </div>
           ) : null}
         </div>
+      </div>
       </div>
 
       {selectedTile !== null && (

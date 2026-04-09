@@ -299,8 +299,7 @@ export default function GuessCharacterMode() {
   if (loading && sourceItems.length === 0 && !selectedSubmodeId) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent"
       >
         Đang tải dữ liệu nhận diện...
       </div>
@@ -310,9 +309,9 @@ export default function GuessCharacterMode() {
   if (!selectedSubmodeId) {
     return (
       <div
-        className="p-4 md:p-6 min-h-screen max-w-6xl mx-auto flex flex-col"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="p-3 md:p-4 h-screen w-full flex flex-col overflow-y-auto custom-scrollbar bg-transparent"
       >
+        <div className="max-w-6xl mx-auto flex flex-col w-full min-h-0 pb-4">
         <div
           className="mb-6 rounded-[28px] border p-5 shadow-2xl"
           style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
@@ -402,6 +401,7 @@ export default function GuessCharacterMode() {
             })}
           </div>
         )}
+        </div>
       </div>
     );
   }
@@ -409,8 +409,7 @@ export default function GuessCharacterMode() {
   if (loading && items.length === 0) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent"
       >
         Đang chuẩn bị mode nhỏ...
       </div>
@@ -420,8 +419,7 @@ export default function GuessCharacterMode() {
   if (!currentItem) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-transparent"
       >
         <div className="text-2xl font-bold text-amber-400">
           Chưa có dữ liệu hợp lệ cho mode nhỏ này.
@@ -438,40 +436,43 @@ export default function GuessCharacterMode() {
 
   return (
     <div
-      className="p-4 md:p-6 min-h-screen max-w-6xl mx-auto flex flex-col items-center"
-      style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+      className="p-3 md:p-4 h-screen w-full flex flex-col overflow-hidden bg-transparent"
     >
+      <div className="max-w-6xl mx-auto flex flex-col w-full h-full min-h-0 items-center">
+      {/* === Compact Header === */}
       <div
-        className="w-full grid grid-cols-[1fr_auto_1fr] items-center mb-6 p-4 rounded-xl shadow gap-4"
+        className="w-full flex flex-wrap items-center gap-2 mb-2 p-2 md:p-3 rounded-xl shadow flex-shrink-0"
         style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
       >
-        <div className="flex justify-start">
-          <button
-            onClick={returnToSubmodeSelection}
-            className="font-bold text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
-          >
-            <ArrowLeft size={20} />
-            <span className="hidden sm:inline">Mode Nhỏ</span>
-          </button>
-        </div>
-        <div className="text-center">
+        <button
+          onClick={returnToSubmodeSelection}
+          className="font-bold text-gray-400 hover:text-white flex items-center gap-1 transition-colors text-xs"
+        >
+          <ArrowLeft size={16} />
+          <span className="hidden sm:inline">Mode Nhỏ</span>
+        </button>
+        <div className="flex-1 text-center">
           <h2
-            className="vn-safe-heading text-lg sm:text-xl md:text-2xl font-black tracking-[0.08em] flex items-center justify-center gap-2"
+            className="vn-safe-heading text-sm sm:text-base md:text-lg font-black tracking-[0.06em] flex items-center justify-center gap-1"
             style={{
               background: "linear-gradient(135deg, #f0d48a, #d4a053)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
           >
-            <ScanSearch size={24} className="text-amber-500" /> Nhận diện lịch sử
+            <ScanSearch size={18} className="text-amber-500" /> Nhận diện lịch sử
           </h2>
-          <p className="mt-2 text-[11px] font-black uppercase tracking-[0.2em] text-sky-200">
+          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-sky-200">
             {selectedSubmode?.shortTitle}
           </p>
         </div>
-        <div className="flex justify-end">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-xs font-black text-amber-300 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <Clock3 size={14} />
+            {questionPhase === "ready" ? `${QUESTION_TIME}s` : `${timeLeft}s`}
+          </div>
           <span
-            className="text-xs sm:text-sm font-black px-3 py-2 rounded-full"
+            className="text-xs font-black px-2 py-1 rounded-lg"
             style={{
               color: "#f0d48a",
               background: "rgba(212,160,83,0.12)",
@@ -480,59 +481,60 @@ export default function GuessCharacterMode() {
           >
             {progressLabel}
           </span>
+          <div className="text-xs font-black text-green-400 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            {score} XP
+          </div>
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-[1.25fr_0.95fr] gap-6">
+      <div className="w-full flex flex-col lg:flex-row gap-3 flex-1 min-h-0 overflow-hidden">
         <div
-          className="rounded-3xl overflow-hidden shadow-2xl"
+          className="lg:w-[58%] w-full rounded-2xl flex flex-col overflow-hidden shadow-xl min-h-0"
           style={{ background: "#16213e", border: "1px solid rgba(255,255,255,0.08)" }}
         >
-          <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "rgba(212,160,83,0.8)" }}>
+          <div className="px-4 py-2 border-b flex-shrink-0 flex items-center gap-3" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+            <p className="text-[10px] font-black uppercase tracking-[0.15em]" style={{ color: "rgba(212,160,83,0.8)" }}>
               {recognitionTypeLabels[currentItem.type] || "Tư liệu"}
             </p>
-            <h3 className="text-white text-xl font-black">{currentItem.title}</h3>
+            <h3 className="text-white text-base md:text-lg font-black">{currentItem.title}</h3>
           </div>
-          <div className="p-5">
+          <div className="p-3 flex-1 min-h-[0] overflow-y-auto custom-scrollbar flex flex-col pr-1">
             {questionPhase === "ready" && !feedback ? (
-              <div className="rounded-2xl mb-5 min-h-[320px] border border-dashed border-sky-400/20 bg-sky-500/10 px-6 py-10 text-center flex flex-col items-center justify-center">
-                <div className="text-xs font-black uppercase tracking-[0.22em] text-sky-200">
+              <div className="rounded-xl mb-3 min-h-[200px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-6 text-center flex flex-col items-center justify-center">
+                <div className="text-xs font-black uppercase tracking-[0.18em] text-sky-200">
                   Câu hỏi sẽ mở sau khi bấm bắt đầu
                 </div>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-slate-200">
-                  {selectedSubmode?.shortTitle} đang chờ mở lượt chơi. Bấm{" "}
-                  <span className="font-black text-sky-200">BẮT ĐẦU</span> để
-                  hiện tư liệu và chạy đồng hồ 15 giây.
+                <p className="mt-2 max-w-xl text-sm leading-6 text-slate-200">
+                  Bấm <span className="font-black text-sky-200">BẮT ĐẦU</span> để hiện tư liệu và chạy 15 giây.
                 </p>
               </div>
             ) : (
               <>
                 <div
-                  className="rounded-2xl overflow-hidden mb-5 bg-slate-900 relative min-h-[320px] flex items-center justify-center p-6"
+                  className="rounded-xl overflow-hidden mb-3 bg-slate-900 relative min-h-[200px] flex items-center justify-center p-3"
                   style={{ border: "1px solid rgba(255,255,255,0.08)" }}
                 >
                   {currentItem.type === "keyword_hint" ? (
-                    <div className="text-center p-4">
-                      <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-amber-300">
-                        <History size={16} />
+                    <div className="text-center p-3">
+                      <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-amber-300">
+                        <History size={14} />
                         Hệ thống từ khóa gợi ý
                       </div>
-                      <p className="text-xl md:text-2xl font-black text-white leading-relaxed italic">
+                      <p className="text-lg md:text-xl font-black text-white leading-relaxed italic">
                         "{currentItem.prompt}"
                       </p>
                     </div>
                   ) : currentImages.length > 0 ? (
-                    <div className={`grid w-full gap-4 ${currentImages.length > 1 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
+                    <div className={`grid w-full gap-3 ${currentImages.length > 1 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
                       {currentImages.map((imageSrc, imageIndex) => (
                         <div
                           key={`${imageSrc}-${imageIndex}`}
-                          className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-3"
+                          className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-950/80 p-2"
                         >
                           <img
                             src={imageSrc}
                             alt={`${currentItem.title} ${imageIndex + 1}`}
-                            className="w-full aspect-square object-contain"
+                            className="w-full aspect-[4/3] object-contain"
                           />
                           <button
                             onClick={() => {
@@ -544,24 +546,24 @@ export default function GuessCharacterMode() {
                                 submodeId: selectedSubmodeId || null,
                               });
                             }}
-                            className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-900/80 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-white"
+                            className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-white/15 bg-slate-900/80 px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-white"
                           >
-                            <ZoomIn size={14} />
-                            Phóng To
+                            <ZoomIn size={12} />
+                            Phóng
                           </button>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-white/10 px-6 py-10 text-sm text-slate-400">
-                      Câu hỏi này chưa có ảnh hiển thị.
+                    <div className="rounded-xl border border-dashed border-white/10 px-4 py-6 text-sm text-slate-400">
+                      Câu hỏi này chưa có ảnh.
                     </div>
                   )}
                 </div>
                 {currentItem.type !== "keyword_hint" ? (
-                  <p className="text-lg font-bold text-white leading-relaxed">{currentItem.prompt}</p>
+                  <p className="text-sm md:text-base font-bold text-white leading-relaxed">{currentItem.prompt}</p>
                 ) : (
-                  <p className="text-sm leading-7 text-slate-300">
+                  <p className="text-xs leading-6 text-slate-300">
                     Đọc chuỗi gợi ý phía trên và nhập chính xác nhân vật, sự kiện hoặc địa danh tương ứng.
                   </p>
                 )}
@@ -571,57 +573,39 @@ export default function GuessCharacterMode() {
         </div>
 
         <div
-          className="rounded-3xl p-6 shadow-2xl flex flex-col"
+          className="lg:w-[42%] w-full rounded-2xl p-3 shadow-xl flex flex-col min-h-0 overflow-hidden"
           style={{ background: "#16213e", border: "1px solid rgba(255,255,255,0.08)" }}
         >
-          <div className="mb-5 rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-4">
-            <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+          <div className="mb-2 flex-shrink-0 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+            <div className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
               Mode nhỏ đang chơi
             </div>
-            <div className="mt-2 text-sm font-black leading-6 text-white">
+            <div className="mt-1 text-xs font-black leading-5 text-white">
               {selectedSubmode?.title}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-4 text-center">
-              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-300/80">
-                Đồng hồ
-              </div>
-              <div className="mt-2 flex items-center justify-center gap-2 text-2xl font-black text-amber-300">
-                <Clock3 size={20} />
-                {questionPhase === "ready" ? `${QUESTION_TIME}s` : `${timeLeft}s`}
-              </div>
-              <div className="mt-1 text-xs text-slate-300">Mỗi câu 15 giây</div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-900/50 px-4 py-4 text-center">
-              <div className="text-[11px] uppercase tracking-[0.2em] font-black text-slate-400">
-                Điểm hiện tại
-              </div>
-              <div className="mt-2 text-3xl font-black text-green-400">{score} XP</div>
-              <div className="mt-1 text-xs text-slate-400">Mỗi đáp án đúng +10 XP</div>
-            </div>
-          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1 flex flex-col">
 
           {!finished && !feedback && questionPhase === "ready" ? (
-            <div className="rounded-2xl border border-sky-400/20 bg-sky-500/10 p-5">
-              <div className="text-xs font-black uppercase tracking-[0.18em] text-sky-200">
+            <div className="rounded-xl border border-sky-400/20 bg-sky-500/10 p-3">
+              <div className="text-xs font-black uppercase tracking-[0.15em] text-sky-200">
                 Sẵn sàng trả lời
               </div>
-              <p className="mt-3 text-sm leading-7 text-slate-200">
-                Bấm bắt đầu để mở lượt đoán 15 giây cho câu này.
+              <p className="mt-2 text-xs leading-5 text-slate-200">
+                Bấm bắt đầu để mở lượt đoán 15 giây.
               </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 <button
                   onClick={startQuestion}
-                  className="rounded-xl py-4 font-black text-slate-950"
+                  className="rounded-lg py-3 font-black text-sm text-slate-950"
                   style={{ background: "linear-gradient(135deg, #38bdf8, #67e8f9)" }}
                 >
                   BẮT ĐẦU
                 </button>
                 <button
                   disabled
-                  className="rounded-xl border border-white/10 bg-slate-800 py-4 font-black text-white/50"
+                  className="rounded-lg border border-white/10 bg-slate-800 py-3 font-black text-sm text-white/50"
                 >
                   DỪNG
                 </button>
@@ -630,7 +614,7 @@ export default function GuessCharacterMode() {
           ) : null}
 
           {!finished && !feedback && questionPhase === "active" ? (
-            <div className="space-y-4">
+            <div className="space-y-2">
               <input
                 type="text"
                 value={guess}
@@ -638,20 +622,20 @@ export default function GuessCharacterMode() {
                 onKeyDown={(event) => event.key === "Enter" && handleSubmit()}
                 placeholder="Nhập đáp án..."
                 disabled={!timerRunning}
-                className="w-full p-4 rounded-xl outline-none text-lg font-bold text-white transition-all disabled:opacity-60"
+                className="w-full p-3 rounded-lg outline-none text-sm font-bold text-white transition-all disabled:opacity-60"
                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(212,160,83,0.3)" }}
               />
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2 sm:grid-cols-2">
                 <button
                   disabled
-                  className="rounded-xl py-4 font-black text-slate-950 disabled:opacity-50"
+                  className="rounded-lg py-3 font-black text-sm text-slate-950 disabled:opacity-50"
                   style={{ background: "linear-gradient(135deg, #38bdf8, #67e8f9)" }}
                 >
                   BẮT ĐẦU
                 </button>
                 <button
                   onClick={toggleTimerRunning}
-                  className="rounded-xl border border-white/10 bg-slate-800 py-4 font-black text-white"
+                  className="rounded-lg border border-white/10 bg-slate-800 py-3 font-black text-sm text-white"
                 >
                   {timerRunning ? "DỪNG" : "TIẾP TỤC"}
                 </button>
@@ -659,7 +643,7 @@ export default function GuessCharacterMode() {
               <button
                 onClick={handleSubmit}
                 disabled={!timerRunning || !guess.trim()}
-                className="btn-primary py-4 rounded-xl font-black disabled:opacity-50"
+                className="btn-primary py-3 rounded-lg font-black text-sm disabled:opacity-50"
               >
                 Kiểm Tra Đáp Án
               </button>
@@ -668,24 +652,24 @@ export default function GuessCharacterMode() {
 
           {feedback && !finished ? (
             <div
-              className="rounded-2xl p-5 animate-fade-in"
+              className="rounded-xl p-3 animate-fade-in"
               style={{
                 background: feedback.isCorrect ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
                 border: `1px solid ${feedback.isCorrect ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.25)"}`,
               }}
             >
-              <div className="flex items-center gap-3 mb-3">
-                {feedback.isCorrect ? <CheckCircle size={28} className="text-green-400" /> : <XCircle size={28} className="text-red-400" />}
-                <h4 className={`text-xl font-black ${feedback.isCorrect ? "text-green-400" : "text-red-400"}`}>
+              <div className="flex items-center gap-2 mb-2">
+                {feedback.isCorrect ? <CheckCircle size={22} className="text-green-400" /> : <XCircle size={22} className="text-red-400" />}
+                <h4 className={`text-base font-black ${feedback.isCorrect ? "text-green-400" : "text-red-400"}`}>
                   {feedback.isCorrect ? "Chính xác" : feedback.timedOut ? "Hết thời gian" : "Chưa đúng"}
                 </h4>
               </div>
-              <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.7)" }}>
-                Đáp án và phần giải thích chỉ được công bố khi kết thúc chế độ.
+              <p className="text-xs mb-3" style={{ color: "rgba(255,255,255,0.7)" }}>
+                Đáp án công bố khi kết thúc chế độ.
               </p>
               <button
                 onClick={nextQuestion}
-                className="w-full py-3 rounded-xl font-black text-white"
+                className="w-full py-2.5 rounded-lg font-black text-sm text-white"
                 style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
               >
                 Câu Tiếp Theo
@@ -695,27 +679,27 @@ export default function GuessCharacterMode() {
 
           {finished ? (
             <div className="mt-auto text-center animate-bounce-in">
-              <Trophy size={72} className="text-amber-400 mx-auto mb-4" />
-              <h3 className="text-3xl font-black text-amber-400 mb-2 uppercase">
-                Hoàn Thành Nhận Diện
+              <Trophy size={48} className="text-amber-400 mx-auto mb-2" />
+              <h3 className="text-xl font-black text-amber-400 mb-1 uppercase">
+                Hoàn Thành
               </h3>
-              <p className="text-white font-bold text-xl mb-3">
+              <p className="text-white font-bold text-base mb-2">
                 Điểm: {score} / {items.length * 10}
               </p>
-              <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.55)" }}>
+              <p className="text-xs mb-3" style={{ color: "rgba(255,255,255,0.55)" }}>
                 {selectedSubmode?.summary}
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <button
                   onClick={replay}
-                  className="flex-1 py-3 rounded-xl font-black text-white"
+                  className="flex-1 py-2.5 rounded-lg font-black text-sm text-white"
                   style={{ background: "rgba(255,255,255,0.08)" }}
                 >
                   Chơi Lại
                 </button>
                 <button
                   onClick={returnToSubmodeSelection}
-                  className="flex-1 py-3 rounded-xl font-black text-white"
+                  className="flex-1 py-2.5 rounded-lg font-black text-sm text-white"
                   style={{ background: "linear-gradient(135deg, #d97706, #f59e0b)" }}
                 >
                   Đổi Mode Nhỏ
@@ -723,6 +707,7 @@ export default function GuessCharacterMode() {
               </div>
             </div>
           ) : null}
+          </div>
         </div>
       </div>
 
@@ -755,6 +740,7 @@ export default function GuessCharacterMode() {
           </div>
         </div>
       ) : null}
+      </div>
     </div>
   );
 }
