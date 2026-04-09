@@ -95,7 +95,7 @@ export default function SurvivalMode() {
 
   if (isVictory) {
     return (
-      <div className="p-6 text-center flex flex-col items-center justify-center min-h-screen" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(34,197,94,0.1) 0%, #1a1a2e 70%)' }}>
+      <div className="h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(34,197,94,0.1) 0%, #1a1a2e 70%)' }}>
         <div className="animate-bounce-in">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1))', border: '2px solid rgba(34,197,94,0.3)' }}>
             <Trophy size={48} className="text-green-400" />
@@ -113,7 +113,7 @@ export default function SurvivalMode() {
 
   if (isFailed) {
     return (
-      <div className="p-6 text-center flex flex-col items-center justify-center min-h-screen" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(239,68,68,0.08) 0%, #1a1a2e 70%)' }}>
+      <div className="h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(239,68,68,0.08) 0%, #1a1a2e 70%)' }}>
         <div className="animate-shake">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1))', border: '2px solid rgba(239,68,68,0.3)' }}>
             <AlertCircle size={48} className="text-red-400" />
@@ -130,7 +130,7 @@ export default function SurvivalMode() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="h-screen flex flex-col overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       <div className="text-center">
         <div className="w-12 h-12 rounded-full border-4 border-t-red-400 border-r-transparent border-b-transparent border-l-transparent animate-spin mx-auto mb-4"></div>
         <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Đang dàn trận...</p>
@@ -139,7 +139,7 @@ export default function SurvivalMode() {
   );
 
   if (questions.length === 0) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="h-screen flex flex-col overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
       <div className="text-center">
         <p className="text-red-400 mb-4 font-semibold">Chưa thể tải dữ liệu câu hỏi.</p>
         <button onClick={() => navigate('/modes')} className="btn-primary px-6 py-3 text-sm">Quay lại</button>
@@ -150,8 +150,8 @@ export default function SurvivalMode() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-transparent relative z-10">
-      <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden p-4 sm:p-6 bg-transparent relative z-10 text-white">
+      <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
         {/* Top Bar */}
         <div className="grid grid-cols-[1fr_auto_1fr] items-center mb-6">
           <div className="flex justify-start">

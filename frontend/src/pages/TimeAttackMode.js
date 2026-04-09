@@ -438,9 +438,9 @@ export default function TimeAttackMode() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-6 text-white sm:px-6">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
-        <div className="grid gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
+    <div className="h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-4 text-white sm:px-6">
+      <div className="mx-auto flex h-full w-full max-w-6xl flex-1 flex-col gap-4 min-h-0">
+        <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">
             <button
               onClick={handleExit}
@@ -479,19 +479,15 @@ export default function TimeAttackMode() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-              Hai Mốc Thời Gian
-            </div>
-
-            <div className="mt-6 space-y-4">
+        <div className="grid flex-1 min-h-0 items-stretch gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-4 sm:p-5 shadow-xl flex min-h-0 flex-col gap-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
                 <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
                   Lần 1: Chuẩn bị
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-3xl font-black text-amber-300">
-                  <Clock3 size={20} />
+                <div className="mt-2 flex items-center gap-2 text-2xl font-black text-amber-300">
+                  <Clock3 size={18} />
                   {prepTimeLeft}s / {PREP_TIME}s
                 </div>
               </div>
@@ -499,59 +495,71 @@ export default function TimeAttackMode() {
                 <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
                   Lần 2: Vào game
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-3xl font-black text-amber-300">
-                  <Clock3 size={20} />
+                <div className="mt-2 flex items-center gap-2 text-2xl font-black text-amber-300">
+                  <Clock3 size={18} />
                   {timeLeft}s / {PLAY_TIME}s
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  disabled
-                  className="rounded-2xl bg-amber-500 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
-                >
-                  BẮT ĐẦU
-                </button>
-                <button
-                  onClick={toggleRunState}
-                  className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black text-white transition hover:bg-slate-700 disabled:opacity-50"
-                >
-                  {timerRunning ? "DỪNG" : "TIẾP TỤC"}
-                </button>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <button
+                disabled
+                className="rounded-2xl bg-amber-500 px-5 py-4 font-black text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
+              >
+                BẮT ĐẦU
+              </button>
+              <button
+                onClick={toggleRunState}
+                className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black text-white transition hover:bg-slate-700 disabled:opacity-50"
+              >
+                {timerRunning ? "DỪNG" : "TIẾP TỤC"}
+              </button>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+                Chuỗi lửa
               </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-4">
-                <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
-                  Chuỗi lửa
-                </div>
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  {Array.from({ length: STREAK_FLAME_SLOTS }, (_, i) => (
-                    <Flame
-                      key={i}
-                      size={22}
-                      className={
-                        i < streak
-                          ? "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.9)]"
-                          : "text-slate-700 opacity-40"
-                      }
-                      strokeWidth={i < streak ? 2 : 1}
-                    />
-                  ))}
-                </div>
-                <div className="mt-2 text-2xl font-black text-white tabular-nums">{streak} liên tiếp</div>
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                {Array.from({ length: STREAK_FLAME_SLOTS }, (_, i) => (
+                  <Flame
+                    key={i}
+                    size={20}
+                    className={
+                      i < streak
+                        ? "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.9)]"
+                        : "text-slate-700 opacity-40"
+                    }
+                    strokeWidth={i < streak ? 2 : 1}
+                  />
+                ))}
               </div>
+              <div className="mt-2 text-2xl font-black text-white tabular-nums">{streak} liên tiếp</div>
+            </div>
+
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-4">
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-amber-300/80">
+                Nhịp độ
+              </div>
+              <p className="mt-2 text-sm leading-6 text-slate-100">
+                Chọn đáp án càng nhanh càng giữ được chuỗi lửa. Khi trả lời đúng,
+                hệ thống sẽ tự chuyển câu để giữ nhịp chơi.
+              </p>
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-4 sm:p-5 shadow-xl flex min-h-0 flex-col">
             <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
               Câu {currentIndex + 1}
             </div>
 
-            <div className="mt-5 rounded-[28px] border border-amber-400/10 bg-slate-950/70 p-6">
-              <h2 className="text-2xl font-bold leading-relaxed text-white">
+            <div className="mt-4 rounded-[28px] border border-amber-400/10 bg-slate-950/70 p-5 sm:p-6 flex min-h-0 flex-1 flex-col">
+              <h2 className="text-xl font-bold leading-relaxed text-white sm:text-2xl">
                 {currentQuestion.content}
               </h2>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="custom-scrollbar mt-5 grid min-h-0 flex-1 content-start gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
                 {currentQuestion.options.map((option, index) => {
                   const isChosen = feedback?.selectedOption === option;
 
@@ -573,15 +581,15 @@ export default function TimeAttackMode() {
                       <div className="text-xs font-black uppercase tracking-[0.24em] text-amber-300/80">
                         Đáp án {String.fromCharCode(65 + index)}
                       </div>
-                      <div className="mt-2 text-lg font-semibold">{option}</div>
+                      <div className="mt-2 text-base font-semibold sm:text-lg">{option}</div>
                     </button>
                   );
                 })}
               </div>
 
-              {feedback && (
+              {feedback ? (
                 <div
-                  className={`mt-5 rounded-2xl border px-5 py-4 ${
+                  className={`mt-4 rounded-2xl border px-5 py-4 ${
                     feedback.correct
                       ? "border-emerald-400/30 bg-emerald-500/10"
                       : "border-rose-400/30 bg-rose-500/10"
@@ -603,6 +611,10 @@ export default function TimeAttackMode() {
                     {currentIndex === questions.length - 1 ? "Kết Thúc Chế Độ" : "Tiếp Theo"}
                     <ChevronRight size={16} />
                   </button>
+                </div>
+              ) : (
+                <div className="mt-4 text-sm text-slate-400">
+                  Bảng đáp án luôn nằm trọn ở cột này. Không cần cuộn toàn màn hình để tiếp tục chơi.
                 </div>
               )}
             </div>

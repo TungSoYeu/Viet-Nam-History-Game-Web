@@ -146,7 +146,7 @@ export default function PvPMode() {
   if (phase === "select") {
     if (loading && !remoteTeammatePackages) {
       return (
-        <div className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+        <div className="h-screen flex flex-col overflow-hidden items-center justify-center text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
           Đang tải gói từ khóa đồng đội...
         </div>
       );
@@ -154,15 +154,15 @@ export default function PvPMode() {
 
     if (!activePackages.length) {
       return (
-        <div className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+        <div className="h-screen flex flex-col overflow-hidden items-center justify-center text-center px-6 text-2xl font-bold text-amber-400" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
         Chưa có gói câu hỏi cho chế độ chơi này.
         </div>
       );
     }
 
     return (
-      <div className="min-h-screen p-4 sm:p-8" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
-        <div className="max-w-6xl mx-auto">
+      <div className="h-screen flex flex-col overflow-hidden p-4 sm:p-8" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+        <div className="max-w-6xl w-full mx-auto flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-2 pb-4">
           <div className="flex justify-between items-center mb-8">
             <button
               onClick={() => navigate("/modes")}
@@ -232,9 +232,9 @@ export default function PvPMode() {
         : "Hoàn Thành Gói Chơi";
 
   return (
-    <div className="min-h-screen p-4 sm:p-8 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
-      <div className="max-w-4xl w-full rounded-3xl p-6 sm:p-10" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 20px 50px rgba(0,0,0,0.25)" }}>
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+    <div className="h-screen p-4 sm:p-8 flex items-center justify-center overflow-hidden" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
+      <div className="max-w-4xl w-full rounded-3xl p-6 sm:p-10 flex flex-col max-h-full custom-scrollbar overflow-y-auto" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 20px 50px rgba(0,0,0,0.25)" }}>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 flex-shrink-0">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(212,160,83,0.8)" }}>
               {selectedPackage?.title}

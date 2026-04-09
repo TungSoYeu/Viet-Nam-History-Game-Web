@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, KeyRound, Puzzle, Trophy } from "lucide-react";
+import { ArrowLeft, KeyRound, Puzzle, Trophy } from "lucide-react";
 import { crosswordSets } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
@@ -420,107 +420,139 @@ export default function MillionaireMode() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#1e293b_0%,#020617_72%)] text-white px-4 py-6 sm:px-6">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
-        <div className="grid gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
-          <div className="flex justify-center md:justify-start">
-            <button
-              onClick={handleExit}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-bold text-slate-200 transition hover:bg-white/5"
-            >
-              <ArrowLeft size={18} />
-              Thoát Với {score} XP
-            </button>
-          </div>
+  /* ── Timer visual helpers ── */
+  const timerPercent = (inCluePhase ? (cluePhase === "active" ? timeLeft : QUESTION_TIME) : (keywordPhase === "active" ? keywordTimeLeft : QUESTION_TIME)) / QUESTION_TIME * 100;
+  const timerColor = displayTimer <= 5 ? "#ef4444" : displayTimer <= 10 ? "#f59e0b" : "#38bdf8";
+  const timerCircle = 2 * Math.PI * 18;
 
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-amber-300">
-              <Puzzle size={16} />
-              Giải mã ô chữ
-            </div>
-            <h1 className="vn-safe-heading mt-3 text-2xl sm:text-3xl font-black tracking-[0.08em] text-white">
+  return (
+    <div className="h-screen flex flex-col overflow-hidden bg-transparent text-white p-2 sm:p-3">
+      <div className="mx-auto flex h-full w-full max-w-[1400px] flex-col min-h-0">
+
+        {/* ═══ COMPACT HEADER BAR ═══ */}
+        <div className="flex-shrink-0 flex items-center gap-2 mb-2 p-2 sm:p-2.5 rounded-2xl"
+          style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}
+        >
+          <button onClick={handleExit}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 transition-all hover:bg-white/5 hover:text-white"
+          >
+            <ArrowLeft size={15} />
+            <span className="hidden sm:inline">Thoát</span>
+          </button>
+
+          <div className="flex-1 flex items-center justify-center gap-2">
+            <Puzzle size={14} className="text-amber-400 shrink-0" />
+            <h1 className="vn-safe-heading text-sm sm:text-base font-black tracking-wide"
+              style={{ background: "linear-gradient(135deg, #f0d48a, #d4a053)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+            >
               {displayTitle}
             </h1>
-            <p className="mt-2 text-sm text-slate-300">{getPublicSectionTheme(currentSet)}</p>
           </div>
 
-          <div className="flex items-center justify-center gap-3 md:justify-end">
-            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-center">
-              <div className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80">
-                Phần
-              </div>
-              <div className="text-lg font-black text-amber-300">
-                {setIndex + 1}/{activeCrosswordSets.length}
-              </div>
+          {/* Mini timer circle */}
+          <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
+            <svg width="40" height="40" viewBox="0 0 40 40" className="absolute -rotate-90">
+              <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
+              <circle cx="20" cy="20" r="18" fill="none" stroke={timerColor} strokeWidth="2.5"
+                strokeDasharray={timerCircle} strokeDashoffset={timerCircle * (1 - timerPercent / 100)}
+                strokeLinecap="round" className="transition-all duration-1000"
+              />
+            </svg>
+            <span className="text-[11px] font-black" style={{ color: timerColor }}>
+              {displayTimer}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <div className="px-2 py-1 rounded-lg text-[11px] font-black text-slate-300"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              {inCluePhase ? `${clueIndex + 1}/${currentSet.clues.length}` : "Từ khóa"}
             </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-3 text-center">
-              <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                Điểm
-              </div>
-              <div className={`text-lg font-black text-white transition-all ${scorePop ? 'animate-score-pop' : ''}`}>{score} XP</div>
+            <div className="px-2 py-1 rounded-lg text-[11px] font-black text-slate-300"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              {setIndex + 1}<span className="text-slate-500">/{activeCrosswordSets.length}</span>
+            </div>
+            <div className="px-2 py-1 rounded-lg text-[11px] font-black"
+              style={{ color: "#fbbf24", background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)" }}
+            >
+              <span className={`transition-all ${scorePop ? 'scale-125' : ''}`}>{score} XP</span>
             </div>
           </div>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <div className="rounded-[24px] border border-amber-400/10 bg-slate-950/70 p-5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-300">
-                  <KeyRound size={16} />
-                  Bảng Ô Chữ
+        {/* ═══ MAIN 3-COLUMN AREA ═══ */}
+        <div className="flex flex-col xl:flex-row gap-2.5 flex-1 min-h-0 overflow-hidden">
+
+          {/* ── COL 1: Crossword Grid ── */}
+          <div className="xl:w-[40%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+            style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+          >
+            <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.2), rgba(99,102,241,0.2))" }}
+                >
+                  <KeyRound size={13} className="text-sky-400" />
                 </div>
-                <div className="rounded-full border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-300">
-                  {inCluePhase ? `Câu ${clueIndex + 1}/${currentSet.clues.length}` : "Từ khóa cuối"}
-                </div>
+                <span className="text-xs font-black text-sky-300 uppercase tracking-wider">Bảng ô chữ</span>
               </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                style={{ color: "#94a3b8", background: "rgba(255,255,255,0.04)" }}
+              >
+                {correctClues}/{currentSet.clues.length} đúng
+              </span>
+            </div>
 
-              <div className="mt-5 overflow-x-auto">
-                <div className="min-w-[520px] space-y-2">
-                  {boardRows.map((row) => (
-                    <div key={`board-row-${row.index}`} className="flex items-center gap-2">
-                      <div className="w-7 text-right text-sm font-black text-slate-300">
-                        {row.index + 1}.
-                      </div>
-                      <div className="flex gap-1">
-                        {Array.from({ length: row.padding }).map((_, padIndex) => (
-                          <div key={`pad-${row.index}-${padIndex}`} className="h-10 w-10" />
-                        ))}
-                        {row.answer.split("").map((char, cellIndex) => {
-                          const isKeywordCell = row.keywordLetter && cellIndex === row.highlightIndex;
-                          const rowCompleted = Boolean(row.status?.completed);
-                          const showLetter = rowCompleted;
-                          const visibleChar = isKeywordCell && row.status?.correct
-                            ? row.keywordLetter
-                            : showLetter
-                              ? char
-                              : "";
-
-                          return (
-                            <div
-                              key={`cell-${row.index}-${cellIndex}`}
-                              className={`flex h-10 w-10 items-center justify-center border text-sm font-black uppercase ${
-                                isKeywordCell
-                                  ? "border-amber-300 bg-amber-200/90 text-rose-500"
-                                  : "border-slate-300 bg-white/90 text-slate-900"
-                              }`}
-                            >
-                              {visibleChar}
-                            </div>
-                          );
-                        })}
-                      </div>
+            {/* Crossword grid - scrollable */}
+            <div className="flex-1 min-h-0 overflow-auto custom-scrollbar p-3">
+              <div className="min-w-[360px] space-y-1 pr-1">
+                {boardRows.map((row) => (
+                  <div key={`board-row-${row.index}`} className="flex items-center gap-1">
+                    <div className="w-5 text-right text-[11px] font-black text-slate-400 shrink-0">
+                      {row.index + 1}.
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: row.padding }).map((_, padIndex) => (
+                        <div key={`pad-${row.index}-${padIndex}`} className="h-7 w-7 lg:h-8 lg:w-8" />
+                      ))}
+                      {row.answer.split("").map((char, cellIndex) => {
+                        const isKeywordCell = row.keywordLetter && cellIndex === row.highlightIndex;
+                        const rowCompleted = Boolean(row.status?.completed);
+                        const showLetter = rowCompleted;
+                        const visibleChar = isKeywordCell && row.status?.correct
+                          ? row.keywordLetter
+                          : showLetter
+                            ? char
+                            : "";
 
-              <div className="mt-5 flex flex-wrap gap-2">
+                        return (
+                          <div
+                            key={`cell-${row.index}-${cellIndex}`}
+                            className={`flex h-7 w-7 lg:h-8 lg:w-8 items-center justify-center border text-[11px] font-black uppercase lg:text-xs ${
+                              isKeywordCell
+                                ? "border-amber-300 bg-amber-200/90 text-rose-500"
+                                : "border-slate-300 bg-white/90 text-slate-900"
+                            }`}
+                          >
+                            {visibleChar}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Keyword slots + progress bar - fixed at bottom */}
+            <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex flex-wrap gap-1.5 mb-2">
                 {keywordSlots.map((slot, index) => (
                   <div
                     key={`${slot.char}-${index}`}
-                    className={`flex h-12 w-11 items-center justify-center rounded-xl border text-lg font-black uppercase ${
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg border text-xs font-black uppercase ${
                       slot.visible
                         ? "border-emerald-400/30 bg-emerald-500/15 text-emerald-200"
                         : "border-white/10 bg-slate-800 text-slate-500"
@@ -530,286 +562,283 @@ export default function MillionaireMode() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-4 text-center">
-                  <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-black">
-                    Câu đúng
-                  </div>
-                  <div className="mt-2 text-2xl font-black text-white">
-                    {correctClues}/{currentSet.clues.length}
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-4 text-center">
-                  <div className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80 font-black">
-                    Đồng hồ
-                  </div>
-                  <div className="mt-2 flex items-center justify-center gap-2 text-2xl font-black text-amber-300">
-                    <Clock3 size={20} />
-                    {displayTimer}s
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 h-2 w-full rounded-full border border-white/10 bg-slate-900/80 overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all duration-500"
-                  style={{ width: `${(revealedCount / currentSet.keyword.length) * 100}%` }}
+              <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${(revealedCount / currentSet.keyword.length) * 100}%`,
+                    background: "linear-gradient(90deg, #38bdf8, #34d399, #fbbf24)",
+                  }}
                 />
               </div>
-              <div className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                Tiến độ mở ký tự: {revealedCount}/{currentSet.keyword.length}
+              <div className="mt-1 text-[10px] font-bold text-slate-500">
+                Tiến độ: {revealedCount}/{currentSet.keyword.length} ký tự
+              </div>
+            </div>
+          </div>
+
+          {/* ── COL 2: Question / Controls ── */}
+          <div className="xl:w-[38%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+            style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+          >
+            <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.2))" }}
+                >
+                  <Puzzle size={13} className="text-amber-400" />
+                </div>
+                <span className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                  {inCluePhase ? `Câu gợi mở ${clueIndex + 1}/${currentSet.clues.length}` : "Từ khóa cuối"}
+                </span>
               </div>
             </div>
 
-            {inCluePhase ? (
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-slate-950/70 p-6">
-                <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                  Câu gợi mở {clueIndex + 1}/{currentSet.clues.length}
-                </div>
-                {cluePhase === "ready" && !clueResult ? (
-                  <div className="mt-6 rounded-2xl border border-sky-400/20 bg-sky-500/10 p-5">
-                    <div className="text-xs font-black uppercase tracking-[0.18em] text-sky-200">
-                      Sẵn sàng mở câu hỏi
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3">
+              {inCluePhase ? (
+                <>
+                  {cluePhase === "ready" && !clueResult ? (
+                    <div className="rounded-xl p-4"
+                      style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.12)" }}
+                    >
+                      <div className="text-xs font-black uppercase tracking-wider text-sky-300 mb-2">
+                        Sẵn sàng mở câu hỏi
+                      </div>
+                      <p className="text-sm leading-relaxed text-slate-300 mb-3">
+                        Bấm bắt đầu để mở câu và chạy {QUESTION_TIME} giây trả lời.
+                      </p>
+                      <div className="flex gap-2">
+                        <button onClick={startClue}
+                          className="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.01]"
+                          style={{ background: "linear-gradient(135deg, #38bdf8, #818cf8)", color: "#0f172a" }}
+                        >
+                          ▶ Bắt Đầu
+                        </button>
+                        <button disabled
+                          className="px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
+                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        >
+                          Dừng
+                        </button>
+                      </div>
                     </div>
-                    <p className="mt-3 text-sm leading-7 text-slate-100">
-                      Câu hỏi của hàng ngang này đang ẩn. Bấm bắt đầu để mở câu và chạy 15 giây trả lời.
-                    </p>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <button
-                        onClick={startClue}
-                        className="rounded-2xl bg-sky-400 px-5 py-3 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-300"
-                      >
-                        BẮT ĐẦU
-                      </button>
-                      <button
-                        disabled
-                        className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-3 font-black uppercase tracking-[0.18em] text-white/50"
-                      >
-                        DỪNG
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
+                  ) : null}
 
-                {cluePhase === "active" && !clueResult ? (
-                  <>
-                    <h2 className="mt-4 text-2xl font-bold leading-relaxed text-white">
-                      {currentClue.question}
-                    </h2>
-                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                      <button
-                        disabled
-                        className="rounded-2xl bg-sky-400 px-5 py-3 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-300 disabled:opacity-50 sm:col-span-1"
-                      >
-                        BẮT ĐẦU
-                      </button>
-                      <button
-                        onClick={toggleTimerRunning}
-                        className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-3 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700 sm:col-span-1"
-                      >
-                        {timerRunning ? "DỪNG" : "TIẾP TỤC"}
-                      </button>
-                    </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      {currentClue.options.map((option, index) => {
-                        const selected = choice === option;
+                  {cluePhase === "active" && !clueResult ? (
+                    <>
+                      <h2 className="text-base sm:text-lg font-bold leading-relaxed text-white mb-3">
+                        {currentClue.question}
+                      </h2>
+                      <div className="flex gap-2 mb-3">
+                        <button disabled
+                          className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white/30"
+                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        >
+                          Bắt đầu
+                        </button>
+                        <button onClick={toggleTimerRunning}
+                          className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
+                          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                        >
+                          {timerRunning ? "⏸ Dừng" : "▶ Tiếp"}
+                        </button>
+                      </div>
+                      <div className="grid gap-2 grid-cols-2">
+                        {currentClue.options.map((option, index) => {
+                          const selected = choice === option;
+                          return (
+                            <button
+                              key={option}
+                              onClick={() => handleAnswer(option, "manual")}
+                              disabled={!timerRunning}
+                              className={`rounded-xl p-3 text-left transition-all disabled:opacity-50 ${
+                                selected
+                                  ? "text-white"
+                                  : "text-white hover:scale-[1.01]"
+                              }`}
+                              style={{
+                                background: selected ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.03)",
+                                border: `1.5px solid ${selected ? "rgba(251,191,36,0.3)" : "rgba(255,255,255,0.06)"}`,
+                              }}
+                            >
+                              <div className="text-[10px] font-black uppercase tracking-widest text-amber-300/70">
+                                {String.fromCharCode(65 + index)}
+                              </div>
+                              <div className="mt-1 text-sm font-bold">{option}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : null}
 
-                        return (
-                          <button
-                            key={option}
-                            onClick={() => handleAnswer(option, "manual")}
-                            disabled={!timerRunning}
-                            className={`rounded-2xl border p-4 text-left transition disabled:opacity-50 ${
-                              selected
-                                ? "border-amber-400/40 bg-amber-500/15 text-white"
-                                : "border-white/10 bg-slate-800 text-white hover:border-amber-400/30 hover:bg-slate-700"
-                            }`}
-                          >
-                            <div className="text-xs font-black uppercase tracking-[0.24em] text-amber-300/80">
-                              Đáp án {String.fromCharCode(65 + index)}
-                            </div>
-                            <div className="mt-2 text-lg font-semibold">{option}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                ) : null}
-
-                {clueResult && (
-                  <div
-                    className={`mt-5 rounded-2xl border px-5 py-4 ${
+                  {clueResult && (
+                    <div className={`rounded-xl p-4 ${
                       clueResult.correct
-                        ? "border-emerald-400/30 bg-emerald-500/10"
-                        : "border-rose-400/30 bg-rose-500/10"
-                    }`}
-                  >
-                    <div className="text-lg font-black text-white">
-                      {clueResult.correct
-                        ? "Chính xác. Bạn đã mở thêm 1 ký tự."
-                        : clueResult.timedOut
-                          ? "Hết thời gian. Câu gợi mở này đã đóng."
-                          : "Chưa đúng. Câu gợi mở này đã đóng."}
-                    </div>
-                    {!clueResult.correct && (
-                      <div className="mt-2 text-sm text-slate-300">
-                        Đáp án câu gợi mở sẽ chỉ được công bố khi kết thúc chế độ.
+                        ? "bg-emerald-500/8 border border-emerald-400/20"
+                        : "bg-rose-500/8 border border-rose-400/20"
+                    }`}>
+                      <div className="text-sm font-black text-white">
+                        {clueResult.correct
+                          ? "✓ Chính xác — mở thêm 1 ký tự."
+                          : clueResult.timedOut
+                            ? "✗ Hết giờ."
+                            : "✗ Chưa đúng."}
                       </div>
-                    )}
-                    <button
-                      onClick={() => {
-                        setChoice("");
-                        setClueResult(null);
-                        setCluePhase("ready");
-                        setTimeLeft(QUESTION_TIME);
-                        setTimerRunning(false);
-                        setClueIndex((prev) => prev + 1);
-                      }}
-                      className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-slate-900 transition hover:bg-amber-300"
-                    >
-                      {clueIndex === currentSet.clues.length - 1
-                        ? "Giải Mã Từ Khóa"
-                        : "Câu Kế Tiếp"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-slate-950/70 p-6">
-                <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                  Từ Khóa Cuối
-                </div>
-                {keywordPhase === "ready" && !keywordResult ? (
-                  <div className="mt-4 rounded-2xl border border-sky-400/20 bg-sky-500/10 p-5">
-                    <p className="text-sm leading-7 text-slate-100">
-                      Ô nhập từ khóa cuối đang ẩn. Bấm bắt đầu để mở câu và chạy 15 giây giải mã.
-                    </p>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <button
-                        onClick={startKeyword}
-                        className="rounded-2xl bg-sky-400 px-5 py-3 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-300"
-                      >
-                        BẮT ĐẦU
-                      </button>
-                      <button
-                        disabled
-                        className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-3 font-black uppercase tracking-[0.18em] text-white/50"
-                      >
-                        DỪNG
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className="mt-4 text-slate-300">
-                      Hãy dùng toàn bộ dữ kiện để giải mã từ khóa của phần này.
-                    </p>
-                    {!keywordResult && (
-                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                        <button
-                          disabled
-                          className="rounded-2xl bg-sky-400 px-5 py-3 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-300 disabled:opacity-50"
-                        >
-                          BẮT ĐẦU
-                        </button>
-                        <button
-                          onClick={toggleTimerRunning}
-                          className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-3 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                        >
-                          {timerRunning ? "DỪNG" : "TIẾP TỤC"}
-                        </button>
-                      </div>
-                    )}
-                    <form onSubmit={submitKeyword} className="mt-5">
-                      <input
-                        value={keywordInput}
-                        onChange={(event) => setKeywordInput(event.target.value)}
-                        disabled={Boolean(keywordResult) || !timerRunning}
-                        placeholder="Nhập từ khóa"
-                        className="w-full rounded-2xl border border-white/10 bg-slate-800 px-4 py-4 text-lg font-semibold text-white outline-none transition focus:border-amber-400/40 disabled:opacity-60"
-                      />
-                      {!keywordResult && (
-                        <button
-                          type="submit"
-                          disabled={!timerRunning || !keywordInput.trim()}
-                          className="mt-4 rounded-2xl bg-amber-500 px-5 py-3 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
-                        >
-                          Kiểm Tra Từ Khóa
-                        </button>
+                      {!clueResult.correct && (
+                        <div className="mt-1 text-xs text-slate-400">
+                          Đáp án sẽ được công bố khi kết thúc chế độ.
+                        </div>
                       )}
-                    </form>
-                  </>
-                )}
-
-                {keywordResult && (
-                  <div
-                    className={`mt-5 rounded-2xl border px-5 py-4 ${
-                      keywordResult.correct
-                        ? "border-emerald-400/30 bg-emerald-500/10"
-                        : "border-rose-400/30 bg-rose-500/10"
-                    }`}
-                  >
-                    <div className="text-lg font-black text-white">
-                      {keywordResult.correct
-                        ? "Đã giải mã đúng từ khóa."
-                        : keywordResult.timedOut
-                          ? "Hết thời gian cho từ khóa cuối."
-                          : "Chưa giải mã đúng từ khóa."}
+                      <button
+                        onClick={() => {
+                          setChoice("");
+                          setClueResult(null);
+                          setCluePhase("ready");
+                          setTimeLeft(QUESTION_TIME);
+                          setTimerRunning(false);
+                          setClueIndex((prev) => prev + 1);
+                        }}
+                        className="mt-3 px-5 py-2 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.02]"
+                        style={{ background: "linear-gradient(135deg, #34d399, #10b981)", color: "#0f172a" }}
+                      >
+                        {clueIndex === currentSet.clues.length - 1 ? "Giải Mã Từ Khóa" : "Câu Kế Tiếp →"}
+                      </button>
                     </div>
-                    <div className="mt-2 text-sm text-slate-300">
-                      Từ khóa chuẩn sẽ chỉ được công bố khi kết thúc chế độ.
-                    </div>
-                    <button
-                      onClick={() => finishSection(keywordResult.correct)}
-                      className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-slate-900 transition hover:bg-amber-300"
+                  )}
+                </>
+              ) : (
+                <>
+                  {keywordPhase === "ready" && !keywordResult ? (
+                    <div className="rounded-xl p-4"
+                      style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.12)" }}
                     >
-                      {setIndex === activeCrosswordSets.length - 1
-                        ? "Kết Thúc Chế Độ"
-                        : "Sang Phần Tiếp"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+                      <div className="text-xs font-black uppercase tracking-wider text-sky-300 mb-2">
+                        Từ khóa cuối
+                      </div>
+                      <p className="text-sm leading-relaxed text-slate-300 mb-3">
+                        Bấm bắt đầu để mở ô nhập và chạy {QUESTION_TIME} giây giải mã.
+                      </p>
+                      <div className="flex gap-2">
+                        <button onClick={startKeyword}
+                          className="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.01]"
+                          style={{ background: "linear-gradient(135deg, #38bdf8, #818cf8)", color: "#0f172a" }}
+                        >
+                          ▶ Bắt Đầu
+                        </button>
+                        <button disabled
+                          className="px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
+                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        >
+                          Dừng
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm leading-relaxed text-slate-300 mb-3">
+                        Hãy dùng toàn bộ dữ kiện để giải mã từ khóa.
+                      </p>
+                      {!keywordResult && (
+                        <div className="flex gap-2 mb-3">
+                          <button disabled
+                            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white/30"
+                            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+                          >
+                            Bắt đầu
+                          </button>
+                          <button onClick={toggleTimerRunning}
+                            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
+                            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                          >
+                            {timerRunning ? "⏸ Dừng" : "▶ Tiếp"}
+                          </button>
+                        </div>
+                      )}
+                      <form onSubmit={submitKeyword}>
+                        <input
+                          value={keywordInput}
+                          onChange={(event) => setKeywordInput(event.target.value)}
+                          disabled={Boolean(keywordResult) || !timerRunning}
+                          placeholder="Nhập từ khóa"
+                          className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-base font-semibold text-white outline-none transition focus:border-amber-400/40 disabled:opacity-60"
+                        />
+                        {!keywordResult && (
+                          <button type="submit" disabled={!timerRunning || !keywordInput.trim()}
+                            className="mt-3 w-full py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all disabled:opacity-40"
+                            style={{ background: "linear-gradient(135deg, #fbbf24, #f59e0b)", color: "#0f172a" }}
+                          >
+                            Kiểm Tra Từ Khóa
+                          </button>
+                        )}
+                      </form>
+                    </>
+                  )}
+
+                  {keywordResult && (
+                    <div className={`mt-3 rounded-xl p-4 ${
+                      keywordResult.correct
+                        ? "bg-emerald-500/8 border border-emerald-400/20"
+                        : "bg-rose-500/8 border border-rose-400/20"
+                    }`}>
+                      <div className="text-sm font-black text-white">
+                        {keywordResult.correct
+                          ? "✓ Đã giải mã đúng từ khóa."
+                          : keywordResult.timedOut
+                            ? "✗ Hết thời gian."
+                            : "✗ Chưa giải mã đúng."}
+                      </div>
+                      <div className="mt-1 text-xs text-slate-400">
+                        Từ khóa chuẩn sẽ được công bố khi kết thúc chế độ.
+                      </div>
+                      <button
+                        onClick={() => finishSection(keywordResult.correct)}
+                        className="mt-3 px-5 py-2 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.02]"
+                        style={{ background: "linear-gradient(135deg, #34d399, #10b981)", color: "#0f172a" }}
+                      >
+                        {setIndex === activeCrosswordSets.length - 1 ? "Kết Thúc Chế Độ" : "Sang Phần Tiếp →"}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-              <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                Theo Dõi Tiến Độ
-              </div>
-              <div className="mt-4 space-y-3">
-                {activeCrosswordSets.map((item, index) => {
-                  const done = summary.find((entry) => entry.id === item.id);
-                  const active = index === setIndex;
+          {/* ── COL 3: Progress Sidebar ── */}
+          <div className="xl:w-[22%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+            style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+          >
+            <div className="flex-shrink-0 px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Tiến Độ</span>
+            </div>
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2.5 space-y-2">
+              {activeCrosswordSets.map((item, index) => {
+                const done = summary.find((entry) => entry.id === item.id);
+                const active = index === setIndex;
+                let borderCol = "rgba(255,255,255,0.06)";
+                let bgCol = "rgba(255,255,255,0.015)";
+                if (active) { borderCol = "rgba(251,191,36,0.2)"; bgCol = "rgba(251,191,36,0.04)"; }
+                if (done) { borderCol = "rgba(52,211,153,0.2)"; bgCol = "rgba(52,211,153,0.04)"; }
 
-                  return (
-                    <div
-                      key={item.id}
-                      className={`rounded-2xl border px-4 py-4 ${
-                        active
-                          ? "border-amber-400/30 bg-amber-500/10"
-                          : done
-                            ? "border-emerald-400/20 bg-emerald-500/10"
-                            : "border-white/10 bg-slate-800/80"
-                      }`}
-                    >
-                      <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
-                        {`Ô chữ ${index + 1}`}
-                      </div>
-                      <div className="mt-2 font-bold text-white">
-                        {done ? done.theme : getPublicSectionTheme(item)}
-                      </div>
-                      <div className="mt-2 text-sm text-slate-300">
-                        {done
-                          ? `${done.correctClues}/${done.totalClues} câu`
-                          : active
-                            ? "Đang chơi"
-                            : "Chưa mở"}
-                      </div>
+                return (
+                  <div key={item.id}
+                    className="rounded-xl p-3 transition-all"
+                    style={{ background: bgCol, border: `1px solid ${borderCol}` }}
+                  >
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {`Ô chữ ${index + 1}`}
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="mt-1 text-xs font-bold text-white leading-snug">
+                      {done ? done.theme : getPublicSectionTheme(item)}
+                    </div>
+                    <div className="mt-1.5 text-[10px] font-bold"
+                      style={{ color: done ? "#6ee7b7" : active ? "#fbbf24" : "#64748b" }}
+                    >
+                      {done ? `${done.correctClues}/${done.totalClues} câu` : active ? "Đang chơi" : "Chưa mở"}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -209,7 +209,7 @@ export default function TerritoryMap() {
 
   if (loading || (activePicturePuzzleItems.length > 0 && !sessionReady)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Đang chuẩn bị phần đuổi hình bắt chữ...
       </div>
     );
@@ -217,7 +217,7 @@ export default function TerritoryMap() {
 
   if (!currentItem && !finished) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
@@ -225,7 +225,7 @@ export default function TerritoryMap() {
 
   if (finished) {
     return (
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top,#1d4ed8_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center">
+      <div className="h-screen bg-[radial-gradient(circle_at_top,#1d4ed8_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center overflow-hidden">
         <div className="w-full max-w-3xl rounded-[32px] border border-sky-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
             <Trophy size={40} />
@@ -280,9 +280,9 @@ export default function TerritoryMap() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#0f766e_0%,#020617_72%)] px-4 py-6 text-white sm:px-6">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6">
-        <div className="grid gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
+    <div className="h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#0f766e_0%,#020617_72%)] px-4 py-4 text-white sm:px-6">
+      <div className="mx-auto flex h-full w-full max-w-6xl flex-1 flex-col gap-4 min-h-0">
+        <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">
             <button
               onClick={handleExit}
@@ -321,31 +321,34 @@ export default function TerritoryMap() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+        <div className="grid flex-1 min-h-0 items-stretch gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-4 sm:p-5 shadow-xl flex min-h-0 flex-col gap-4">
             {questionPhase === "ready" && !feedback ? (
-              <div className="rounded-[28px] border border-dashed border-sky-400/20 bg-sky-500/10 p-8 text-center">
-                <div className="text-xs font-black uppercase tracking-[0.22em] text-sky-200">
-                  Câu hỏi đang chờ bắt đầu
+              <div className="flex flex-1 items-center justify-center rounded-[28px] border border-dashed border-sky-400/20 bg-sky-500/10 p-8 text-center">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.22em] text-sky-200">
+                    Câu hỏi đang chờ bắt đầu
+                  </div>
+                  <p className="mt-4 text-sm leading-7 text-slate-100">
+                    Ảnh và câu hỏi sẽ chỉ hiện ra sau khi bấm <span className="font-black text-sky-200">BẮT ĐẦU</span>.
+                  </p>
                 </div>
-                <p className="mt-4 text-sm leading-7 text-slate-100">
-                  Ảnh và câu hỏi sẽ chỉ hiện ra sau khi bấm <span className="font-black text-sky-200">BẮT ĐẦU</span>.
-                </p>
               </div>
             ) : (
               <>
-                <div className="mb-5 rounded-[24px] border border-amber-400/20 bg-amber-500/10 p-5">
+                <div className="rounded-[24px] border border-amber-400/20 bg-amber-500/10 p-4">
                   <div className="text-xs font-black uppercase tracking-[0.22em] text-amber-300">
                     Câu Hỏi
                   </div>
-                  <p className="mt-3 text-base font-semibold leading-7 text-white sm:text-lg">
+                  <p className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base">
                     {currentItem.prompt || "Hãy xác định từ khóa của từng hình rồi ghép thành đáp án lịch sử hoàn chỉnh."}
                   </p>
                 </div>
-                <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/70 p-6">
-                  <div className="grid grid-cols-2 gap-4">
+
+                <div className="rounded-[28px] border border-white/10 bg-slate-950/70 p-4 sm:p-5 flex-1 min-h-0 overflow-hidden">
+                  <div className="grid h-full auto-rows-fr grid-cols-2 gap-3">
                     {currentItem.images.map((img, idx) => (
-                      <div key={idx} className="aspect-square bg-slate-900 rounded-2xl overflow-hidden border border-white/5 p-2">
+                      <div key={idx} className="min-h-0 rounded-2xl border border-white/5 bg-slate-900 p-2 overflow-hidden">
                         <img
                           src={img}
                           alt={`Mảnh ghép ${idx + 1}`}
@@ -356,15 +359,15 @@ export default function TerritoryMap() {
                   </div>
                 </div>
 
-                <div className="mt-5 rounded-[24px] border border-white/10 bg-slate-950/60 p-5">
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/60 p-4">
                   <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-amber-300">
                     <Lightbulb size={16} />
                     Gợi Ý
                   </div>
-                  <p className="mt-4 text-base leading-7 text-slate-200">
+                  <p className="mt-3 text-sm leading-6 text-slate-200">
                     Hãy tìm từ khóa của từng hình rồi ghép chúng thành cụm từ lịch sử hoàn chỉnh.
                   </p>
-                  <div className="mt-4 space-y-2">
+                  <div className="mt-3 space-y-2">
                     {hintLevel > 0 ? (
                       computedHints.slice(0, hintLevel).map((hint, index) => (
                         <div
@@ -401,7 +404,7 @@ export default function TerritoryMap() {
             )}
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-5 shadow-xl">
+          <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-4 sm:p-5 shadow-xl flex min-h-0 flex-col">
             <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
               Bảng Đáp Án
             </div>
@@ -414,16 +417,17 @@ export default function TerritoryMap() {
                 {questionPhase === "ready" ? `${QUESTION_TIME}s` : `${timeLeft}s`}
               </div>
             </div>
-            <div className="mt-5">
+
+            <div className="mt-4 flex-1 min-h-0 flex flex-col">
               {!feedback && questionPhase === "ready" ? (
                 <div className="rounded-2xl border border-sky-400/20 bg-sky-500/10 p-5">
                   <div className="text-xs font-black uppercase tracking-[0.18em] text-sky-200">
                     Sẵn sàng ghép đáp án
                   </div>
-                  <p className="mt-3 text-sm leading-7 text-slate-100">
+                  <p className="mt-3 text-sm leading-6 text-slate-100">
                     Bấm bắt đầu để mở 15 giây suy luận cho câu này.
                   </p>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <button
                       onClick={startPuzzle}
                       className="rounded-2xl bg-sky-400 py-4 font-black uppercase tracking-widest text-slate-900 transition hover:bg-sky-300"
@@ -474,34 +478,38 @@ export default function TerritoryMap() {
                   </button>
                 </div>
               ) : null}
-            </div>
 
-            {feedback && (
-              <div
-                className={`mt-5 rounded-2xl border px-5 py-4 ${
-                  feedback.correct
-                    ? "border-emerald-400/30 bg-emerald-500/10"
-                    : "border-rose-400/30 bg-rose-500/10"
-                }`}
-              >
-                <div className="text-lg font-black text-white">
-                  {feedback.correct
-                    ? "Ghép đúng đáp án lịch sử."
-                    : feedback.timedOut
-                      ? "Hết thời gian cho câu này."
-                      : "Ghép chưa đúng đáp án."}
-                </div>
-                <div className="mt-2 text-sm text-slate-300">
-                  Đáp án và giải thích sẽ chỉ được công bố khi kết thúc chế độ.
-                </div>
-                <button
-                  onClick={nextPuzzle}
-                  className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-slate-900 transition hover:bg-sky-200"
+              {feedback ? (
+                <div
+                  className={`mt-4 rounded-2xl border px-5 py-4 ${
+                    feedback.correct
+                      ? "border-emerald-400/30 bg-emerald-500/10"
+                      : "border-rose-400/30 bg-rose-500/10"
+                  }`}
                 >
-                  {currentIndex === items.length - 1 ? "Kết Thúc Chế Độ" : "Hình Kế Tiếp"}
-                </button>
-              </div>
-            )}
+                  <div className="text-lg font-black text-white">
+                    {feedback.correct
+                      ? "Ghép đúng đáp án lịch sử."
+                      : feedback.timedOut
+                        ? "Hết thời gian cho câu này."
+                        : "Ghép chưa đúng đáp án."}
+                  </div>
+                  <div className="mt-2 text-sm text-slate-300">
+                    Đáp án và giải thích sẽ chỉ được công bố khi kết thúc chế độ.
+                  </div>
+                  <button
+                    onClick={nextPuzzle}
+                    className="mt-4 rounded-full bg-white px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-slate-900 transition hover:bg-sky-200"
+                  >
+                    {currentIndex === items.length - 1 ? "Kết Thúc Chế Độ" : "Hình Kế Tiếp"}
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-auto pt-4 text-sm text-slate-400">
+                  Ảnh, ô nhập đáp án và các thao tác đều được giữ trong một màn hình.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

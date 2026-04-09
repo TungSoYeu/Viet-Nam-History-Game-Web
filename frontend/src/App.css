@@ -10,8 +10,8 @@
   --viet-gold: #d4a053;
   --viet-gold-light: #f0d48a;
   --viet-gold-glow: rgba(212, 160, 83, 0.3);
-  --bg-dark-obsidian: #0a0a0f; /* Nền tối sâu đồng nhất */
-  --bg-card-slate: rgba(30, 41, 59, 0.8); /* Card tối hơn để nổi bật */
+  --bg-dark-obsidian: #0a0a0f;
+  --bg-card-slate: rgba(30, 41, 59, 0.8);
   --nav-height: 72px;
 }
 
@@ -95,7 +95,7 @@ html, body {
 }
 
 /* ============================
-   19. STUDY PAGE & TIMELINE (UNIFIED DARK)
+   STUDY PAGE & TIMELINE (UNIFIED DARK)
    ============================ */
 body:has(.study-page), body:has(.timeline-page),
 .study-page {
@@ -165,7 +165,7 @@ body:has(.study-page), body:has(.timeline-page),
 .study-page .study-content {
   flex: 1;
   border-radius: 1.5rem;
-  background: rgba(15, 23, 42, 0.7); /* Card nội dung đậm hơn */
+  background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin: 0 1.5rem 2rem;
@@ -620,6 +620,32 @@ textarea:focus-visible {
 }
 
 /* ============================
+   CUSTOM SCROLLBAR (GAME MODES)
+   ============================ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--viet-gold);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--viet-red);
+}
+
+/* Firefox support */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--viet-gold) transparent;
+}
+
+/* ============================
    RESPONSIVE MOBILE FIXES
    ============================ */
 @media (max-width: 480px) {
@@ -647,8 +673,59 @@ textarea:focus-visible {
   width: 100%;
 }
 
+.fullscreen-game-controls {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: calc(env(safe-area-inset-left, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.fullscreen-game-controls > * {
+  pointer-events: auto;
+}
+
+.fullscreen-game-control-btn {
+  min-height: 42px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.fullscreen-game-stage {
+  height: 100dvh;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--fullscreen-controls-height, 64px) + 12px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+}
+
+.fullscreen-game-stage > * {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.fullscreen-game-stage .h-screen {
+  height: 100% !important;
+}
+
+.fullscreen-game-stage .min-h-screen {
+  min-height: 100% !important;
+  height: 100% !important;
+}
+
+.fullscreen-game-stage .max-h-screen {
+  max-height: 100% !important;
+}
+
+.fullscreen-game-stage .overflow-y-auto {
+  overscroll-behavior: contain;
+}
+
 .fullscreen-game-container .game-content {
-  min-height: 100vh;
+  min-height: 100%;
   height: 100%;
 }
 
@@ -695,4 +772,26 @@ body:has(.fullscreen-active) .bottom-nav {
 
 body:has(.fullscreen-active) .app-content {
   padding-bottom: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .fullscreen-game-controls {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .fullscreen-game-control-btn {
+    width: 100%;
+  }
+
+  .fullscreen-game-stage {
+    padding-top: calc(env(safe-area-inset-top, 0px) + var(--fullscreen-controls-height, 88px) + 8px);
+  }
+}
+
+@media (max-height: 820px) {
+  .fullscreen-game-stage {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2px);
+  }
 }
