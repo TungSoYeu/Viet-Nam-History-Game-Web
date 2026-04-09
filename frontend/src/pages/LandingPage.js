@@ -63,7 +63,7 @@ export default function LandingPage() {
         ></div>
 
         {/* 3. Main Content Layer */}
-        <div className="relative z-20 text-center max-w-lg mx-auto">
+        <div className="relative z-20 text-center max-w-4xl mx-auto w-full px-4">
           {/* Emblem */}
           <div className="mb-8 animate-fade-in-scale">
             <div className="inline-flex items-center justify-center w-28 h-28 rounded-full relative shadow-2xl backdrop-blur-md" style={{ background: 'linear-gradient(135deg, rgba(185,28,28,0.25), rgba(212,160,83,0.3))', border: '2px solid rgba(212,160,83,0.4)', boxShadow: '0 0 40px rgba(212,160,83,0.3)' }}>
