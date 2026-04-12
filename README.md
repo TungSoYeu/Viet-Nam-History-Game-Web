@@ -134,7 +134,14 @@ cd frontend
 npm install
 ```
 
-Update `frontend/src/App.js` or `frontend/src/config/api.js` if your backend is hosted on a different URL (Defaults to `http://localhost:5000`).
+Create `frontend/.env` with:
+
+```env
+REACT_APP_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+REACT_APP_API_URL=http://localhost:5000
+```
+
+If your deploy platform only exposes `GOOGLE_CLIENT_ID`, the frontend build scripts in this repo will automatically map it to `REACT_APP_GOOGLE_CLIENT_ID`.
 
 Start the React development server:
 

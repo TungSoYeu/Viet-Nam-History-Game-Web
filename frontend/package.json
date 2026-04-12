@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "dev": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "node scripts/react-scripts-env.js start",
+    "dev": "node scripts/react-scripts-env.js start",
+    "build": "node scripts/react-scripts-env.js build",
+    "test": "node scripts/react-scripts-env.js test",
     "eject": "react-scripts eject"
   },
   "keywords": [],

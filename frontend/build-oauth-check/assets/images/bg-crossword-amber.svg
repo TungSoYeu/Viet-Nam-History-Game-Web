@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1460" y2="850" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#78350F"/>
+      <stop offset="0.46" stop-color="#111827"/>
+      <stop offset="1" stop-color="#92400E"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FCD34D" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0.08"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#FCD34D" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" rx="48" fill="url(#bg)"/>
+  <circle cx="266" cy="164" r="180" fill="#F59E0B" fill-opacity="0.08"/>
+  <circle cx="1334" cy="736" r="246" fill="#FCD34D" fill-opacity="0.06"/>
+
+  <g transform="translate(310 126)">
+    <rect x="0" y="0" width="980" height="648" rx="42" fill="#0B1120" fill-opacity="0.6" stroke="#F8FAFC" stroke-opacity="0.08"/>
+    <g transform="translate(118 92)">
+      <g fill="url(#tile)" stroke="#F8FAFC" stroke-opacity="0.08">
+        <rect x="0" y="0" width="74" height="74" rx="14"/>
+        <rect x="86" y="0" width="74" height="74" rx="14"/>
+        <rect x="172" y="0" width="74" height="74" rx="14"/>
+        <rect x="258" y="0" width="74" height="74" rx="14"/>
+        <rect x="344" y="0" width="74" height="74" rx="14"/>
+        <rect x="430" y="0" width="74" height="74" rx="14"/>
+        <rect x="516" y="0" width="74" height="74" rx="14"/>
+        <rect x="602" y="0" width="74" height="74" rx="14"/>
+
+        <rect x="0" y="86" width="74" height="74" rx="14"/>
+        <rect x="86" y="86" width="74" height="74" rx="14"/>
+        <rect x="172" y="86" width="74" height="74" rx="14"/>
+        <rect x="258" y="86" width="74" height="74" rx="14"/>
+        <rect x="344" y="86" width="74" height="74" rx="14"/>
+        <rect x="430" y="86" width="74" height="74" rx="14"/>
+        <rect x="516" y="86" width="74" height="74" rx="14"/>
+        <rect x="602" y="86" width="74" height="74" rx="14"/>
+
+        <rect x="0" y="172" width="74" height="74" rx="14"/>
+        <rect x="86" y="172" width="74" height="74" rx="14"/>
+        <rect x="172" y="172" width="74" height="74" rx="14"/>
+        <rect x="258" y="172" width="74" height="74" rx="14"/>
+        <rect x="344" y="172" width="74" height="74" rx="14"/>
+        <rect x="430" y="172" width="74" height="74" rx="14"/>
+        <rect x="516" y="172" width="74" height="74" rx="14"/>
+        <rect x="602" y="172" width="74" height="74" rx="14"/>
+
+        <rect x="0" y="258" width="74" height="74" rx="14"/>
+        <rect x="86" y="258" width="74" height="74" rx="14"/>
+        <rect x="172" y="258" width="74" height="74" rx="14"/>
+        <rect x="258" y="258" width="74" height="74" rx="14"/>
+        <rect x="344" y="258" width="74" height="74" rx="14"/>
+        <rect x="430" y="258" width="74" height="74" rx="14"/>
+        <rect x="516" y="258" width="74" height="74" rx="14"/>
+        <rect x="602" y="258" width="74" height="74" rx="14"/>
+      </g>
+
+      <g filter="url(#glow)">
+        <rect x="258" y="-18" width="74" height="364" rx="18" fill="#FCD34D" fill-opacity="0.22" stroke="#FCD34D" stroke-opacity="0.9" stroke-width="4"/>
+      </g>
+    </g>
+
+    <rect x="756" y="126" width="126" height="24" rx="12" fill="#F8FAFC" fill-opacity="0.14"/>
+    <rect x="756" y="176" width="162" height="24" rx="12" fill="#F8FAFC" fill-opacity="0.1"/>
+    <rect x="756" y="226" width="106" height="24" rx="12" fill="#F8FAFC" fill-opacity="0.08"/>
+    <rect x="756" y="306" width="126" height="126" rx="28" fill="url(#tile)"/>
+    <rect x="756" y="464" width="126" height="126" rx="28" fill="url(#tile)"/>
+  </g>
+
+  <rect x="96" y="96" width="1408" height="708" rx="38" stroke="#F8FAFC" stroke-opacity="0.08" stroke-width="2"/>
+</svg>
