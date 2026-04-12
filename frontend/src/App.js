@@ -32,6 +32,7 @@ import CourseManagement from './pages/CourseManagement';
 import NotFound from './pages/NotFound';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import FullscreenGameWrapper from './components/FullscreenGameWrapper';
+import { GOOGLE_CLIENT_ID } from './config/env';
 
 const gameRoutes = ['/survival', '/time-attack', '/matching', '/pvp', '/chronological', '/millionaire', '/territory-map', '/guess-character', '/reveal-picture'];
 
@@ -85,17 +86,19 @@ function AppContent() {
 }
 
 function App() {
-  const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || ""; 
-
-  return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <ToastProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ToastProvider>
-    </GoogleOAuthProvider>
+  const appShell = (
+    <ToastProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ToastProvider>
   );
+
+  if (!GOOGLE_CLIENT_ID) {
+    return appShell;
+  }
+
+  return <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>{appShell}</GoogleOAuthProvider>;
 }
 
 export default App;

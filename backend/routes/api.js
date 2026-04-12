@@ -36,7 +36,8 @@ const upload = require('../middleware/uploadMiddleware');
 const { getTheme4Content } = require('../services/theme4ContentService');
 const { normalizeRole } = require('../utils/roleUtils');
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const GOOGLE_CLIENT_ID = String(process.env.GOOGLE_CLIENT_ID || '').trim();
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const SAFE_USER_SELECT =
     '_id username email role fullName dateOfBirth school province city avatar experience streak lastLoginDate createdAt updatedAt';
@@ -358,10 +359,17 @@ router.post('/google-login', async (req, res) => {
         });
     }
 
+    if (!GOOGLE_CLIENT_ID) {
+        return res.status(500).json({
+            success: false,
+            message: 'Máy chủ chưa cấu hình GOOGLE_CLIENT_ID.',
+        });
+    }
+
     try {
         const ticket = await client.verifyIdToken({
             idToken: tokenId,
-            audience: process.env.GOOGLE_CLIENT_ID,
+            audience: GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
         const { sub, email, name, picture } = payload;
@@ -531,10 +539,18 @@ router.patch('/user/change-password', verifyToken, async (req, res) => {
 // Đường dẫn liên kết Google cho user đã đăng nhập
 router.post('/user/link-google', async (req, res) => {
     const { userId, tokenId } = req.body;
+
+    if (!GOOGLE_CLIENT_ID) {
+        return res.status(500).json({
+            success: false,
+            message: 'Máy chủ chưa cấu hình GOOGLE_CLIENT_ID.',
+        });
+    }
+
     try {
         const ticket = await client.verifyIdToken({
             idToken: tokenId,
-            audience: process.env.GOOGLE_CLIENT_ID,
+            audience: GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
         const { sub, email, picture } = payload;

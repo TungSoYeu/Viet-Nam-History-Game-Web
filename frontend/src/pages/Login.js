@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, User, Lock, Mail, BookOpen, MapPin, Landmark } from 'lucide-react';
 import API_BASE_URL from '../config/api';
+import { GOOGLE_CLIENT_ID } from '../config/env';
 import { useToast } from '../components/Toast';
 import { normalizeRole } from '../utils/roleUtils';
 import Button from '../components/Button';
@@ -25,6 +26,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
   const [formShake, setFormShake] = useState(false);
+  const hasGoogleLogin = Boolean(GOOGLE_CLIENT_ID);
 
   // --- STATE CHO ĐỊA CHỈ TRƯỜNG ---
   const { provinces: rawProvinces } = useProvinces();
@@ -440,13 +442,26 @@ export default function Login() {
                 <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.55)' }}>HOẶC</span>
                 <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
               </div>
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => toast.error('Đăng nhập Google thất bại!')}
-                useOneTap
-                shape="pill"
-                theme="filled_black"
-              />
+              {hasGoogleLogin ? (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => toast.error('Đăng nhập Google thất bại!')}
+                  useOneTap
+                  shape="pill"
+                  theme="filled_black"
+                />
+              ) : (
+                <div
+                  className="w-full rounded-2xl px-4 py-3 text-center text-sm font-semibold"
+                  style={{
+                    background: 'rgba(245,158,11,0.08)',
+                    border: '1px solid rgba(245,158,11,0.24)',
+                    color: '#fcd34d',
+                  }}
+                >
+                  Đăng nhập Google chưa được cấu hình cho bản build này.
+                </div>
+              )}
             </div>
           )}
         </div>
