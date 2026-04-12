@@ -5,7 +5,7 @@ import { teammatePackages } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import { logGameTelemetry, resetModeSessionId } from "../utils/gameHelpers";
 
-const PREP_SECONDS = 30;
+const PREP_SECONDS = 10;
 const ROUND_SECONDS = 60;
 const MODE_ID = "understanding-teammates";
 
@@ -23,6 +23,7 @@ export default function PvPMode() {
   const [activeRole, setActiveRole] = useState("nguoi-goi-y");
   const [finishReason, setFinishReason] = useState(null);
   const [timerRunning, setTimerRunning] = useState(false);
+  const [keywordResults, setKeywordResults] = useState([]);
   const startedAtRef = useRef(Date.now());
   const sessionActiveRef = useRef(false);
   const activePackages = Array.isArray(remoteTeammatePackages)
@@ -80,6 +81,7 @@ export default function PvPMode() {
     setActiveRole("nguoi-goi-y");
     setFinishReason(null);
     setTimerRunning(false);
+    setKeywordResults([]);
   };
 
   const startPrepPhase = () => {
@@ -113,16 +115,21 @@ export default function PvPMode() {
     setActiveRole("nguoi-goi-y");
     setFinishReason(null);
     setTimerRunning(false);
+    setKeywordResults([]);
   };
 
-  const nextKeyword = () => {
+  const submitKeywordResult = (isCorrect) => {
     if (!selectedPackage) return;
+    
+    setKeywordResults((prev) => [...prev, { keyword: selectedPackage.keywords[keywordIndex], isCorrect }]);
+
     logGameTelemetry(MODE_ID, "answer_submitted", {
-      correct: true,
+      correct: isCorrect,
       questionType: "keyword_cycle",
       keywordIndex,
       packageId: selectedPackage.id,
     });
+    
     if (keywordIndex + 1 >= selectedPackage.keywords.length) {
       endSession({
         solved: true,
@@ -136,7 +143,6 @@ export default function PvPMode() {
       return;
     }
     setKeywordIndex((prev) => prev + 1);
-    setRevealedKeywords(false);
   };
 
   const toggleTimerRunning = () => {
@@ -190,27 +196,13 @@ export default function PvPMode() {
               <button
                 key={pkg.id}
                 onClick={() => startPackage(pkg)}
-                className="text-left p-6 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.99]"
+                className="text-left p-6 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.99] flex items-center gap-4"
                 style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 12px 30px rgba(0,0,0,0.2)" }}
               >
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg, rgba(236,72,153,0.9), rgba(168,85,247,0.9))" }}>
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, rgba(236,72,153,0.9), rgba(168,85,247,0.9))" }}>
                   <Users size={24} className="text-white" />
                 </div>
-                <h2 className="vn-safe-heading text-xl font-black text-white mb-2">{pkg.title}</h2>
-                <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  10 từ khóa tổng hợp được trộn nhiều mảng nội dung để một bạn gợi ý, một bạn đoán thật nhanh và chính xác.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {pkg.keywords.slice(0, 4).map((keyword) => (
-                    <span
-                      key={keyword}
-                      className="vn-safe-chip px-3 py-1 rounded-full text-xs font-bold"
-                      style={{ background: "rgba(255,255,255,0.06)", color: "#f0d48a", border: "1px solid rgba(255,255,255,0.08)" }}
-                    >
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
+                <h2 className="vn-safe-heading text-xl font-black text-white m-0">{pkg.title}</h2>
               </button>
             ))}
           </div>
@@ -221,9 +213,6 @@ export default function PvPMode() {
 
   const currentKeyword = selectedPackage?.keywords[keywordIndex];
   const keywordProgress = selectedPackage ? ((keywordIndex + 1) / selectedPackage.keywords.length) * 100 : 0;
-  const revealedHistory = selectedPackage
-    ? selectedPackage.keywords.slice(0, revealedKeywords ? keywordIndex + 1 : keywordIndex)
-    : [];
   const phaseTitle =
     phase === "prep" || phase === "prep-ready"
       ? "Ghi Nhớ Từ Khóa"
@@ -275,7 +264,7 @@ export default function PvPMode() {
             <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "rgba(212,160,83,0.12)", border: "2px solid rgba(212,160,83,0.25)" }}>
               <Flag size={40} className="text-amber-400" />
             </div>
-            <p className="text-lg text-white font-bold mb-3">Người gợi ý có 30 giây để nhớ trọn gói từ khóa trước khi người đoán bắt đầu.</p>
+            <p className="text-lg text-white font-bold mb-3">Người gợi ý có 10 giây để nhớ trọn gói từ khóa trước khi người đoán bắt đầu.</p>
             <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.55)" }}>
               {phase === "prep"
                 ? "Đồng hồ đang chạy cho người gợi ý. Hết thời gian sẽ tự chuyển sang lượt người đoán."
@@ -339,29 +328,33 @@ export default function PvPMode() {
             <div className="text-xs font-black uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(212,160,83,0.8)" }}>
               Từ khóa {keywordIndex + 1} / {selectedPackage?.keywords.length}
             </div>
-            <div className="min-h-[220px] rounded-3xl flex items-center justify-center mb-6 p-6" style={{ background: "linear-gradient(135deg, rgba(236,72,153,0.18), rgba(99,102,241,0.18))", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="min-h-[220px] rounded-3xl flex text-center items-center justify-center mb-6 p-6" style={{ background: "linear-gradient(135deg, rgba(236,72,153,0.18), rgba(99,102,241,0.18))", border: "1px solid rgba(255,255,255,0.08)" }}>
               <span className="text-4xl sm:text-6xl font-black text-white tracking-wide">
-                {revealedKeywords ? currentKeyword : "Sẵn sàng mở từ khóa tiếp theo"}
+                {currentKeyword}
               </span>
             </div>
             <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Hiện từ khóa hiện tại, để người đoán trả lời rồi chuyển sang từ tiếp theo.
+              Đồng đội có nhiệm vụ đưa ra những gợi ý phù hợp để người kia đoán ra từ này.
             </p>
             <div className="mb-6 rounded-2xl border border-white/10 bg-slate-900/50 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-300 mb-3">Các từ đã đi qua</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-300 mb-3">Chuỗi đáp án</p>
               <div className="flex flex-wrap justify-center gap-2">
-                {revealedHistory.length > 0 ? (
-                  revealedHistory.map((keyword) => (
+                {keywordResults.length > 0 ? (
+                  keywordResults.map((res, index) => (
                     <span
-                      key={keyword}
+                      key={index}
                       className="vn-safe-chip px-3 py-2 rounded-full text-xs font-bold"
-                      style={{ background: "rgba(255,255,255,0.06)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}
+                      style={{ 
+                        background: res.isCorrect ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)", 
+                        color: res.isCorrect ? "#4ade80" : "#f87171", 
+                        border: res.isCorrect ? "1px solid rgba(34, 197, 94, 0.4)" : "1px solid rgba(239, 68, 68, 0.4)" 
+                      }}
                     >
-                      {keyword}
+                      {res.keyword} {res.isCorrect ? "✔" : "✘"}
                     </span>
                   ))
                 ) : (
-                  <span className="text-sm text-slate-400">Chưa mở từ khóa nào.</span>
+                  <span className="text-sm text-slate-400">Chưa có kết quả nào.</span>
                 )}
               </div>
             </div>
@@ -380,27 +373,20 @@ export default function PvPMode() {
                 {timerRunning ? "DỪNG" : "TIẾP TỤC"}
               </button>
               <button
-                onClick={() => {
-                  setRevealedKeywords(true);
-                  logGameTelemetry(MODE_ID, "hint_used", {
-                    packageId: selectedPackage?.id,
-                    keywordIndex,
-                    action: "reveal_keyword",
-                  });
-                }}
-                disabled={revealedKeywords || !timerRunning}
-                className="px-6 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-2 disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #db2777, #a855f7)" }}
-              >
-                <Play size={18} /> Hiện Từ Khóa
-              </button>
-              <button
-                onClick={nextKeyword}
-                disabled={!revealedKeywords || !timerRunning}
-                className="px-6 py-4 rounded-2xl font-black text-white disabled:opacity-50"
+                onClick={() => submitKeywordResult(true)}
+                disabled={!timerRunning}
+                className="px-6 py-4 rounded-2xl font-black text-white disabled:opacity-50 active:scale-[0.98] transition-transform"
                 style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
               >
-                Từ Kế Tiếp
+                Đoán Đúng
+              </button>
+              <button
+                onClick={() => submitKeywordResult(false)}
+                disabled={!timerRunning}
+                className="px-6 py-4 rounded-2xl font-black text-white disabled:opacity-50 active:scale-[0.98] transition-transform"
+                style={{ background: "linear-gradient(135deg, #ef4444, #b91c1c)" }}
+              >
+                Bỏ Qua
               </button>
               <button onClick={resetRound} className="px-6 py-4 rounded-2xl font-black" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
                 Chơi Lại Gói
@@ -423,11 +409,21 @@ export default function PvPMode() {
                 : "Gói chơi này đã khép lại khi đồng hồ người đoán về 0."}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-              {selectedPackage?.keywords.map((keyword) => (
-                <div key={keyword} className="vn-safe-chip p-3 rounded-xl text-center text-sm font-bold" style={{ background: "rgba(255,255,255,0.05)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  {keyword}
+              {selectedPackage?.keywords.map((keyword) => {
+                const res = keywordResults.find(r => r.keyword === keyword);
+                const isCorrect = res?.isCorrect;
+                const isUnanswered = res === undefined;
+
+                return (
+                <div key={keyword} className="vn-safe-chip p-3 rounded-xl text-center text-sm font-bold" 
+                     style={{ 
+                        background: isUnanswered ? "rgba(255,255,255,0.05)" : (isCorrect ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"), 
+                        color: isUnanswered ? "#f8fafc" : (isCorrect ? "#4ade80" : "#f87171"), 
+                        border: isUnanswered ? "1px solid rgba(255,255,255,0.08)" : (isCorrect ? "1px solid rgba(34, 197, 94, 0.4)" : "1px solid rgba(239, 68, 68, 0.4)")
+                      }}>
+                  {keyword} {isUnanswered ? "" : (isCorrect ? "✔" : "✘")}
                 </div>
-              ))}
+              )})}
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button onClick={() => startPackage(selectedPackage)} className="px-6 py-4 rounded-2xl font-black text-white" style={{ background: "linear-gradient(135deg, #db2777, #a855f7)" }}>

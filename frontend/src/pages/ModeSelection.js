@@ -9,6 +9,7 @@ import {
 import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
 import ParticlesBackground from '../components/animations/ParticlesBackground';
+import ProgressRing from '../components/ProgressRing';
 import { theme4Modes } from '../data/theme4Modes';
 
 export default function ModeSelection() {
@@ -62,14 +63,14 @@ export default function ModeSelection() {
             <div 
               className="relative h-48 sm:h-56 flex items-center justify-center overflow-hidden" 
               style={{ 
-                backgroundImage: selectedMode.gradient,
+                backgroundImage: `url(${selectedMode.bgImage})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 backgroundBlendMode: 'overlay'
               }}
             >
-              <div className="absolute inset-0 opacity-10 bg-black"></div>
+              <div className="absolute inset-0 opacity-40 bg-black"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#16213e] to-transparent"></div>
               <div className="relative z-10 text-center px-6 flex flex-col items-center">
                 <motion.div 
@@ -86,22 +87,25 @@ export default function ModeSelection() {
 
             {/* Body */}
             <div className="p-6 sm:p-10">
-              <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.6)', fontStyle: 'italic' }}>
+              <p className="text-base sm:text-lg leading-relaxed mt-2 mb-8 text-center" style={{ color: 'rgba(255,255,255,0.8)', fontStyle: 'italic' }}>
                 "{selectedMode.longDesc}"
               </p>
 
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span className="block text-[10px] uppercase font-bold mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Mục tiêu</span>
-                  <span className="text-white font-bold">{selectedMode.stats}</span>
-                </div>
-                <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span className="block text-[10px] uppercase font-bold mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Phần thưởng</span>
-                  <span className="text-white font-bold">{selectedMode.rewardText || '100 - 500 XP'}</span>
+              <div className="flex items-center gap-6 mb-8 justify-center">
+                <ProgressRing percent={selectedMode.progress || 0} size={64} strokeWidth={6} />
+                <div className="text-left">
+                  <div className="text-[10px] uppercase font-bold tracking-widest text-gray-300 mb-1">Độ khó</div>
+                  <div className={`px-3 py-1 rounded text-xs font-bold w-max ${
+                    selectedMode.difficulty === 'Dễ' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                    selectedMode.difficulty === 'Trung bình' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                    'bg-red-500/20 text-red-400 border border-red-500/30'
+                  }`}>
+                    {selectedMode.difficulty || 'Chưa phân loại'}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 mt-4">
                 <BouncyButton 
                   onClick={() => navigate(`/modes/${selectedMode.id}/guide`)}
                   className="w-full"
@@ -109,7 +113,6 @@ export default function ModeSelection() {
                   <div className="w-full py-4 rounded-2xl font-black text-lg uppercase text-white flex items-center justify-center gap-2"
                     style={{ 
                       background: selectedMode.gradient,
-                      backgroundSize: 'cover',
                       boxShadow: '0 4px 20px rgba(0,0,0,0.3)' 
                     }}
                   >
@@ -118,10 +121,10 @@ export default function ModeSelection() {
                 </BouncyButton>
                 <button 
                   onClick={() => setSelectedMode(null)}
-                  className="w-full py-3 rounded-2xl font-semibold uppercase text-sm transition-all"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  className="w-full py-3 rounded-2xl font-semibold uppercase text-sm transition-all hover:bg-white/10"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >
-                  ← Quay lại
+                  ← Quay Lại
                 </button>
               </div>
             </div>
@@ -155,9 +158,6 @@ export default function ModeSelection() {
             <h1 className="historical-title mb-3 text-white drop-shadow-md" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Chiến tranh Bảo vệ Tổ quốc và giải phóng dân tộc
             </h1>
-            <p className="parchment-text-soft text-sm max-w-2xl mx-auto leading-7 sm:text-base">
-              Trước Cách mạng tháng Tám năm 1945. Bộ trò chơi của Bài 7 và Bài 8 với số lượng câu hỏi cố định, hình ảnh lịch sử chính thống và lược đồ nhận diện.
-            </p>
           </header>
 
           {/* Mode Grid */}
@@ -165,7 +165,7 @@ export default function ModeSelection() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-12"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-12"
           >
             {competitionModes.map((mode) => (
               <motion.div 
@@ -215,18 +215,28 @@ export default function ModeSelection() {
                   <div className="absolute top-4 left-4 w-10 h-10 rounded-xl flex items-center justify-center text-white backdrop-blur-md" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}>
                     {mode.icon}
                   </div>
+                  
+                  {/* Difficulty Badge */}
+                  <div className="absolute top-4 left-16" title={mode.difficultyDetail}>
+                    <div className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${
+                      mode.difficulty === 'Dễ' ? 'bg-green-500/30 border border-green-400/50 text-green-300' :
+                      mode.difficulty === 'Trung bình' ? 'bg-amber-500/30 border border-amber-400/50 text-amber-300' :
+                      'bg-red-500/30 border border-red-400/50 text-red-300'
+                    }`}>
+                      {mode.difficulty}
+                    </div>
+                  </div>
 
-                  {/* Title & Desc */}
-                  <h2 className="text-xl font-black text-white mb-1 group-hover:text-amber-400 transition-colors tracking-wide drop-shadow-md">
-                    {mode.name}
-                  </h2>
-                  <p className="text-xs mb-3 leading-relaxed line-clamp-2 drop-shadow-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                    {mode.desc}
-                  </p>
+                  {/* Progress Ring Overlay */}
+                  <div className="absolute top-4 right-4">
+                    <ProgressRing percent={mode.progress || 0} size={48} strokeWidth={4} />
+                  </div>
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                    <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(212,160,83,0.9)' }}>{mode.stats}</span>
+                  {/* Title */}
+                  <div className="flex items-center justify-between mt-auto">
+                    <h2 className="text-xl font-black text-white group-hover:text-amber-400 transition-colors tracking-wide drop-shadow-md">
+                      {mode.name}
+                    </h2>
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-white transition-all group-hover:translate-x-1" style={{ background: 'rgba(255,255,255,0.2)' }}>
                       <ArrowRight size={12} />
                     </div>

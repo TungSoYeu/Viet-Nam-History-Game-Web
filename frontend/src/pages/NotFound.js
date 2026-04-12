@@ -13,7 +13,7 @@ export default function NotFound() {
         </div>
         <h1 className="text-7xl font-black mb-2" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>404</h1>
         <h2 className="text-2xl font-bold text-white mb-4">Lạc Đường Rồi, Danh Tướng!</h2>
-        <p className="text-base mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <p className="text-base mb-8" style={{ color: 'rgba(255,255,255,0.65)' }}>
           "Con đường này không dẫn đến bất kỳ chiến trường nào. Hãy quay lại sảnh chính để tiếp tục hành trình."
         </p>
         <button 
