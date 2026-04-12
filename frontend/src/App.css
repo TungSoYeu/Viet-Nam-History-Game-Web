@@ -214,7 +214,7 @@ body:has(.study-page), body:has(.timeline-page),
 }
 
 .parchment-text-soft {
-  color: rgba(255, 245, 230, 0.78) !important;
+  color: rgba(255, 245, 230, 0.88) !important;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
 }
 
@@ -229,8 +229,8 @@ body:has(.study-page), body:has(.timeline-page),
 }
 
 .answer-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   padding: 16px 20px;
   color: white;
@@ -343,7 +343,7 @@ textarea:focus-visible {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.52);
   transition: all 0.25s ease;
   text-decoration: none;
   position: relative;
@@ -639,6 +639,299 @@ textarea:focus-visible {
   background: var(--viet-red);
 }
 
+/* ============================
+   PHASE 2 DESKTOP ENHANCEMENTS
+   ============================ */
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blinkCursor {
+  0%, 49% { border-color: rgba(240, 212, 138, 0.9); }
+  50%, 100% { border-color: transparent; }
+}
+
+@keyframes counterUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg) scale(0.85);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-18px, 110vh, 0) rotate(540deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes comboSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(28px, 0, 0) scale(0.92);
+  }
+  18%,
+  82% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0) scale(0.96);
+  }
+}
+
+@keyframes radarDraw {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(240, 212, 138, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(240, 212, 138, 0.35);
+  }
+}
+
+@keyframes parchmentUnroll {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scaleY(0.84);
+    transform-origin: top center;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    transform-origin: top center;
+  }
+}
+
+@keyframes quoteFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes quoteFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes carouselProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.landing-title-typewriter {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  border-right: 3px solid rgba(240, 212, 138, 0.9);
+  animation:
+    typewriter 2.8s steps(20, end) 0.15s both,
+    blinkCursor 0.9s step-end infinite;
+}
+
+.counter-stat {
+  animation: counterUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.quote-enter {
+  animation: quoteFadeIn 0.6s ease-out both;
+}
+
+.quote-exit {
+  animation: quoteFadeOut 0.6s ease-out both;
+}
+
+.hero-carousel-progress {
+  width: 0%;
+  animation-name: carouselProgress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.confetti-particle {
+  position: absolute;
+  top: 0;
+  animation: confettiFall var(--fall-duration, 3s) linear var(--fall-delay, 0s) forwards;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  will-change: transform, opacity;
+}
+
+.combo-badge {
+  animation: comboSlideIn 2.2s ease-out both;
+}
+
+.combo-fire {
+  animation: glowPulse 1.2s ease-in-out infinite;
+}
+
+.radar-chart-area {
+  animation: radarDraw 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center;
+}
+
+.progress-ring-circle {
+  filter: drop-shadow(0 0 10px rgba(240, 212, 138, 0.18));
+}
+
+.parchment-unroll {
+  animation: parchmentUnroll 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.glow-gold {
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+
+.glow-legendary {
+  animation: glowPulse 1.4s ease-in-out infinite;
+  box-shadow:
+    0 0 18px rgba(240, 212, 138, 0.24),
+    0 0 34px rgba(212, 160, 83, 0.2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift {
+    transition: transform 0.24s ease, box-shadow 0.24s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+  }
+
+  .hover-glow-gold {
+    transition: box-shadow 0.24s ease, transform 0.24s ease;
+  }
+
+  .hover-glow-gold:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgba(240, 212, 138, 0.2),
+      0 0 28px rgba(212, 160, 83, 0.26);
+  }
+
+  .hover-scale-subtle {
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .hover-scale-subtle:hover {
+    transform: scale(1.02);
+  }
+
+  .hover-border-reveal {
+    border-color: transparent;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+
+.hover-border-reveal:hover {
+  border-color: rgba(240, 212, 138, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(240, 212, 138, 0.12);
+}
+
+/* ============================
+   PHASE 2 FINAL OVERRIDES
+   Keep desktop-first selectors last to win over older duplicated blocks.
+   ============================ */
+
+.counter-stat {
+  opacity: 1;
+  animation: counterUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.quote-enter {
+  animation: quoteFadeIn 0.6s ease-out both;
+}
+
+.quote-exit {
+  animation: quoteFadeOut 0.6s ease-out both;
+}
+
+.hero-carousel-progress {
+  width: 0%;
+  animation-name: carouselProgress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.confetti-particle {
+  position: absolute;
+  top: 0;
+  animation: confettiFall var(--fall-duration, 3s) linear var(--fall-delay, 0s) forwards;
+}
+
+.combo-badge {
+  animation: comboSlideIn 2.2s ease-out both;
+}
+
+.combo-fire {
+  animation: glowPulse 1.2s ease-in-out infinite;
+}
+
+.radar-chart-area {
+  animation: radarDraw 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center;
+}
+
+.parchment-unroll {
+  animation: parchmentUnroll 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
+}
+
+.glow-gold {
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+
+.glow-legendary {
+  animation: glowPulse 1.4s ease-in-out infinite;
+  box-shadow:
+    0 0 18px rgba(240, 212, 138, 0.24),
+    0 0 34px rgba(212, 160, 83, 0.2);
+}
+}
+
+@media (max-width: 1023px) {
+  .landing-title-typewriter {
+    white-space: normal;
+    border-right: none;
+    animation: fadeInUp 0.7s ease-out both;
+  }
+}
+
 /* Firefox support */
 .custom-scrollbar {
   scrollbar-width: thin;
@@ -793,5 +1086,230 @@ body:has(.fullscreen-active) .app-content {
 @media (max-height: 820px) {
   .fullscreen-game-stage {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2px);
+  }
+}
+
+/* ============================
+   PHASE 2: DESKTOP UI/UX ENHANCEMENTS
+   ============================ */
+
+/* --- Typewriter Effect --- */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blinkCaret {
+  0%, 100% { border-right-color: transparent; }
+  50% { border-right-color: var(--viet-gold); }
+}
+
+.typewriter-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--viet-gold);
+  animation:
+    typewriter 2.5s steps(20, end) forwards,
+    blinkCaret 0.75s step-end infinite;
+}
+
+.typewriter-text.done {
+  border-right-color: transparent;
+  animation: none;
+  width: 100%;
+}
+
+/* --- Counter Animation --- */
+@keyframes counterReveal {
+  0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.counter-stat {
+  animation: counterReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.counter-stat:nth-child(1) { animation-delay: 0.3s; }
+.counter-stat:nth-child(2) { animation-delay: 0.5s; }
+.counter-stat:nth-child(3) { animation-delay: 0.7s; }
+
+/* --- Confetti --- */
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(-100vh) rotate(0deg) scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(720deg) scale(0.3);
+  }
+}
+
+.confetti-particle {
+  position: fixed;
+  top: -10px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: confettiFall var(--fall-duration, 3s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: var(--fall-delay, 0s);
+}
+
+/* --- Combo Indicator --- */
+@keyframes comboSlideIn {
+  0% { opacity: 0; transform: translateX(60px) scale(0.7); }
+  50% { opacity: 1; transform: translateX(-8px) scale(1.1); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes comboPulse {
+  0%, 100% { transform: scale(1); text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+  50% { transform: scale(1.08); text-shadow: 0 0 30px rgba(251, 191, 36, 0.8); }
+}
+
+@keyframes comboFireFlicker {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3) saturate(1.5); }
+}
+
+.combo-badge {
+  animation: comboSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.combo-badge.active {
+  animation: comboPulse 1.2s ease-in-out infinite;
+}
+
+.combo-fire {
+  animation: comboFireFlicker 0.4s ease-in-out infinite;
+}
+
+/* --- Radar Chart --- */
+@keyframes radarDraw {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.radar-chart-area {
+  animation: radarDraw 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: center;
+}
+
+/* --- Glow Pulse for Rank --- */
+@keyframes glowPulseGold {
+  0%, 100% { box-shadow: 0 0 8px rgba(212, 160, 83, 0.3); }
+  50% { box-shadow: 0 0 24px rgba(212, 160, 83, 0.6), 0 0 48px rgba(212, 160, 83, 0.2); }
+}
+
+@keyframes glowPulseLegendary {
+  0%, 100% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.4), 0 0 4px rgba(185, 28, 28, 0.3); }
+  50% { box-shadow: 0 0 32px rgba(251, 191, 36, 0.7), 0 0 64px rgba(185, 28, 28, 0.4); }
+}
+
+.glow-gold { animation: glowPulseGold 3s ease-in-out infinite; }
+.glow-legendary { animation: glowPulseLegendary 2.5s ease-in-out infinite; }
+
+/* --- Parchment Unroll --- */
+@keyframes parchmentUnroll {
+  0% { max-height: 0; opacity: 0; }
+  30% { opacity: 1; }
+  100% { max-height: 90vh; opacity: 1; }
+}
+
+.parchment-unroll {
+  animation: parchmentUnroll 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  overflow: hidden;
+}
+
+/* --- Quote Cycle --- */
+@keyframes quoteFadeIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes quoteFadeOut {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+.quote-enter { animation: quoteFadeIn 0.8s ease-out forwards; }
+.quote-exit { animation: quoteFadeOut 0.6s ease-in forwards; }
+
+/* --- Desktop-Only Hover Effects --- */
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .hover-glow-gold {
+    transition: box-shadow 0.35s ease;
+  }
+  .hover-glow-gold:hover {
+    box-shadow: 0 0 24px rgba(212, 160, 83, 0.4), 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .hover-scale-subtle {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .hover-scale-subtle:hover {
+    transform: scale(1.03);
+  }
+
+  .hover-border-reveal {
+    border: 1px solid transparent;
+    transition: border-color 0.4s ease;
+  }
+  .hover-border-reveal:hover {
+    border-color: var(--viet-gold);
+  }
+
+  .hover-card-3d {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+  }
+  .hover-card-3d:hover {
+    transform: translateY(-4px) rotateX(2deg);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* --- Progress Ring Animation --- */
+@keyframes progressRingFill {
+  from { stroke-dashoffset: var(--ring-circumference, 283); }
+  to { stroke-dashoffset: var(--ring-offset, 0); }
+}
+
+.progress-ring-circle {
+  animation: progressRingFill 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* --- Streak Calendar --- */
+.streak-cell {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) {
+  .streak-cell:hover {
+    transform: scale(1.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+    position: relative;
   }
 }

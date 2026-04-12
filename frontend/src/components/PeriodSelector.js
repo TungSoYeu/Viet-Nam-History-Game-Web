@@ -39,7 +39,7 @@ export default function PeriodSelector({ onSelect, onBack, title, description })
           <h1 className="text-2xl sm:text-3xl font-black mb-2" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             {title || "Chọn Thời Kỳ Tu Luyện"}
           </h1>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
             {description || "Chọn một triều đại hoặc thử thách bản thân với kiến thức tổng hợp."}
           </p>
         </div>
@@ -69,7 +69,7 @@ export default function PeriodSelector({ onSelect, onBack, title, description })
             >
               <span className="text-3xl mb-2">📜</span>
               <h3 className="text-sm font-bold text-white leading-tight">{lesson.title}</h3>
-              <p className="text-[11px] mt-1 line-clamp-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{lesson.description}</p>
+              <p className="text-[11px] mt-1 line-clamp-2" style={{ color: 'rgba(255,255,255,0.55)' }}>{lesson.description}</p>
             </div>
           ))}
         </div>
@@ -79,7 +79,7 @@ export default function PeriodSelector({ onSelect, onBack, title, description })
           <button 
             onClick={onBack}
             className="px-8 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 mx-auto"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)' }}
           >
             <ArrowLeft size={16} /> Quay lại
           </button>

@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, ImageIcon, Lightbulb, Trophy } from "lucide-react";
+import { ArrowLeft, Clock3, ImageIcon, Trophy } from "lucide-react";
 import { picturePuzzleItems } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
+import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
+import Confetti from "../components/animations/Confetti";
 import {
   logGameTelemetry,
   matchesAnswer,
@@ -33,7 +35,6 @@ export default function TerritoryMap() {
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
   const [xpSaved, setXpSaved] = useState(false);
-  const [hintLevel, setHintLevel] = useState(0);
   const [sessionReady, setSessionReady] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
   const [questionPhase, setQuestionPhase] = useState("ready");
@@ -41,17 +42,6 @@ export default function TerritoryMap() {
   const startedAtRef = useRef(Date.now());
 
   const currentItem = items[currentIndex];
-  const computedHints = useMemo(() => {
-    if (!currentItem) return [];
-    const normalized = currentItem.answer.trim();
-    const words = normalized.split(/\s+/).filter(Boolean);
-    const compact = normalized.replace(/\s+/g, "");
-    return [
-      `Tên đáp án có ${words.length} từ.`,
-      `Đáp án bắt đầu bằng chữ "${normalized.charAt(0)}".`,
-      `Đáp án có ${compact.length} ký tự (không tính khoảng trắng).`,
-    ];
-  }, [currentItem]);
 
   useEffect(() => {
     if (loading || activePicturePuzzleItems.length === 0) return;
@@ -69,7 +59,6 @@ export default function TerritoryMap() {
     setCorrectCount(0);
     setFinished(false);
     setXpSaved(false);
-    setHintLevel(0);
     setTimeLeft(QUESTION_TIME);
     setQuestionPhase("ready");
     setTimerRunning(false);
@@ -148,7 +137,6 @@ export default function TerritoryMap() {
     logGameTelemetry(MODE_ID, "answer_submitted", {
       correct: isCorrect,
       index: currentIndex,
-      hintLevel,
       reason,
       scoreAfter: isCorrect ? score + 10 : score,
     });
@@ -168,7 +156,6 @@ export default function TerritoryMap() {
     setCurrentIndex((prev) => prev + 1);
     setSelectedOption("");
     setFeedback(null);
-    setHintLevel(0);
     setTimeLeft(QUESTION_TIME);
     setQuestionPhase("ready");
     setTimerRunning(false);
@@ -196,7 +183,6 @@ export default function TerritoryMap() {
     setCorrectCount(0);
     setFinished(false);
     setXpSaved(false);
-    setHintLevel(0);
     setTimeLeft(QUESTION_TIME);
     setQuestionPhase("ready");
     setTimerRunning(false);
@@ -206,6 +192,27 @@ export default function TerritoryMap() {
   const toggleTimerRunning = () => {
     setTimerRunning((prev) => !prev);
   };
+
+  useKeyboardShortcuts(
+    {
+      Escape: handleExit,
+      Enter: () => {
+        if (questionPhase === "active" && timerRunning && selectedOption.trim()) {
+          handleAnswer(selectedOption, "manual");
+        }
+      },
+      ' ': () => {
+        if (questionPhase === "ready" && !feedback) {
+          startPuzzle();
+          return;
+        }
+        if (questionPhase === "active") {
+          toggleTimerRunning();
+        }
+      },
+    },
+    !finished
+  );
 
   if (loading || (activePicturePuzzleItems.length > 0 && !sessionReady)) {
     return (
@@ -226,6 +233,7 @@ export default function TerritoryMap() {
   if (finished) {
     return (
       <div className="h-screen bg-[radial-gradient(circle_at_top,#1d4ed8_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center overflow-hidden">
+        <Confetti active={true} count={80} />
         <div className="w-full max-w-3xl rounded-[32px] border border-sky-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
             <Trophy size={40} />
@@ -298,9 +306,6 @@ export default function TerritoryMap() {
               <ImageIcon size={16} />
               Đuổi hình bắt chữ
             </div>
-            <h1 className="vn-safe-heading mt-3 text-2xl sm:text-3xl font-black tracking-[0.08em] text-white">
-              Xác Định Từ Khóa, Ghép Thành Đáp Án
-            </h1>
           </div>
 
           <div className="flex items-center justify-center gap-3 md:justify-end">
@@ -341,7 +346,7 @@ export default function TerritoryMap() {
                     Câu Hỏi
                   </div>
                   <p className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base">
-                    {currentItem.prompt || "Hãy xác định từ khóa của từng hình rồi ghép thành đáp án lịch sử hoàn chỉnh."}
+                    {currentItem.prompt || "Quan sát các hình và nhập đáp án lịch sử hoàn chỉnh."}
                   </p>
                 </div>
 
@@ -357,48 +362,6 @@ export default function TerritoryMap() {
                       </div>
                     ))}
                   </div>
-                </div>
-
-                <div className="rounded-[24px] border border-white/10 bg-slate-950/60 p-4">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-amber-300">
-                    <Lightbulb size={16} />
-                    Gợi Ý
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-200">
-                    Hãy tìm từ khóa của từng hình rồi ghép chúng thành cụm từ lịch sử hoàn chỉnh.
-                  </p>
-                  <div className="mt-3 space-y-2">
-                    {hintLevel > 0 ? (
-                      computedHints.slice(0, hintLevel).map((hint, index) => (
-                        <div
-                          key={hint}
-                          className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-3 py-2 text-sm text-amber-100"
-                        >
-                          Gợi ý tầng {index + 1}: {hint}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-sm text-slate-400">
-                        Chưa mở gợi ý.
-                      </div>
-                    )}
-                  </div>
-                  {questionPhase === "active" && !feedback && hintLevel < computedHints.length ? (
-                    <button
-                      onClick={() => {
-                        const nextLevel = Math.min(computedHints.length, hintLevel + 1);
-                        setHintLevel(nextLevel);
-                        logGameTelemetry(MODE_ID, "hint_used", {
-                          index: currentIndex,
-                          level: nextLevel,
-                        });
-                      }}
-                      disabled={!timerRunning}
-                      className="mt-4 rounded-full border border-amber-400/30 bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-amber-200 transition hover:bg-amber-500/20 disabled:opacity-50"
-                    >
-                      Mở Gợi Ý Tầng {hintLevel + 1}
-                    </button>
-                  ) : null}
                 </div>
               </>
             )}

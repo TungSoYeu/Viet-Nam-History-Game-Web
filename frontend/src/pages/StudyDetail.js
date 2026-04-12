@@ -120,7 +120,7 @@ export default function StudyDetail() {
             {lesson.wiki?.content ? (
               <ReactMarkdown>{lesson.wiki.content}</ReactMarkdown>
             ) : (
-              <p className="italic" style={{ color: 'rgba(255,255,255,0.4)' }}>Đang cập nhật nội dung lịch sử cho triều đại này...</p>
+              <p className="italic" style={{ color: 'rgba(255,255,255,0.55)' }}>Đang cập nhật nội dung lịch sử cho triều đại này...</p>
             )}
             
             {lesson.wiki?.images?.length > 0 && (
@@ -138,7 +138,7 @@ export default function StudyDetail() {
                 <FlashcardItem key={idx} card={card} />
               ))
             ) : (
-              <p className="col-span-2 text-center italic py-12" style={{ color: 'rgba(255,255,255,0.4)' }}>Chưa có thẻ ghi nhớ cho triều đại này.</p>
+              <p className="col-span-2 text-center italic py-12" style={{ color: 'rgba(255,255,255,0.55)' }}>Chưa có thẻ ghi nhớ cho triều đại này.</p>
             )}
           </div>
         )}

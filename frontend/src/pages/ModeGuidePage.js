@@ -137,104 +137,40 @@ export default function ModeGuidePage() {
             </div>
           </div>
 
-          <div className="grid gap-6 px-5 py-6 sm:px-8 sm:py-8 xl:grid-cols-[1.2fr_0.8fr]">
-            <div className="space-y-6">
-              <ModeGuidePanel
-                objective={guide.objective}
-                rules={guide.rules}
-                scoring={guide.scoring}
-                sample={guide.sample}
-                statusText="Đọc hướng dẫn trước khi vào chơi"
-              />
+          <div className="grid gap-6 px-5 py-6 sm:px-8 sm:py-8 xl:grid-cols-[1fr_320px]">
+            <ModeGuidePanel
+              objective={guide.objective}
+              rules={guide.rules}
+              scoring={guide.scoring}
+              sample={guide.sample}
+            />
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div
-                  className="rounded-3xl border p-5"
-                  style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
-                >
-                  <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-amber-300">
-                    <BookOpenText size={14} />
-                    Trước Khi Chơi
-                  </div>
-                  <div className="mt-4 space-y-3">
-                    {checklistLabels.map((label) => (
-                      <div
-                        key={label}
-                        className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm leading-6 text-slate-200"
-                      >
-                        {label}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  className="rounded-3xl border p-5"
-                  style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
-                >
-                  <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-amber-300">
-                    <CircleHelp size={14} />
-                    Tóm Tắt Nhanh
-                  </div>
-                  <div className="mt-4 space-y-4 text-sm leading-6 text-slate-200">
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                      <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-                        <Medal size={13} />
-                        Tính điểm
-                      </div>
-                      <p className="mt-2">{guide.scoring}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                      <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-                        <CircleHelp size={13} />
-                        Ví dụ mẫu
-                      </div>
-                      <p className="mt-2">{guide.sample}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div
-                className="rounded-3xl border p-6"
-                style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
-              >
+            <div
+              className="flex flex-col rounded-3xl border p-6 justify-between"
+              style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+            >
+              <div>
                 <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-300">Sẵn Sàng</div>
-                <h2 className="mt-3 text-2xl font-black text-white">Bắt đầu khi đã nắm luật chơi</h2>
+                <h2 className="mt-3 text-2xl font-black text-white">Bắt đầu chơi</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
                   {readinessText}
                 </p>
-
-                <div className="mt-6 flex flex-col gap-3">
-                  <button
-                    onClick={() => navigate(mode.path)}
-                    className="rounded-2xl px-5 py-4 text-base font-black uppercase tracking-[0.16em] text-white"
-                    style={{ background: mode.gradient }}
-                  >
-                    {startButtonLabel}
-                  </button>
-                  <button
-                    onClick={() => navigate("/modes")}
-                    className="rounded-2xl border border-white/10 bg-slate-900/50 px-5 py-4 text-sm font-black uppercase tracking-[0.16em] text-slate-200"
-                  >
-                    Chọn Chế Độ Khác
-                  </button>
-                </div>
               </div>
 
-              <div
-                className="rounded-3xl border p-6"
-                style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
-              >
-                <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-300">Cấu Trúc Trang</div>
-                <div className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">Mục tiêu: người học cần chinh phục điều gì trong chế độ chơi này.</div>
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">Tính điểm: cách hệ thống hoặc giáo viên ghi nhận kết quả.</div>
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">Luật chơi: trình tự thao tác và giới hạn cần tuân thủ.</div>
-                  <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">Ví dụ mẫu: một tình huống minh họa để học sinh hình dung nhanh cách chơi.</div>
-                </div>
+              <div className="mt-6 flex flex-col gap-3">
+                <button
+                  onClick={() => navigate(mode.path)}
+                  className="rounded-2xl px-5 py-4 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg transition hover:scale-[1.02]"
+                  style={{ background: mode.gradient }}
+                >
+                  {startButtonLabel}
+                </button>
+                <button
+                  onClick={() => navigate("/modes")}
+                  className="rounded-2xl border border-white/10 bg-slate-900/50 px-5 py-4 text-sm font-black uppercase tracking-[0.16em] text-slate-200 transition hover:bg-slate-800"
+                >
+                  Chọn Chế Độ Khác
+                </button>
               </div>
             </div>
           </div>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Trophy, AlertCircle, Swords, ArrowLeft, ChevronRight } from 'lucide-react';
 import Questions from '../components/Questions';
 import PeriodSelector from '../components/PeriodSelector';
+import Confetti from '../components/animations/Confetti';
+import ComboIndicator from '../components/animations/ComboIndicator';
 import API_BASE_URL from '../config/api';
 import { buildApiHeaders, buildApiUrl } from '../utils/classroomContext';
 
@@ -13,6 +15,7 @@ export default function SurvivalMode() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -65,8 +68,10 @@ export default function SurvivalMode() {
       setFeedback(data);
       if (data.correct) {
         setScore(prev => prev + data.experienceGain);
+        setStreak(prev => prev + 1);
       } else {
         // Strict Rule: One mistake = Failure
+        setStreak(0);
         setIsFailed(true);
       }
     })
@@ -96,6 +101,7 @@ export default function SurvivalMode() {
   if (isVictory) {
     return (
       <div className="h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(34,197,94,0.1) 0%, #1a1a2e 70%)' }}>
+        <Confetti active={true} count={80} />
         <div className="animate-bounce-in">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1))', border: '2px solid rgba(34,197,94,0.3)' }}>
             <Trophy size={48} className="text-green-400" />
@@ -151,6 +157,7 @@ export default function SurvivalMode() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden p-4 sm:p-6 bg-transparent relative z-10 text-white">
+      <ComboIndicator streak={streak} show={!loading && !isFailed && !isVictory} />
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
         {/* Top Bar */}
         <div className="grid grid-cols-[1fr_auto_1fr] items-center mb-6">

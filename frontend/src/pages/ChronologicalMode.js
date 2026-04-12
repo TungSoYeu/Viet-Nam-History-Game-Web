@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, History, RefreshCcw, Trophy } from "lucide-react";
 import { historicalFlowSets } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
+import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
 import {
   logGameTelemetry,
   resetModeSessionId,
@@ -11,7 +12,7 @@ import {
 } from "../utils/gameHelpers";
 
 const MODE_ID = "historical-flow";
-const ROUND_TIME = 15;
+const ROUND_TIME = 60;
 const ROUND_SCORE = 20;
 
 const lines = [
@@ -205,7 +206,7 @@ export default function ChronologicalMode() {
     setIncorrectIds([]);
     setRoundStarted(true);
     setTimerRunning(true);
-    setTimeLeft((prev) => (prev > 0 ? prev : ROUND_TIME));
+    setTimeLeft(ROUND_TIME);
     logGameTelemetry(MODE_ID, "question_started", {
       roundIndex: roundIndex + 1,
       totalRounds,
@@ -306,6 +307,27 @@ export default function ChronologicalMode() {
     if (!roundStarted || !timerRunning || finished || timeLeft > 0) return;
     checkArrangement(true);
   }, [checkArrangement, finished, roundStarted, timeLeft, timerRunning]);
+
+  useKeyboardShortcuts(
+    {
+      Escape: handleExit,
+      Enter: () => {
+        if (roundStarted && timerRunning && !roundSolved) {
+          checkArrangement(false);
+        }
+      },
+      ' ': () => {
+        if (!roundStarted && !finished) {
+          startRound();
+          return;
+        }
+        if (roundStarted && !roundSolved && !finished) {
+          toggleTimerRunning();
+        }
+      },
+    },
+    !finished
+  );
 
   if (loading || (totalRounds > 0 && !boardReady)) {
     return (
@@ -423,7 +445,7 @@ export default function ChronologicalMode() {
                 <div className="flex flex-1 items-center justify-center rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
                   Bộ dữ kiện đang được ẩn. Bấm{" "}
                   <span className="mx-1 font-black text-sky-200">BẮT ĐẦU</span>
-                  để mở câu {roundIndex + 1} và chạy 15 giây.
+                  để mở câu {roundIndex + 1} và chạy {ROUND_TIME} giây.
                 </div>
               ) : (
                 <>

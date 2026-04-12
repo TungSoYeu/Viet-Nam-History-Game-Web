@@ -5,6 +5,7 @@ import { Sparkles, ChevronRight, BookOpen, Shield, Trophy, Landmark } from 'luci
 import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
 import ParticlesBackground from '../components/animations/ParticlesBackground';
+import HistoricalQuote from '../components/HistoricalQuote';
 
 const BACKGROUND_IMAGES = [
   "/assets/images/vinh_ha_long.png",
@@ -17,6 +18,8 @@ const BACKGROUND_IMAGES = [
 export default function LandingPage() {
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [hasFinePointer, setHasFinePointer] = useState(false);
+  const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     // Removed eager preloading to improve initial performance
@@ -28,9 +31,33 @@ export default function LandingPage() {
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const media = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const sync = () => setHasFinePointer(media.matches);
+    sync();
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', sync);
+      return () => media.removeEventListener('change', sync);
+    }
+    media.addListener(sync);
+    return () => media.removeListener(sync);
+  }, []);
+
+  const handleMouseMove = (event) => {
+    if (!hasFinePointer) return;
+    const { innerWidth, innerHeight } = window;
+    const offsetX = ((event.clientX / innerWidth) - 0.5) * 28;
+    const offsetY = ((event.clientY / innerHeight) - 0.5) * 18;
+    setParallaxOffset({ x: offsetX, y: offsetY });
+  };
+
   return (
     <AnimatedPage>
-      <div className="relative min-h-[100dvh] flex flex-col items-center justify-center p-6">
+      <div
+        className="relative min-h-[100dvh] flex flex-col items-center justify-center p-6"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setParallaxOffset({ x: 0, y: 0 })}
+      >
         <ParticlesBackground type="dust" />
         
         {/* 1. Animated Background Carousel Layer */}
@@ -44,7 +71,10 @@ export default function LandingPage() {
                 style={{
                   backgroundImage: isNear ? `url('${imgUrl}')` : 'none',
                   opacity: idx === currentImageIndex ? 1 : 0,
-                  transform: idx === currentImageIndex ? 'scale(1.05)' : 'scale(1)',
+                  transform:
+                    idx === currentImageIndex
+                      ? `translate3d(${parallaxOffset.x}px, ${parallaxOffset.y}px, 0) scale(1.07)`
+                      : 'scale(1)',
                   transition: 'opacity 1s ease-in-out, transform 5s linear',
                   filter: 'brightness(0.92) saturate(1.05)'
                 }}
@@ -75,9 +105,15 @@ export default function LandingPage() {
           </div>
 
           {/* Title */}
-          <h1 className="text-5xl sm:text-6xl font-black mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 50%, #f0d48a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-6xl sm:text-6xl lg:text-7xl font-black mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]"
+            style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 50%, #f0d48a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.08em' }}
+          >
             Danh Nhân Đất Việt 
-          </h1>
+          </motion.h1>
 
           {/* Tagline */}
           <p className="text-lg sm:text-xl mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ color: '#f0d48a', fontFamily: "'Playfair Display', serif" }}>
@@ -98,20 +134,26 @@ export default function LandingPage() {
             </div>
           </BouncyButton>
 
-          <div className="flex flex-wrap justify-center gap-3 mt-10">
+          {/* Historical Quote — Rotating */}
+          <div className="mt-8">
+            <HistoricalQuote />
+          </div>
+
+          {/* Feature badges */}
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
             {[
               { icon: <BookOpen size={14} />, text: '8 Chế Độ Chơi' },
               { icon: <Shield size={14} />, text: 'PvP Đối Kháng' },
               { icon: <Trophy size={14} />, text: 'Bảng Xếp Hạng' },
             ].map((f, i) => (
-              <span key={i} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold backdrop-blur-sm drop-shadow-md" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.9)' }}>
+              <span key={i} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold backdrop-blur-sm drop-shadow-md hover-scale-subtle" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.9)' }}>
                 {f.icon} {f.text}
               </span>
             ))}
           </div>
 
           {/* Decorative divider */}
-          <div className="mt-12 flex items-center justify-center gap-3 opacity-40">
+          <div className="mt-8 flex items-center justify-center gap-3 opacity-40">
             <div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-500"></div>
             <div className="w-1.5 h-1.5 rounded-full bg-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]"></div>
             <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-500"></div>

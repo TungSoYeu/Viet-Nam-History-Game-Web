@@ -118,7 +118,7 @@ export const revealPictureSets = [
     acceptedAnswers: ["Trận Nhật Tảo", "Nhật Tảo"],
     caption: "Chiến công đốt tàu Hy Vọng của Nguyễn Trung Trực trong kháng chiến chống Pháp.",
     questions: [
-      { q: "Cuộc kháng chiến nào không thành công vào nửa sau thế kỉ XIX?", a: "Kháng chiến chống thực dân Pháp (18881- 1884)", hint: "1861" },
+      { q: "Cuộc kháng chiến nào không thành công vào nửa sau thế kỉ XIX?", a: "Kháng chiến chống thực dân Pháp (1858 - 1884)", hint: "1861" },
       { q: "“Bao giờ người Tây nhổ hết cỏ nước Nam, thì mới hết người Nam đánh Tây” là câu nói nổi tiếng của ai?", a: "Nguyễn Trung Trực", hint: "Nguyễn Trung Trực" },
       { q: "Sự kiện mở đầu cho quá trình Pháp xâm lược Việt Nam là?", a: "Ngày 1/9/1858, liên quân Pháp - Tây Ban Nha nổ súng tấn công Đà Nẵng.", hint: "Tàu Hy Vọng" },
       { q: "Sự kiện nào đánh dấu Pháp hoàn thành cơ bản cuộc xâm lược Việt Nam vào nửa sau thế kỉ XIX?", a: "Hiệp ước Hác - măng (1883) và Hiệp ước Pa-tơ-nốt (1884) được kí kết.", hint: "Trận đánh" },
@@ -689,7 +689,7 @@ export const historicalFlowSets = [
     instruction:
       "Kéo thả dữ kiện vào đúng 4 hộp Bối cảnh, Diễn biến, Kết quả - Ý nghĩa, Di sản. Có dữ kiện thừa gây nhiễu, hãy giữ chúng ở ngoài.",
     sentences: [
-      { id: "A", text: "543, Lý Bí lên ngôi vua.", group: "extra" },
+      { id: "A", text: "544, Lý Bí lên ngôi vua.", group: "extra" },
       { id: "B", text: "Nhà Lương cai trị tàn bạo.", group: "context" },
       { id: "C", text: "545, Triệu Quang Phục lãnh đạo cuộc khởi nghĩa và giành thắng lợi.", group: "developments" },
       { id: "D", text: "Mùa xuân 544, khởi nghĩa thắng lợi.", group: "developments" },
@@ -752,7 +752,7 @@ const lightningFastQuestionSeeds = [
   },
   {
     content:
-      "Vị vua nào của nhà Lý đã chỉ huy trận chiến trên sông Như Nguyệt?",
+      "Vị tướng nào thời Lý đã chỉ huy trận chiến trên sông Như Nguyệt?",
     correctAnswer: "Lý Thường Kiệt",
   },
   {

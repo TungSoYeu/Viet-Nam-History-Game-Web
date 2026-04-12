@@ -9,6 +9,10 @@ import {
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
+import Confetti from "../components/animations/Confetti";
+import ComboIndicator from "../components/animations/ComboIndicator";
+import RadarChart from "../components/game/RadarChart";
+import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -49,6 +53,7 @@ export default function TimeAttackMode() {
   const autoAdvanceRef = useRef(null);
 
   const currentQuestion = questions[currentIndex];
+  const answeredCount = currentIndex + (feedback ? 1 : 0);
 
   const buildQuestionSet = () =>
     shuffleArray(activeQuestionBank).slice(0, targetQuestionCount);
@@ -294,6 +299,41 @@ export default function TimeAttackMode() {
     setSessionReady(true);
   };
 
+  const performanceData = [
+    {
+      label: "Tốc độ",
+      value: Math.min(100, Math.round((answeredCount / Math.max(1, targetQuestionCount)) * 100)),
+      color: "#38bdf8",
+    },
+    {
+      label: "Chính xác",
+      value: Math.min(100, Math.round((score / Math.max(10, targetQuestionCount * 12)) * 100)),
+      color: "#34d399",
+    },
+    {
+      label: "Combo",
+      value: Math.min(100, Math.round((bestStreak / Math.max(1, targetQuestionCount / 3)) * 100)),
+      color: "#f59e0b",
+    },
+    {
+      label: "XP",
+      value: Math.min(100, Math.round((score / Math.max(10, targetQuestionCount * 20)) * 100)),
+      color: "#f0d48a",
+    },
+  ];
+
+  useKeyboardShortcuts(
+    {
+      Escape: handleExit,
+      '1': () => currentQuestion?.options?.[0] && handleAnswer(currentQuestion.options[0]),
+      '2': () => currentQuestion?.options?.[1] && handleAnswer(currentQuestion.options[1]),
+      '3': () => currentQuestion?.options?.[2] && handleAnswer(currentQuestion.options[2]),
+      '4': () => currentQuestion?.options?.[3] && handleAnswer(currentQuestion.options[3]),
+      ' ': toggleRunState,
+    },
+    phase === "play" || phase === "prep" || phase === "play-ready"
+  );
+
   if (loading || (targetQuestionCount > 0 && !sessionReady)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
@@ -384,6 +424,7 @@ export default function TimeAttackMode() {
   if (finished || phase === "finished") {
     return (
       <div className="min-h-screen bg-[radial-gradient(circle_at_top,#451a03_0%,#020617_68%)] px-4 py-8 text-white flex items-center justify-center">
+        <Confetti active={true} count={100} />
         <div className="w-full max-w-3xl rounded-[32px] border border-amber-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
             <Trophy size={40} />
@@ -418,6 +459,15 @@ export default function TimeAttackMode() {
             </div>
           </div>
 
+          <div className="mt-8 rounded-[28px] border border-white/10 bg-slate-950/50 p-5">
+            <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
+              Radar Thành Tích
+            </div>
+            <div className="mt-5 flex justify-center">
+              <RadarChart data={performanceData} size={280} />
+            </div>
+          </div>
+
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={restartMode}
@@ -439,6 +489,7 @@ export default function TimeAttackMode() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-4 text-white sm:px-6">
+      <ComboIndicator streak={streak} show={phase === "play"} />
       <div className="mx-auto flex h-full w-full max-w-6xl flex-1 flex-col gap-4 min-h-0">
         <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">

@@ -7,6 +7,8 @@ import AnimatedPage from '../components/animations/AnimatedPage';
 import BouncyButton from '../components/animations/BouncyButton';
 import ParticlesBackground from '../components/animations/ParticlesBackground';
 import SkeletonLoader from '../components/SkeletonLoader';
+import AvatarFrame from '../components/AvatarFrame';
+import RankBadge from '../components/RankBadge';
 import { fetchClassroomLeaderboard } from '../services/classroomClient';
 import { getActiveClassroomId, getActiveClassroomName } from '../utils/classroomContext';
 
@@ -141,7 +143,7 @@ export default function Leaderboard() {
           <div className="flex justify-center sm:justify-start">
             <BouncyButton onClick={() => navigate('/modes')}>
               <div className="px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all text-sm"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)' }}
               >
                 <ArrowLeft size={18} /> Quay lại
               </div>
@@ -173,7 +175,7 @@ export default function Leaderboard() {
                 }}
               >
                 <div className="text-sm font-black text-white">{tab.label}</div>
-                <div className="text-[11px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{tab.hint}</div>
+                <div className="text-[11px]" style={{ color: 'rgba(255,255,255,0.6)' }}>{tab.hint}</div>
               </button>
             );
           })}
@@ -201,8 +203,13 @@ export default function Leaderboard() {
                   >
                     {styles.icon}
                   </motion.div>
-                  <div className={`w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full border-3 sm:border-4 ${styles.border} overflow-hidden shadow-xl relative z-0`} style={{ background: 'rgba(255,255,255,0.05)' }}>
-                    <img src={userAvatar} alt={user.username} className="w-full h-full object-cover" />
+                  <div className="relative z-0">
+                    <AvatarFrame 
+                      avatar={userAvatar} 
+                      username={user.username} 
+                      xp={user.experience} 
+                      size={window.innerWidth >= 768 ? 96 : window.innerWidth >= 640 ? 80 : 64} 
+                    />
                   </div>
                   <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2 shadow-lg text-white font-black text-xs sm:text-base" style={{ background: styles.gradientBg, borderColor: 'rgba(255,255,255,0.2)' }}>
                     {idx + 1}
@@ -211,6 +218,9 @@ export default function Leaderboard() {
                 
                 <div className="text-center mb-3 sm:mb-4 px-1">
                   <p className="font-black text-white text-xs sm:text-sm md:text-base truncate w-20 sm:w-32 md:w-40">{user.username}</p>
+                  <div className="mt-2 flex justify-center">
+                    <RankBadge xp={user.experience} compact />
+                  </div>
                   <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(212,160,83,0.8)' }}>{user.experience} EXP</p>
                 </div>
 
@@ -244,7 +254,7 @@ export default function Leaderboard() {
             className="flex flex-col gap-3 sm:gap-4 relative z-10"
           >
             {runnerUpData.length === 0 ? (
-              <p className="text-center py-8 font-bold italic" style={{ color: 'rgba(255,255,255,0.4)' }}>Bảng danh dự còn để trống...</p>
+              <p className="text-center py-8 font-bold italic" style={{ color: 'rgba(255,255,255,0.55)' }}>Bảng danh dự còn để trống...</p>
             ) : (
               runnerUpData.map((user, idx) => {
                 const rank = idx + 4;
@@ -271,22 +281,30 @@ export default function Leaderboard() {
                         }}>
                         {rank}
                       </span>
-                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 overflow-hidden shrink-0" style={{ borderColor: 'rgba(212,160,83,0.3)', background: 'rgba(255,255,255,0.03)' }}>
-                        <img src={userAvatar} alt={user.username} className="w-full h-full object-cover" />
+                      <div className="shrink-0 flex items-center justify-center">
+                        <AvatarFrame 
+                          avatar={userAvatar} 
+                          username={user.username} 
+                          xp={user.experience} 
+                          size={window.innerWidth >= 640 ? 48 : 36} 
+                        />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-1.5 truncate">
-                          {user.username}
-                          {isTop5 && <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />}
-                        </h3>
-                        <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold uppercase" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                      <div className="min-w-0 flex-1 ml-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-1.5 truncate">
+                            {user.username}
+                            {isTop5 && <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />}
+                          </h3>
+                          <RankBadge xp={user.experience} compact />
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>
                            <MapPin size={10} /> <span className="truncate">{user.province || user.city || 'Ẩn danh'}</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-2">
                       <p className="text-base sm:text-xl font-black text-amber-400">{user.experience.toLocaleString()}</p>
-                      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.3)' }}>Kinh nghiệm</p>
+                      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)' }}>Kinh nghiệm</p>
                     </div>
                   </motion.div>
                 );
@@ -296,7 +314,7 @@ export default function Leaderboard() {
         </div>
 
         <div className="mt-12 sm:mt-16 text-center pb-4 relative z-10">
-           <p className="font-bold italic mb-6 text-sm sm:text-base" style={{ color: 'rgba(255,255,255,0.4)' }}>Hãy rèn luyện sử sách để được ghi danh trên Bảng Phong Thần!</p>
+           <p className="font-bold italic mb-6 text-sm sm:text-base" style={{ color: 'rgba(255,255,255,0.55)' }}>Hãy rèn luyện sử sách để được ghi danh trên Bảng Phong Thần!</p>
            <BouncyButton onClick={() => navigate('/modes')}>
              <div className="btn-primary px-8 sm:px-12 py-3 sm:py-4 shadow-xl flex items-center gap-3 text-sm sm:text-base">
                <Trophy size={20} /> TIẾP TỤC TRANH TÀI

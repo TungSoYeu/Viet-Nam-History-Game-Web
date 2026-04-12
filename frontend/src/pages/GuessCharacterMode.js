@@ -311,7 +311,7 @@ export default function GuessCharacterMode() {
       <div
         className="p-3 md:p-4 h-screen w-full flex flex-col overflow-y-auto custom-scrollbar bg-transparent"
       >
-        <div className="max-w-6xl mx-auto flex flex-col w-full min-h-0 pb-4">
+        <div className="max-w-[1600px] mx-auto flex flex-col w-full min-h-0 pb-4">
         <div
           className="mb-6 rounded-[28px] border p-5 shadow-2xl"
           style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
@@ -362,36 +362,27 @@ export default function GuessCharacterMode() {
               return (
                 <div
                   key={submode.id}
-                  className="flex h-full flex-col rounded-[30px] border p-6 shadow-2xl"
+                  className="flex flex-col justify-center items-center text-center rounded-[30px] border p-8 md:p-12 shadow-2xl transition hover:scale-[1.02]"
                   style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div
-                      className="inline-flex h-16 w-16 items-center justify-center rounded-2xl text-slate-950"
-                      style={{ background: submode.accent }}
-                    >
-                      <SubmodeIcon size={28} />
-                    </div>
-                    <div className="rounded-full border border-white/10 bg-slate-950/45 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-200">
-                      {submode.items.length} câu | 15 giây/câu
-                    </div>
+                  <div
+                    className="inline-flex h-20 w-20 md:h-24 md:w-24 items-center justify-center rounded-[2rem] text-slate-950 mb-6"
+                    style={{ background: submode.accent }}
+                  >
+                    <SubmodeIcon size={40} />
                   </div>
 
-                  <h2 className="mt-6 text-2xl font-black text-white">
+                  <div className="rounded-full border border-white/10 bg-slate-950/45 px-5 py-2.5 text-xs md:text-sm font-black uppercase tracking-[0.18em] text-slate-200 mb-6">
+                    {submode.items.length} câu | 15 giây/câu
+                  </div>
+
+                  <h2 className="text-2xl md:text-3xl max-w-sm font-black text-white mb-10 leading-[1.3] vn-safe-heading">
                     {submode.title}
                   </h2>
-                  <div className="mt-4 flex flex-1 flex-col">
-                    <p className="text-sm leading-7 text-slate-300">
-                      {submode.description}
-                    </p>
-                    <p className="mt-4 flex-1 rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-4 text-sm leading-7 text-slate-200">
-                      {submode.summary}
-                    </p>
-                  </div>
 
                   <button
                     onClick={() => setSelectedSubmodeId(submode.id)}
-                    className="mt-6 w-full rounded-2xl px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-slate-950"
+                    className="w-full max-w-sm rounded-2xl px-6 py-4 md:py-5 text-sm md:text-base font-black uppercase tracking-[0.2em] text-slate-950 transition-all hover:brightness-110 active:scale-95"
                     style={{ background: submode.accent }}
                   >
                     {submode.buttonLabel}
@@ -438,7 +429,7 @@ export default function GuessCharacterMode() {
     <div
       className="p-3 md:p-4 h-screen w-full flex flex-col overflow-hidden bg-transparent"
     >
-      <div className="max-w-6xl mx-auto flex flex-col w-full h-full min-h-0 items-center">
+      <div className="max-w-[1600px] mx-auto flex flex-col w-full h-full min-h-0 items-center">
       {/* === Compact Header === */}
       <div
         className="w-full flex flex-wrap items-center gap-2 mb-2 p-2 md:p-3 rounded-xl shadow flex-shrink-0"

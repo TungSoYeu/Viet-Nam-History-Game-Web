@@ -265,7 +265,7 @@ export default function Login() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors hover:bg-white/10"
-                      style={{ color: 'rgba(255,255,255,0.4)' }}
+                      style={{ color: 'rgba(255,255,255,0.55)' }}
                       aria-label={showPassword ? "Ẩn mật mã" : "Hiện mật mã"}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -313,7 +313,7 @@ export default function Login() {
                               }}
                             >
                               <div className="text-sm font-black text-white">{option.title}</div>
-                              <div className="mt-1 text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>{option.desc}</div>
+                              <div className="mt-1 text-[11px]" style={{ color: 'rgba(255,255,255,0.65)' }}>{option.desc}</div>
                             </button>
                           );
                         })}
@@ -437,7 +437,7 @@ export default function Login() {
             <div className="mt-6 flex flex-col items-center gap-4">
               <div className="flex items-center w-full gap-3">
                 <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
-                <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>HOẶC</span>
+                <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.55)' }}>HOẶC</span>
                 <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
               </div>
               <GoogleLogin

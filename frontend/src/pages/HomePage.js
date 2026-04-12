@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpen, Shield, Crown, User, ChevronRight, MapPin, Clock, Trophy, Star, History, Sword } from 'lucide-react';
+import { X, BookOpen, Shield, Crown, User, Clock, Trophy, Star, History, Sword } from 'lucide-react';
 import API_BASE_URL from '../config/api';
 import { useApiData } from '../hooks/useApiData';
+import TodayInHistory from '../components/TodayInHistory';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
+import HeroCarousel from '../components/HeroCarousel';
+import ParchmentModal from '../components/ParchmentModal';
 
 const heroes = [
   {
@@ -13,36 +17,36 @@ const heroes = [
     title: 'Anh thư dân tộc',
     dynasty: 'Triều Trưng',
     image: '/assets/images/hai_ba_trung.png',
-    description: 'Hai Bà Trưng Trắc và Trưng Nhị là những người phụ nữ đầu tiên trong lịch sử Việt Nam lãnh đạo cuộc khởi nghĩa chống ách đô hộ.',
+    description: 'Hai Bà Trưng Trắc và Trưng Nhị là những người phụ nữ đầu tiên trong lịch sử Việt Nam lãnh đạo cuộc khởi nghĩa chống ách đô hộ nhà Đông Hán.',
     achievements: ['Khởi nghĩa năm 40 SCN', 'Giành độc lập 3 năm', 'Tự xưng vương'],
     stats: { wins: 3, time: 180, level: 1 }
   },
   {
     id: 2,
     name: 'Bà Triệu',
-    era: '248 - 250 SCN',
-    title: 'Nữ tướng kháng Hán',
-    dynasty: 'Triều Bà Triệu',
+    era: '225 - 248',
+    title: 'Nữ tướng kháng Ngô',
+    dynasty: 'Thời Bắc thuộc',
     image: '/assets/images/ba_trieu.png',
-    description: 'Bà Triệu (Triệu Thị Trinh) là nữ tướng lừng danh với câu nói "Tôi muốn cưỡi gió xuống biển, chém cá voi ở đầu nguồn".',
-    achievements: ['Khởi nghĩa chống Đông Hán', 'Lãnh đạo nghĩa quân', 'Biểu tượng nữ anh hùng'],
+    description: 'Bà Triệu (Triệu Thị Trinh) là nữ tướng lừng danh với câu nói "Tôi muốn cưỡi cơn gió mạnh, đạp luồng sóng dữ, chém cá kình ở biển Đông".',
+    achievements: ['Khởi nghĩa chống Đông Ngô năm 248', 'Lãnh đạo nghĩa quân ở núi Nưa', 'Biểu tượng nữ anh hùng'],
     stats: { wins: 4, time: 200, level: 2 }
   },
   {
     id: 3,
     name: 'Lý Bí',
-    era: '544 - 602',
-    title: 'Vua khai sơn nhà Lý',
-    dynasty: 'Vạn Xuân',
+    era: '503 - 548',
+    title: 'Hoàng đế nước Vạn Xuân',
+    dynasty: 'Nhà Tiền Lý',
     image: '/assets/images/ly_bi.png',
-    description: 'Lý Bí là người lãnh đạo cuộc khởi nghĩa chống nhà Lương, lập nước Vạn Xuân năm 542.',
-    achievements: ['Lập nước Vạn Xuân 542', 'Đánh tan quân Lương', 'Khai sơn nhà Lý'],
+    description: 'Lý Bí (Lý Nam Đế) là người lãnh đạo cuộc khởi nghĩa chống nhà Lương, lập nước Vạn Xuân năm 544.',
+    achievements: ['Lập nước Vạn Xuân 544', 'Đánh tan quân Lương', 'Xưng Lý Nam Đế'],
     stats: { wins: 6, time: 280, level: 3 }
   },
   {
     id: 4,
     name: 'Ngô Quyền',
-    era: '938 - 944',
+    era: '898 - 944',
     title: 'Vua đánh tan quân Nam Hán',
     dynasty: 'Nhà Ngô',
     image: '/assets/images/ngo_quyen.png',
@@ -53,12 +57,12 @@ const heroes = [
   {
     id: 5,
     name: 'Lê Hoàn',
-    era: '980 - 1009',
-    title: 'Vua khai sơn nhà Lê',
-    dynasty: 'Nhà Lê',
+    era: '941 - 1005',
+    title: 'Hoàng đế triều Tiền Lê',
+    dynasty: 'Nhà Tiền Lê',
     image: '/assets/images/le_hoan.png',
-    description: 'Lê Hoàn là vị vua sáng lập nhà Lê (Lê Đại Hành), người đã đánh bại quân Tống năm 981 trong trận chiến trên sông Bạch Đằng.',
-    achievements: ['Lập nhà Lê', 'Chiến thắng quân Tống 981', 'Xưng hoàng đế'],
+    description: 'Lê Hoàn (Lê Đại Hành) là vị vua sáng lập nhà Tiền Lê, người đã đánh bại quân Tống năm 981 tại Chi Lăng và sông Bạch Đằng.',
+    achievements: ['Sáng lập nhà Tiền Lê', 'Chiến thắng quân Tống 981', 'Xưng hoàng đế'],
     stats: { wins: 15, time: 520, level: 6 }
   },
   {
@@ -76,55 +80,55 @@ const heroes = [
     id: 7,
     name: 'Trần Hưng Đạo',
     era: '1228 - 1300',
-    title: 'Thái tử & Tướng quân',
+    title: 'Quốc công Tiết chế',
     dynasty: 'Nhà Trần',
     image: '/assets/images/tran_hung_dao.png',
-    description: 'Trần Hưng Đạo là thái tử và tướng quân nhà Trần, được phong làm "Quốc công", chỉ huy cuộc kháng chiến chống Nguyên lần thứ hai.',
-    achievements: ['Đánh bại quân Nguyên', 'Soạn Binh thư yếu', 'Phò tá vua Trần'],
+    description: 'Trần Hưng Đạo (Trần Quốc Tuấn) là Quốc công Tiết chế nhà Trần, chỉ huy tối cao quân đội, lãnh đạo chiến thắng quân Mông - Nguyên lần thứ hai (1285) và lần thứ ba (1287-1288).',
+    achievements: ['Ba lần đánh bại quân Mông - Nguyên', 'Soạn Hịch tướng sĩ', 'Chiến thắng Bạch Đằng 1288'],
     stats: { wins: 6, time: 260, level: 4 }
   },
   {
     id: 8,
     name: 'Lê Lợi',
     era: '1385 - 1433',
-    title: 'Vua khởi nghĩa',
-    dynasty: 'Nhà Lê',
+    title: 'Vua khởi nghĩa Lam Sơn',
+    dynasty: 'Nhà Hậu Lê',
     image: '/assets/images/le_loi.png',
-    description: 'Lê Lợi là vị vua sáng lập nhà Lê, thủ lĩnh cuộc khởi nghĩa Lam Sơn chống ách thống trị của nhà Minh.',
-    achievements: ['Khởi nghĩa Lam Sơn', 'Lập nhà Lê', 'Chiến thắng quân Minh'],
+    description: 'Lê Lợi là vị vua sáng lập nhà Hậu Lê, thủ lĩnh cuộc khởi nghĩa Lam Sơn chống ách thống trị của nhà Minh.',
+    achievements: ['Khởi nghĩa Lam Sơn', 'Lập nhà Hậu Lê', 'Chiến thắng quân Minh'],
     stats: { wins: 9, time: 380, level: 5 }
   },
   {
     id: 9,
     name: 'Nguyễn Trãi',
     era: '1380 - 1442',
-    title: 'Nhà văn & Nhà quân sự',
-    dynasty: 'Nhà Lê',
+    title: 'Danh nhân văn hóa & Quân sư',
+    dynasty: 'Nhà Hậu Lê',
     image: '/assets/images/nguyen_trai.png',
-    description: 'Nguyễn Trãi là nhà văn, nhà quân sự lỗi lạc thời Lê sơ, được mệnh danh là "Quốc sĩ" với tài năng văn chương và quân sự.',
-    achievements: ['Soạn Lam Sơn lục', 'Phò tá Lê Lợi', 'Văn học đỉnh cao'],
+    description: 'Nguyễn Trãi là mưu sĩ kiệt xuất thời Lê sơ, Danh nhân văn hóa thế giới (UNESCO), tác giả Bình Ngô đại cáo.',
+    achievements: ['Soạn Bình Ngô đại cáo', 'Phò tá Lê Lợi', 'Danh nhân văn hóa UNESCO'],
     stats: { wins: 4, time: 200, level: 3 }
   },
   {
     id: 10,
     name: 'Trương Định',
     era: '1820 - 1864',
-    title: 'Võ sĩ kháng Pháp',
+    title: 'Bình Tây Đại Nguyên Soái',
     dynasty: 'Nhà Nguyễn',
     image: '/assets/images/truong_dinh.png',
-    description: 'Trương Định là võ sĩ người Quảng Nam, từng tham gia kháng chiến chống Pháp và gia nhập triều đình Huế.',
-    achievements: ['Kháng chiến chống Pháp', 'Bảo vệ đất nước', 'Tinh thần võ sĩ'],
+    description: 'Trương Định là võ quan người Quảng Ngãi, được nhân dân Nam Kỳ suy tôn làm "Bình Tây Đại Nguyên Soái", kháng lệnh triều đình ở lại chống Pháp tại Gò Công.',
+    achievements: ['Bình Tây Đại Nguyên Soái', 'Kháng lệnh triều đình chống Pháp', 'Khởi nghĩa Gò Công'],
     stats: { wins: 5, time: 210, level: 3 }
   },
   {
     id: 11,
     name: 'Nguyễn Trung Trực',
-    era: '1838 - 1861',
+    era: '1838 - 1868',
     title: 'Anh hùng kháng Pháp',
     dynasty: 'Nhà Nguyễn',
     image: '/assets/images/nguyen_trung_truc.png',
-    description: 'Nguyễn Trung Trực là anh hùng kháng chiến chống thực dân Pháp, nổi tiếng with câu nói "Thà chết không chịu làm nô lệ".',
-    achievements: ['Khởi nghĩa chống Pháp', 'Hy sinh anh dũng', 'Tượng đài tinh thần'],
+    description: 'Nguyễn Trung Trực là anh hùng kháng chiến chống thực dân Pháp, nổi tiếng với câu nói "Bao giờ người Tây nhổ hết cỏ nước Nam thì mới hết người Nam đánh Tây".',
+    achievements: ['Đốt tàu Hy Vọng trên sông Nhật Tảo', 'Đánh chiếm đồn Kiên Giang', 'Hy sinh anh dũng tại Rạch Giá'],
     stats: { wins: 3, time: 150, level: 2 }
   },
   {
@@ -134,19 +138,19 @@ const heroes = [
     title: 'Thủ lĩnh kháng chiến',
     dynasty: 'Nhà Nguyễn',
     image: '/assets/images/phan_dinh_phung.png',
-    description: 'Phan Đình Phùng là thủ lĩnh phong trào kháng chiến chống thực dân Pháp cuối thế kỷ 19, nổi tiếng với chiến thuật du kích tại vùng núi Nghệ An.',
-    achievements: ['Lãnh đạo kháng chiến Nghệ An', 'Chiến đấu chống Pháp', 'Tiên phong chống thực dân'],
+    description: 'Phan Đình Phùng là thủ lĩnh khởi nghĩa Hương Khê — đỉnh cao phong trào Cần Vương, nổi tiếng với chiến thuật du kích tại vùng núi Hà Tĩnh.',
+    achievements: ['Lãnh đạo khởi nghĩa Hương Khê', 'Đỉnh cao phong trào Cần Vương', 'Chế tạo súng trường kiểu Pháp'],
     stats: { wins: 8, time: 320, level: 4 }
   },
   {
     id: 13,
     name: 'Hoàng Hoa Thám',
     era: '1858 - 1913',
-    title: 'Vua kháng chiến',
+    title: 'Hùm thiêng Yên Thế',
     dynasty: 'Nhà Nguyễn',
     image: '/assets/images/hoang_hoa_tham.png',
-    description: 'Hoàng Hoa Thám là vị vua cuối cùng của nhà Nguyễn, nổi tiếng với tinh thần kháng chiến chống thực dân Pháp.',
-    achievements: ['Kháng chiến chống Pháp', 'Bảo vệ lãnh thổ', 'Biểu tượng chủ quyền'],
+    description: 'Hoàng Hoa Thám (Đề Thám) là thủ lĩnh phong trào nông dân Yên Thế (Bắc Giang), lãnh đạo cuộc khởi nghĩa chống Pháp kéo dài gần 30 năm.',
+    achievements: ['Khởi nghĩa Yên Thế gần 30 năm', 'Hai lần buộc Pháp giảng hòa', 'Hùm thiêng Yên Thế'],
     stats: { wins: 7, time: 290, level: 4 }
   }
 ];
@@ -175,6 +179,8 @@ export default function HomePage() {
   const [bgIndex, setBgIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [infoModal, setInfoModal] = useState(null);
+  const [carouselPaused, setCarouselPaused] = useState(false);
+  const [isDesktopViewport, setIsDesktopViewport] = useState(() => window.innerWidth >= 1024);
   const username = localStorage.getItem('username') || 'linh12345';
   const rawRole = localStorage.getItem('role') || 'student';
   const roleDisplay = (rawRole === 'teacher' || rawRole === 'GV') ? 'Giáo viên' : (rawRole === 'admin' ? 'Quản trị' : 'Học viên');
@@ -186,17 +192,39 @@ export default function HomePage() {
   };
 
   const userId = localStorage.getItem('userId');
-  const { data: user } = useApiData(userId ? `${API_BASE_URL}/api/user/${userId}` : null);
+  useApiData(userId ? `${API_BASE_URL}/api/user/${userId}` : null);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktopViewport(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!showModal) {
+      if (!showModal && !carouselPaused) {
         setCurrentIndex((prev) => (prev + 1) % heroes.length);
         setBgIndex((prev) => (prev + 1) % heroes.length);
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [showModal]);
+  }, [carouselPaused, showModal]);
+
+  // Desktop keyboard navigation
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + heroes.length) % heroes.length);
+    setBgIndex((prev) => (prev - 1 + heroes.length) % heroes.length);
+  }, []);
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % heroes.length);
+    setBgIndex((prev) => (prev + 1) % heroes.length);
+  }, []);
+
+  useKeyboardShortcuts({
+    ArrowLeft: goToPrev,
+    ArrowRight: goToNext,
+    Escape: () => { setShowModal(false); setInfoModal(null); },
+  }, true);
 
   const openModal = () => {
     setShowModal(true);
@@ -210,7 +238,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="min-h-screen relative overflow-hidden"
+      className="h-[100dvh] w-full relative overflow-hidden flex flex-col"
       style={{
         backgroundColor: '#0a0a0a',
         backgroundImage: "url('/assets/images/background_homepage.jpg')",
@@ -301,12 +329,12 @@ export default function HomePage() {
       </div>
 
       {/* Main Glass Panel */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-4 pb-20">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-6 pt-2 pb-[72px] lg:pb-20 flex flex-col flex-1 min-h-0 items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="rounded-3xl overflow-hidden"
+          className="rounded-[24px] lg:rounded-3xl overflow-hidden flex flex-col w-full max-h-full"
           style={{ 
             background: 'linear-gradient(135deg, rgba(25,28,38,0.46) 0%, rgba(28,30,42,0.38) 100%)',
             border: '1px solid rgba(255,255,255,0.12)',
@@ -315,16 +343,16 @@ export default function HomePage() {
           }}
         >
           {/* Header Section */}
-          <div className="flex items-center justify-between p-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+          <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
             {/* Left section - Flex 1 to balance the right section */}
             <div className="flex-1 min-w-0">
               <h1 
-                className="text-lg font-black tracking-wide"
+                className="text-base font-black tracking-wide"
                 style={{ fontFamily: "'Oswald', sans-serif", color: '#d4a053', letterSpacing: '0.05em' }}
               >
                 DANH NHÂN ĐẤT VIỆT
               </h1>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>
                 Danh sách anh hùng dân tộc
               </p>
             </div>
@@ -336,7 +364,7 @@ export default function HomePage() {
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer" 
                 style={{ background: 'rgba(255,255,255,0.08)' }}
               >
-                <BookOpen size={14} style={{ color: 'rgba(255,255,255,0.6)' }} />
+                <BookOpen size={14} style={{ color: 'rgba(255,255,255,0.72)' }} />
                 <span className="text-xs font-medium leading-none" style={{ color: 'rgba(255,255,255,0.8)' }}>Sử liệu</span>
               </button>
               <button 
@@ -344,7 +372,7 @@ export default function HomePage() {
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer" 
                 style={{ background: 'rgba(255,255,255,0.08)' }}
               >
-                <Sword size={14} style={{ color: 'rgba(255,255,255,0.6)' }} />
+                <Sword size={14} style={{ color: 'rgba(255,255,255,0.72)' }} />
                 <span className="text-xs font-medium leading-none" style={{ color: 'rgba(255,255,255,0.8)' }}>Quân sự</span>
               </button>
               <button 
@@ -352,7 +380,7 @@ export default function HomePage() {
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer" 
                 style={{ background: 'rgba(255,255,255,0.08)' }}
               >
-                <History size={14} style={{ color: 'rgba(255,255,255,0.6)' }} />
+                <History size={14} style={{ color: 'rgba(255,255,255,0.72)' }} />
                 <span className="text-xs font-medium leading-none" style={{ color: 'rgba(255,255,255,0.8)' }}>Timeline</span>
               </button>
             </div>
@@ -372,7 +400,7 @@ export default function HomePage() {
                 <p className="text-white text-xs font-medium truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
                   {username}
                 </p>
-                <p className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <p className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {roleDisplay}
                 </p>
               </div>
@@ -380,7 +408,101 @@ export default function HomePage() {
           </div>
 
               {/* Central Carousel Area */}
-          <div className="p-4">
+          <div className="p-2 lg:p-3 flex-1 min-h-0 overflow-hidden">
+            <div className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-3 xl:grid-cols-[minmax(0,1.15fr)_340px] xl:gap-4 h-full items-stretch">
+              <HeroCarousel
+                items={heroes}
+                currentIndex={currentIndex}
+                currentItem={currentHero}
+                onPrev={goToPrev}
+                onNext={goToNext}
+                onSelect={(nextIndex) => {
+                  setCurrentIndex(nextIndex);
+                  setBgIndex(nextIndex);
+                }}
+                onOpen={openModal}
+                paused={showModal || carouselPaused}
+                onHoverChange={setCarouselPaused}
+                autoplayMs={5000}
+              />
+
+              <div className="flex flex-col gap-2 xl:gap-3 overflow-y-auto custom-scrollbar" style={{ maxHeight: '100%' }}>
+                <div
+                  className="rounded-2xl xl:rounded-3xl p-3 xl:p-5"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    boxShadow: '0 18px 48px rgba(0,0,0,0.25)',
+                    backdropFilter: 'blur(18px)'
+                  }}
+                >
+                  <div className="text-[10px] xl:text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: 'rgba(212,160,83,0.9)' }}>
+                    Hồ sơ đang chọn
+                  </div>
+                  <h2 className="mt-1 xl:mt-2 text-xl xl:text-[1.65rem] font-black text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                    {currentHero.name}
+                  </h2>
+                  <div className="mt-1 inline-flex rounded-full px-2 py-0.5 xl:px-3 xl:py-1 text-[9px] xl:text-[11px] font-black uppercase tracking-[0.18em]" style={{ background: 'rgba(212,160,83,0.14)', color: '#f0d48a', border: '1px solid rgba(212,160,83,0.2)' }}>
+                    {currentHero.title}
+                  </div>
+                  <p className="mt-2 xl:mt-3 text-[11px] xl:text-xs leading-relaxed max-h-[64px] overflow-y-auto custom-scrollbar" style={{ color: 'rgba(255,255,255,0.82)' }}>
+                    {currentHero.description}
+                  </p>
+
+                  <div className="mt-2 xl:mt-3 grid grid-cols-3 gap-2">
+                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.55)' }}>Chiến công</div>
+                      <div className="mt-0.5 text-lg xl:text-xl font-black text-white">{currentHero.stats.wins}</div>
+                    </div>
+                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.55)' }}>Mốc</div>
+                      <div className="mt-0.5 text-lg xl:text-xl font-black text-white">{currentHero.stats.time}</div>
+                    </div>
+                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.55)' }}>Cấp</div>
+                      <div className="mt-0.5 text-lg xl:text-xl font-black text-white">{currentHero.stats.level}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className="rounded-2xl xl:rounded-3xl p-3 xl:p-5"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(212,160,83,0.08), rgba(255,255,255,0.04))',
+                    border: '1px solid rgba(212,160,83,0.18)',
+                    backdropFilter: 'blur(16px)'
+                  }}
+                >
+                  <div className="text-[10px] xl:text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: 'rgba(212,160,83,0.9)' }}>
+                    Thành tựu nổi bật
+                  </div>
+                  <div className="mt-2 xl:mt-3 space-y-1.5 xl:space-y-2">
+                    {currentHero.achievements.map((achievement, idx) => (
+                      <div
+                        key={achievement}
+                        className="rounded-xl px-3 py-1.5 xl:px-3 xl:py-2"
+                        style={{ background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.08)' }}
+                      >
+                        <div className="text-[9px] xl:text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.52)' }}>
+                          Mốc {idx + 1}
+                        </div>
+                        <div className="mt-1 text-xs xl:text-sm font-semibold text-white">{achievement}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={openModal}
+                    className="hover-glow-gold mt-3 py-2.5 w-full rounded-xl text-[11px] xl:text-xs font-black uppercase tracking-[0.18em] text-[#121826] transition"
+                    style={{ background: 'linear-gradient(135deg, #d4a053, #f0d48a)' }}
+                  >
+                    Mở Sử Truyện
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:hidden">
             <div className="flex flex-col items-center">
               {/* Large Central Carousel */}
               <div className="relative w-full max-w-md mb-4">
@@ -438,7 +560,7 @@ export default function HomePage() {
 
               {/* Compact Character List */}
               <div className="w-full mt-3">
-                <p className="text-xs font-medium mb-2 uppercase tracking-wider text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <p className="text-xs font-medium mb-2 uppercase tracking-wider text-center" style={{ color: 'rgba(255,255,255,0.55)' }}>
                   Các vị anh hùng
                 </p>
                 <div className="flex justify-center gap-1.5 flex-wrap">
@@ -478,6 +600,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -512,6 +635,16 @@ export default function HomePage() {
           <Trophy size={11} />
           <span className="text-xs font-medium">Chế độ chơi</span>
         </motion.button>
+      </div>
+
+      {/* Today In History — Desktop sidebar widget */}
+      <div className="absolute top-2 right-2 z-20 hidden lg:block scale-90 origin-top-right">
+        <TodayInHistory />
+      </div>
+
+      {/* Desktop keyboard hint */}
+      <div className="absolute bottom-20 right-4 z-10 hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>← → chuyển danh nhân</span>
       </div>
 
       {/* Info Modal for the 3 Categories */}
@@ -569,8 +702,18 @@ export default function HomePage() {
       </AnimatePresence>
 
       {/* Detail Modal */}
+      <ParchmentModal
+        open={showModal && isDesktopViewport}
+        hero={currentHero}
+        index={currentIndex}
+        total={heroes.length}
+        onPrev={goToPrev}
+        onNext={goToNext}
+        onClose={closeModal}
+      />
+
       <AnimatePresence>
-        {showModal && (
+        {showModal && !isDesktopViewport && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -631,7 +774,7 @@ export default function HomePage() {
                     >
                       {currentHero.dynasty}
                     </span>
-                    <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    <span className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
                       {currentHero.era}
                     </span>
                   </div>
@@ -642,7 +785,7 @@ export default function HomePage() {
                         <Trophy size={16} style={{ color: '#00BD7D' }} />
                       </div>
                       <div>
-                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Chiến thắng</p>
+                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>Chiến thắng</p>
                         <p className="text-sm font-medium text-white">{currentHero.stats.wins}</p>
                       </div>
                     </div>
@@ -651,7 +794,7 @@ export default function HomePage() {
                         <Clock size={16} style={{ color: '#3b82f6' }} />
                       </div>
                       <div>
-                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Thời gian</p>
+                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>Thời gian</p>
                         <p className="text-sm font-medium text-white">{currentHero.stats.time} phút</p>
                       </div>
                     </div>
@@ -660,18 +803,18 @@ export default function HomePage() {
                         <Star size={16} style={{ color: '#d4a053' }} />
                       </div>
                       <div>
-                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Cấp độ</p>
+                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>Cấp độ</p>
                         <p className="text-sm font-medium text-white">{currentHero.stats.level}</p>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.8)' }}>
                     {currentHero.description}
                   </p>
 
                   <div className="mt-4 pt-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                    <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>Thành tựu</p>
+                    <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>Thành tựu</p>
                     <div className="flex flex-wrap gap-1.5">
                       {currentHero.achievements.map((achievement, idx) => (
                         <span 

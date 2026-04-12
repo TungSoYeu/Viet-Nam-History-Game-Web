@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Puzzle, Trophy } from "lucide-react";
 import { crosswordSets } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
+import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
+import Confetti from "../components/animations/Confetti";
 import {
   logGameTelemetry,
   matchesAnswer,
@@ -14,6 +16,10 @@ import SkeletonLoader from "../components/SkeletonLoader";
 
 const MODE_ID = "crossword-decoding";
 const QUESTION_TIME = 15;
+const BOARD_CELL_GAP = 1;
+const BOARD_ROW_GAP = 1;
+const BOARD_ROW_LABEL_WIDTH = 20;
+const BOARD_ROW_LABEL_GAP = 4;
 
 const normalizeBoardText = (value) =>
   (value || "")
@@ -23,12 +29,6 @@ const normalizeBoardText = (value) =>
     .replace(/đ/g, "d")
     .replace(/[^a-zA-Z0-9]/g, "")
     .toUpperCase();
-
-const getPublicSectionTheme = (section) => {
-  const clueCount = Array.isArray(section?.clues) ? section.clues.length : 0;
-  const keywordLength = String(section?.keyword || "").length;
-  return `Giải mã từ khóa ${keywordLength} chữ cái qua ${clueCount} hàng ngang.`;
-};
 
 const getSolvedSectionLabel = (section, fallbackTitle) =>
   section?.acceptedAnswers?.[0]
@@ -61,6 +61,9 @@ export default function MillionaireMode() {
   const [xpSaved, setXpSaved] = useState(false);
   const startedAtRef = useRef(Date.now());
   const [scorePop, setScorePop] = useState(false);
+  
+  const gridContainerRef = useRef(null);
+  const [cellPx, setCellPx] = useState(40); // Khởi tạo an toàn
 
   const activeCrosswordSets =
     Array.isArray(remoteCrosswordSets) && remoteCrosswordSets.length > 0
@@ -78,6 +81,19 @@ export default function MillionaireMode() {
       visible: index < revealedCount,
     }));
   }, [currentSet, revealedCount]);
+
+  // Tìm vị trí xa nhất của cột từ khóa (màu vàng) để căn thẳng tắp toàn bộ các hàng
+  const maxHighlightIndex = useMemo(() => {
+    if (!currentSet) return 0;
+    return Math.max(...currentSet.clues.map(clue => {
+      const answer = normalizeBoardText(clue.boardAnswer || clue.correctAnswer);
+      const explicit = Number.isInteger(clue.highlightIndex) ? clue.highlightIndex : null;
+      return explicit != null 
+        ? Math.max(0, Math.min(answer.length - 1, explicit)) 
+        : (answer.length > 0 ? Math.min(answer.length - 1, Math.floor(answer.length / 2)) : 0);
+    }));
+  }, [currentSet]);
+  
   const boardRows = useMemo(() => {
     if (!currentSet) return [];
 
@@ -91,7 +107,9 @@ export default function MillionaireMode() {
       const highlightIndex = explicitHighlightIndex != null
         ? Math.max(0, Math.min(answer.length - 1, explicitHighlightIndex))
         : fallbackHighlightIndex;
-      const padding = Math.max(0, 4 - highlightIndex);
+      
+      // Đồng bộ padding để cột vàng luôn thẳng hàng
+      const padding = Math.max(0, maxHighlightIndex - highlightIndex);
 
       return {
         index,
@@ -102,7 +120,70 @@ export default function MillionaireMode() {
         status: rowResults[index] || null,
       };
     });
-  }, [currentSet, rowResults]);
+  }, [currentSet, rowResults, maxHighlightIndex]);
+
+  const maxRowCells = useMemo(() => {
+    if (!boardRows.length) return 10;
+    return Math.max(...boardRows.map((row) => row.padding + row.answer.length));
+  }, [boardRows]);
+
+  // THUẬT TOÁN ĐO KÍCH THƯỚC CHUẨN XÁC, ÉP KÍCH THƯỚC TO HẾT CỠ
+  useEffect(() => {
+    const el = gridContainerRef.current;
+    if (!el) return;
+
+    let timeoutId;
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect();
+      
+      // Nếu layout chưa giãn ra (height = 0), thử lại sau 50ms
+      if (rect.width === 0 || rect.height === 0) {
+        timeoutId = setTimeout(measure, 50);
+        return;
+      }
+
+      const numRows = boardRows.length || 1;
+      const numCols = maxRowCells || 10;
+
+      // Trừ đi khoảng lề an toàn (padding 16px * 2 của container = 32)
+      const availW = rect.width - BOARD_ROW_LABEL_WIDTH - BOARD_ROW_LABEL_GAP - (numCols - 1) * BOARD_CELL_GAP - 32;
+      const availH = rect.height - (numRows - 1) * BOARD_ROW_GAP - 32;
+
+      // Tính pixel lớn nhất mỗi ô có thể đạt được
+      const pxByW = availW / numCols;
+      const pxByH = availH / numRows;
+
+      // Chọn số nhỏ hơn để đảm bảo không bị tràn
+      let exactPx = Math.floor(Math.min(pxByW, pxByH));
+      
+      // Giữ kích thước tối thiểu để an toàn
+      setCellPx(Math.max(exactPx, 25));
+    };
+
+    measure();
+
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(measure);
+    });
+    ro.observe(el);
+
+    return () => {
+      clearTimeout(timeoutId);
+      ro.disconnect();
+    };
+  }, [maxRowCells, boardRows.length]);
+
+  const boardLayout = useMemo(() => ({
+    width:
+      BOARD_ROW_LABEL_WIDTH +
+      BOARD_ROW_LABEL_GAP +
+      maxRowCells * cellPx +
+      Math.max(0, maxRowCells - 1) * BOARD_CELL_GAP,
+    height:
+      boardRows.length * cellPx +
+      Math.max(0, boardRows.length - 1) * BOARD_ROW_GAP,
+  }), [boardRows.length, cellPx, maxRowCells]);
 
   const resetRound = () => {
     setClueIndex(0);
@@ -330,6 +411,42 @@ export default function MillionaireMode() {
     setTimerRunning((prev) => !prev);
   };
 
+  useKeyboardShortcuts(
+    {
+      Escape: handleExit,
+      '1': () => currentClue?.options?.[0] && handleAnswer(currentClue.options[0], "manual"),
+      '2': () => currentClue?.options?.[1] && handleAnswer(currentClue.options[1], "manual"),
+      '3': () => currentClue?.options?.[2] && handleAnswer(currentClue.options[2], "manual"),
+      '4': () => currentClue?.options?.[3] && handleAnswer(currentClue.options[3], "manual"),
+      Enter: () => {
+        if (!inCluePhase && keywordPhase === "active" && timerRunning && keywordInput.trim()) {
+          submitKeyword(null, "manual");
+        }
+      },
+      ' ': () => {
+        if (inCluePhase) {
+          if (cluePhase === "ready" && !clueResult) {
+            startClue();
+            return;
+          }
+          if (cluePhase === "active") {
+            toggleTimerRunning();
+          }
+          return;
+        }
+
+        if (keywordPhase === "ready" && !keywordResult) {
+          startKeyword();
+          return;
+        }
+        if (keywordPhase === "active") {
+          toggleTimerRunning();
+        }
+      },
+    },
+    !finished
+  );
+
   const displayTimer = inCluePhase
     ? cluePhase === "ready"
       ? QUESTION_TIME
@@ -357,6 +474,7 @@ export default function MillionaireMode() {
   if (finished) {
     return (
       <div className="min-h-screen bg-slate-950 text-white px-4 py-8 flex items-center justify-center">
+        <Confetti active={true} count={90} />
         <div className="w-full max-w-4xl rounded-[32px] border border-amber-500/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
             <Trophy size={40} />
@@ -423,14 +541,14 @@ export default function MillionaireMode() {
   /* ── Timer visual helpers ── */
   const timerPercent = (inCluePhase ? (cluePhase === "active" ? timeLeft : QUESTION_TIME) : (keywordPhase === "active" ? keywordTimeLeft : QUESTION_TIME)) / QUESTION_TIME * 100;
   const timerColor = displayTimer <= 5 ? "#ef4444" : displayTimer <= 10 ? "#f59e0b" : "#38bdf8";
-  const timerCircle = 2 * Math.PI * 18;
+
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-transparent text-white p-2 sm:p-3">
-      <div className="mx-auto flex h-full w-full max-w-[1400px] flex-col min-h-0">
+    <div className="h-screen flex flex-col overflow-hidden bg-transparent text-white p-1.5 sm:p-2">
+      <div className="mx-auto flex h-full w-full flex-col min-h-0">
 
         {/* ═══ COMPACT HEADER BAR ═══ */}
-        <div className="flex-shrink-0 flex items-center gap-2 mb-2 p-2 sm:p-2.5 rounded-2xl"
+        <div className="flex-shrink-0 flex items-center gap-2 mb-1.5 p-1.5 sm:p-2 rounded-2xl"
           style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}
         >
           <button onClick={handleExit}
@@ -449,16 +567,15 @@ export default function MillionaireMode() {
             </h1>
           </div>
 
-          {/* Mini timer circle */}
-          <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
-            <svg width="40" height="40" viewBox="0 0 40 40" className="absolute -rotate-90">
-              <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
-              <circle cx="20" cy="20" r="18" fill="none" stroke={timerColor} strokeWidth="2.5"
-                strokeDasharray={timerCircle} strokeDashoffset={timerCircle * (1 - timerPercent / 100)}
+          <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
+            <svg width="64" height="64" viewBox="0 0 64 64" className="absolute -rotate-90">
+              <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
+              <circle cx="32" cy="32" r="28" fill="none" stroke={timerColor} strokeWidth="4"
+                strokeDasharray={2 * Math.PI * 28} strokeDashoffset={2 * Math.PI * 28 * (1 - timerPercent / 100)}
                 strokeLinecap="round" className="transition-all duration-1000"
               />
             </svg>
-            <span className="text-[11px] font-black" style={{ color: timerColor }}>
+            <span className="text-lg font-black" style={{ color: timerColor }}>
               {displayTimer}
             </span>
           </div>
@@ -483,13 +600,13 @@ export default function MillionaireMode() {
         </div>
 
         {/* ═══ MAIN 3-COLUMN AREA ═══ */}
-        <div className="flex flex-col xl:flex-row gap-2.5 flex-1 min-h-0 overflow-hidden">
+        <div className="flex flex-col xl:flex-row gap-1.5 flex-1 min-h-0 overflow-hidden">
 
           {/* ── COL 1: Crossword Grid ── */}
-          <div className="xl:w-[40%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+          <div className="xl:w-[68%] 2xl:w-[70%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
             style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
           >
-            <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <div className="flex-shrink-0 flex items-center justify-between px-2.5 py-1 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center"
                   style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.2), rgba(99,102,241,0.2))" }}
@@ -505,17 +622,36 @@ export default function MillionaireMode() {
               </span>
             </div>
 
-            {/* Crossword grid - scrollable */}
-            <div className="flex-1 min-h-0 overflow-auto custom-scrollbar p-3">
-              <div className="min-w-[360px] space-y-1 pr-1">
+            {/* Vùng lưới được tự động đo và ép tỷ lệ căng khít nhất có thể */}
+            <div ref={gridContainerRef} className="flex-1 min-h-0 w-full overflow-hidden flex items-center justify-center p-2 sm:p-4 relative">
+              <div
+                className="shrink-0 transition-all duration-300 ease-out absolute"
+                style={{
+                  width: boardLayout.width,
+                  height: boardLayout.height,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: BOARD_ROW_GAP,
+                }}
+              >
                 {boardRows.map((row) => (
-                  <div key={`board-row-${row.index}`} className="flex items-center gap-1">
-                    <div className="w-5 text-right text-[11px] font-black text-slate-400 shrink-0">
+                  <div
+                    key={`board-row-${row.index}`}
+                    className="flex items-center"
+                    style={{ gap: BOARD_ROW_LABEL_GAP }}
+                  >
+                    <div
+                      className="text-right font-black text-slate-400 shrink-0"
+                      style={{
+                        width: BOARD_ROW_LABEL_WIDTH, 
+                        fontSize: Math.max(14, Math.floor(cellPx * 0.4)),
+                      }}
+                    >
                       {row.index + 1}.
                     </div>
-                    <div className="flex gap-0.5">
+                    <div className="flex" style={{ gap: BOARD_CELL_GAP }}>
                       {Array.from({ length: row.padding }).map((_, padIndex) => (
-                        <div key={`pad-${row.index}-${padIndex}`} className="h-7 w-7 lg:h-8 lg:w-8" />
+                        <div key={`pad-${row.index}-${padIndex}`} style={{ width: cellPx, height: cellPx }} />
                       ))}
                       {row.answer.split("").map((char, cellIndex) => {
                         const isKeywordCell = row.keywordLetter && cellIndex === row.highlightIndex;
@@ -530,7 +666,13 @@ export default function MillionaireMode() {
                         return (
                           <div
                             key={`cell-${row.index}-${cellIndex}`}
-                            className={`flex h-7 w-7 lg:h-8 lg:w-8 items-center justify-center border text-[11px] font-black uppercase lg:text-xs ${
+                            style={{
+                              width: cellPx,
+                              height: cellPx,
+                              // Cỡ chữ được boost to lên để nhìn rõ nét nhất
+                              fontSize: Math.max(16, Math.floor(cellPx * 0.55)),
+                            }}
+                            className={`flex items-center justify-center border font-black uppercase ${
                               isKeywordCell
                                 ? "border-amber-300 bg-amber-200/90 text-rose-500"
                                 : "border-slate-300 bg-white/90 text-slate-900"
@@ -547,12 +689,17 @@ export default function MillionaireMode() {
             </div>
 
             {/* Keyword slots + progress bar - fixed at bottom */}
-            <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-              <div className="flex flex-wrap gap-1.5 mb-2">
+            <div className="flex-shrink-0 px-2 py-1 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex flex-wrap gap-1 mb-1">
                 {keywordSlots.map((slot, index) => (
                   <div
                     key={`${slot.char}-${index}`}
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg border text-xs font-black uppercase ${
+                    style={{
+                      width: Math.max(24, Math.min(cellPx, 40)),
+                      height: Math.max(24, Math.min(cellPx, 40)),
+                      fontSize: Math.max(9, Math.floor(Math.min(cellPx, 40) * 0.42)),
+                    }}
+                    className={`flex items-center justify-center rounded-lg border font-black uppercase ${
                       slot.visible
                         ? "border-emerald-400/30 bg-emerald-500/15 text-emerald-200"
                         : "border-white/10 bg-slate-800 text-slate-500"
@@ -570,14 +717,14 @@ export default function MillionaireMode() {
                   }}
                 />
               </div>
-              <div className="mt-1 text-[10px] font-bold text-slate-500">
+              <div className="mt-0.5 text-[9px] font-bold text-slate-500">
                 Tiến độ: {revealedCount}/{currentSet.keyword.length} ký tự
               </div>
             </div>
           </div>
 
           {/* ── COL 2: Question / Controls ── */}
-          <div className="xl:w-[38%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+          <div className="xl:w-[20%] 2xl:w-[18%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
             style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
@@ -805,7 +952,7 @@ export default function MillionaireMode() {
           </div>
 
           {/* ── COL 3: Progress Sidebar ── */}
-          <div className="xl:w-[22%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+          <div className="xl:w-[12%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
             style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex-shrink-0 px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
@@ -825,16 +972,10 @@ export default function MillionaireMode() {
                     className="rounded-xl p-3 transition-all"
                     style={{ background: bgCol, border: `1px solid ${borderCol}` }}
                   >
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                      {`Ô chữ ${index + 1}`}
-                    </div>
-                    <div className="mt-1 text-xs font-bold text-white leading-snug">
-                      {done ? done.theme : getPublicSectionTheme(item)}
-                    </div>
-                    <div className="mt-1.5 text-[10px] font-bold"
+                    <div className="text-sm font-black uppercase tracking-widest"
                       style={{ color: done ? "#6ee7b7" : active ? "#fbbf24" : "#64748b" }}
                     >
-                      {done ? `${done.correctClues}/${done.totalClues} câu` : active ? "Đang chơi" : "Chưa mở"}
+                      {`Ô chữ ${index + 1}`}
                     </div>
                   </div>
                 );

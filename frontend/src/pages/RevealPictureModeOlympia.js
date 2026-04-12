@@ -207,11 +207,39 @@ export default function RevealPictureModeOlympia() {
   };
 
   const moveToNextClue = () => {
-    if (currentClueIndex >= clues.length - 1) {
+    const unrevealedIndices = clues
+      .map((c, i) => (!c.revealed && i !== currentClueIndex ? i : -1))
+      .filter((i) => i !== -1);
+
+    if (unrevealedIndices.length === 0) {
       setPhase("final-open");
       return;
     }
-    setCurrentClueIndex((prev) => prev + 1);
+
+    let nextIndex = unrevealedIndices.find((i) => i > currentClueIndex);
+    if (nextIndex === undefined) {
+      nextIndex = unrevealedIndices[0];
+    }
+
+    setCurrentClueIndex(nextIndex);
+    setQuestionTimeLeft(QUESTION_SECONDS);
+    setGuessTimeLeft(GUESS_SECONDS);
+    setQuestionInput("");
+    setGuessInput("");
+    setQuestionFeedback(null);
+    setGuessFeedback(null);
+    setGuessAttempted(false);
+    setPhase("question-ready");
+    setQuestionTimerRunning(false);
+    setGuessTimerRunning(false);
+  };
+
+  const handleSelectClue = (index) => {
+    if (clues[index].revealed) return;
+    if (index === currentClueIndex) return;
+    if (phase === "question-active" || phase === "guess-active") return; // Ngăn không cho chuyển ô khi đang chạy giờ
+
+    setCurrentClueIndex(index);
     setQuestionTimeLeft(QUESTION_SECONDS);
     setGuessTimeLeft(GUESS_SECONDS);
     setQuestionInput("");
@@ -509,21 +537,32 @@ export default function RevealPictureModeOlympia() {
                 gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)`,
               }}
             >
-              {clues.map((clue, index) => (
+              {clues.map((clue, index) => {
+                const isCurrentAndNotRevealed = index === currentClueIndex && !clue.revealed;
+                const canSelect = !clue.revealed && phase !== "question-active" && phase !== "guess-active" && index !== currentClueIndex;
+                
+                return (
                 <div
                   key={clue.id}
+                  onClick={() => {
+                    if (canSelect) handleSelectClue(index);
+                  }}
                   className={`border origin-center flex items-center justify-center transition-all duration-700 shadow-lg ${
                     clue.revealed ? "opacity-0 pointer-events-none scale-0 rotate-[360deg]" : ""
+                  } ${
+                    canSelect ? "cursor-pointer hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:border-amber-400" : ""
+                  } ${
+                    isCurrentAndNotRevealed ? "ring-4 ring-amber-500 z-10 border-amber-400" : ""
                   }`}
                   style={{
                     background: "linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)",
-                    borderColor: "#8f7346",
-                    boxShadow: "inset 0 0 36px rgba(0,0,0,0.92)",
+                    borderColor: isCurrentAndNotRevealed ? "#f59e0b" : "#8f7346",
+                    boxShadow: isCurrentAndNotRevealed ? "inset 0 0 48px rgba(245, 158, 11, 0.4)" : "inset 0 0 36px rgba(0,0,0,0.92)",
                   }}
                 >
                   {!clue.revealed && (
                     <div className="flex flex-col items-center">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200/70">
+                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isCurrentAndNotRevealed ? "text-amber-300" : "text-amber-200/70"}`}>
                         Góc {index + 1}
                       </span>
                       <span className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-200 to-amber-600">
@@ -532,7 +571,7 @@ export default function RevealPictureModeOlympia() {
                     </div>
                   )}
                 </div>
-              ))}
+              )})}
             </div>
           </div>
 

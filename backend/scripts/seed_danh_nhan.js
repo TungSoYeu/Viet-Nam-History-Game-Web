@@ -363,7 +363,7 @@ const seedData = async () => {
           { q: "Để sinh tồn, nghĩa quân Yên Thế làm nghề gì trong thời gian giảng hòa?", a: "Làm ruộng" },
           { q: "Cuộc khởi nghĩa Yên Thế thuộc phong trào cứu nước cuối thế kỷ bao nhiêu?", a: "Thế kỷ XIX" },
           { q: "Căn cứ địa nổi tiếng nhất của nghĩa quân ở Yên Thế tên là gì?", a: "Phồn Xương" },
-          { q: "Vợ ba của Đề Thám, một nữ tướng tài ba có tên là gì?", a: "Cô Giang" }
+          { q: "Vợ ba của Đề Thám, một nữ tướng tài ba có tên là gì?", a: "Đặng Thị Nho" }
         ]
       },
       {
