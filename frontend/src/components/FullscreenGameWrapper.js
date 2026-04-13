@@ -55,12 +55,12 @@ export default function FullscreenGameWrapper({ children, onExit }) {
   return (
     <div
       ref={containerRef}
-      className="fullscreen-game-container fullscreen-active"
+      className="fullscreen-game-container fullscreen-active theme-page game-screen"
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        backgroundColor: '#0a0a0f',
+        background: 'var(--page-bg-gradient)',
         overflow: 'hidden',
       }}
     >
@@ -77,9 +77,9 @@ export default function FullscreenGameWrapper({ children, onExit }) {
           style={{
             padding: '10px 16px',
             borderRadius: 9999,
-            background: 'rgba(15, 23, 42, 0.8)',
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.18)',
+            background: 'var(--game-surface-strong)',
+            color: 'var(--game-text)',
+            border: '1px solid var(--game-border)',
             cursor: 'pointer',
             fontWeight: 700,
             fontSize: 14,
@@ -99,7 +99,7 @@ export default function FullscreenGameWrapper({ children, onExit }) {
             borderRadius: 9999,
             background: 'rgba(185, 28, 28, 0.8)',
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.2)',
+            border: '1px solid rgba(255,255,255,0.16)',
             cursor: 'pointer',
             fontWeight: 700,
             fontSize: 14,
