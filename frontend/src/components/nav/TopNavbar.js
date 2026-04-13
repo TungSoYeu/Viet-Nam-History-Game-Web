@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ScrollText, Castle, Swords, Trophy, User, Settings, Key, LogOut, ShieldCheck, GraduationCap, ChevronDown, ImageIcon, LayoutGrid, Milestone, Timer, Map, ScanSearch, Gamepad2 } from 'lucide-react';
+import { ScrollText, Castle, Swords, Trophy, User, Settings, Key, LogOut, ShieldCheck, GraduationCap, ChevronDown, ImageIcon, LayoutGrid, Milestone, Timer, Map, ScanSearch } from 'lucide-react';
 import { theme4Modes } from '../../data/theme4Modes';
 
 export default function TopNavbar({ 
@@ -27,7 +27,7 @@ export default function TopNavbar({
   }));
 
   return (
-    <nav ref={navRef} className="text-amber-50 sticky top-0 z-[100] h-20 transition-all hidden md:block" style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)' }}>
+    <nav ref={navRef} className="top-nav sticky top-0 z-[100] h-20 transition-all hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full relative">
             
@@ -39,18 +39,18 @@ export default function TopNavbar({
             </div>
 
             <div className="hidden md:flex items-center space-x-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-              <Link to="/timeline" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+              <Link to="/timeline" className={`top-nav-link ${location.pathname.includes('/study') || location.pathname === '/timeline' ? 'is-active' : ''}`}>
                 <Castle size={18} /> Học Thuật
               </Link>
               
               <div className="relative">
-                <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${showModes || location.pathname === '/modes' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                <button onClick={() => {setShowModes(!showModes); setShowUserMenu(false);}} className={`top-nav-link ${showModes || location.pathname === '/modes' ? 'is-active' : ''}`}>
                   <Swords size={18} /> Thách Đấu <ChevronDown size={14} className={`transition-transform ${showModes ? 'rotate-180' : ''}`} />
                 </button>
                 {showModes && (
-                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl shadow-2xl py-2 animate-fade-in overflow-hidden" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div className="nav-menu-panel absolute left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl py-2 animate-fade-in overflow-hidden">
                     {modes.map((mode, idx) => (
-                      <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white font-bold transition">
+                      <Link key={idx} to={mode.path} onClick={() => setShowModes(false)} className="nav-menu-link">
                         <span className="text-amber-500">{mode.icon}</span> {mode.name}
                       </Link>
                     ))}
@@ -58,10 +58,10 @@ export default function TopNavbar({
                 )}
               </div>
 
-              <Link to="/leaderboard" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+              <Link to="/leaderboard" className={`top-nav-link ${location.pathname === '/leaderboard' ? 'is-active' : ''}`}>
                 <Trophy size={18} /> Phong Thần
               </Link>
-              <Link to="/courses" className={`px-4 py-2 rounded-lg font-bold text-sm uppercase transition flex items-center gap-2 ${location.pathname === '/courses' ? 'bg-amber-500/10 text-amber-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+              <Link to="/courses" className={`top-nav-link ${location.pathname === '/courses' ? 'is-active' : ''}`}>
                 <GraduationCap size={18} /> Khoá Học
               </Link>
             </div>
@@ -72,8 +72,7 @@ export default function TopNavbar({
                    setShowUserMenu(!showUserMenu);
                    setShowModes(false);
                  }}
-                 className="flex items-center gap-2 md:gap-4 px-3 md:px-4 py-2 rounded-full cursor-pointer transition border"
-                 style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
+                 className="top-nav-user-trigger flex items-center gap-2 md:gap-4 px-3 md:px-4 py-2 rounded-full cursor-pointer transition border"
                >
                   <img 
                     src={getAvatarUrl(user?.avatar)} 
@@ -81,50 +80,50 @@ export default function TopNavbar({
                     className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-amber-500/50 object-cover"
                   />
                   <div className="hidden sm:flex flex-col items-start">
-                     <span className="text-[10px] opacity-60 font-bold uppercase tracking-tighter">Danh tướng</span>
-                     <span className="font-bold text-amber-300 leading-tight">{username || 'Ẩn danh'}</span>
+                     <span className="nav-user-caption text-[10px] font-bold uppercase tracking-tighter">Danh tướng</span>
+                     <span className="nav-user-name font-bold leading-tight">{username || 'Ẩn danh'}</span>
                   </div>
-                  <div className="h-8 w-[1px] bg-amber-800 mx-1 hidden sm:block"></div>
+                  <div className="nav-user-divider h-8 w-[1px] mx-1 hidden sm:block"></div>
                   <div className="flex flex-col items-center">
-                     <span className="hidden sm:block text-[10px] font-bold text-amber-400 uppercase tracking-widest">Tích lũy</span>
-                     <span className="text-xs font-black text-amber-300">{user?.experience || 0} XP</span>
+                     <span className="nav-user-stat-label hidden sm:block text-[10px] font-bold uppercase tracking-widest">Tích lũy</span>
+                     <span className="nav-user-stat-value text-xs font-black">{user?.experience || 0} XP</span>
                   </div>
                   {activeClassroomName ? (
                     <>
-                      <div className="h-8 w-[1px] bg-amber-800 mx-1 hidden lg:block"></div>
+                      <div className="nav-user-divider h-8 w-[1px] mx-1 hidden lg:block"></div>
                       <div className="hidden lg:flex flex-col items-start max-w-[140px]">
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Lớp đang học</span>
-                        <span className="text-xs font-black text-white truncate max-w-[140px]">{activeClassroomName}</span>
+                        <span className="nav-user-stat-label text-[10px] font-bold uppercase tracking-widest">Lớp đang học</span>
+                        <span className="nav-user-classroom-name text-xs font-black truncate max-w-[140px]">{activeClassroomName}</span>
                       </div>
                     </>
                   ) : null}
                </div>
 
                {showUserMenu && (
-                 <div className="absolute right-0 top-14 w-56 rounded-xl shadow-2xl py-2 z-50 animate-fade-in overflow-hidden text-sm" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }}>
+                 <div className="nav-menu-panel absolute right-0 top-14 w-56 rounded-xl py-2 z-50 animate-fade-in overflow-hidden text-sm">
                     <button 
                       onClick={() => { setShowProfile(true); setShowUserMenu(false); }}
-                      className="w-full text-left px-4 py-3 text-white font-bold hover:bg-white/10 flex items-center gap-3 border-b border-white/10 transition"
+                      className="nav-menu-link w-full text-left border-b border-white/10 transition"
                     >
                       <User size={16} className="text-amber-500" /> Thông Tin Cá Nhân
                     </button>
-                    <Link to="/courses" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                    <Link to="/courses" onClick={() => setShowUserMenu(false)} className="nav-menu-link border-b border-white/10 transition">
                       <GraduationCap size={16} className="text-amber-500" /> Quản Lý Khoá Học
                     </Link>
                     {isTeacher && (
                       <>
-                        <Link to="/teacher/content" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                        <Link to="/teacher/content" onClick={() => setShowUserMenu(false)} className="nav-menu-link border-b border-white/10 transition">
                           <Settings size={16} className="text-amber-500" /> Soạn Học Thuật
                         </Link>
-                        <Link to="/teacher/theme4" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                        <Link to="/teacher/theme4" onClick={() => setShowUserMenu(false)} className="nav-menu-link border-b border-white/10 transition">
                           <ShieldCheck size={16} className="text-amber-500" /> Soạn Chủ Đề 4
                         </Link>
                       </>
                     )}
-                    <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="flex px-4 py-3 text-white font-bold hover:bg-white/10 items-center gap-3 border-b border-white/10 transition">
+                    <Link to="/change-password" onClick={() => setShowUserMenu(false)} className="nav-menu-link border-b border-white/10 transition">
                       <Key size={16} className="text-amber-500" /> Đổi Mật Khẩu
                     </Link>
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-red-400 font-bold hover:bg-red-500/10 flex items-center gap-3 transition">
+                    <button onClick={handleLogout} className="nav-menu-link danger w-full text-left transition">
                       <LogOut size={16} /> Đăng Xuất
                     </button>
                  </div>

@@ -238,9 +238,9 @@ export default function HomePage() {
 
   return (
     <div
-      className="h-[100dvh] w-full relative overflow-hidden flex flex-col"
+      className="homepage-shell min-h-[100dvh] lg:h-[100dvh] w-full relative overflow-x-hidden lg:overflow-hidden flex flex-col"
       style={{
-        backgroundColor: '#0a0a0a',
+        backgroundColor: 'var(--bg-base)',
         backgroundImage: "url('/assets/images/background_homepage.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
@@ -287,7 +287,7 @@ export default function HomePage() {
       <div 
         className="absolute inset-0 z-[2]"
         style={{ 
-          background: 'linear-gradient(135deg, rgba(8,10,18,0.34) 0%, rgba(18,22,34,0.28) 50%, rgba(8,10,18,0.4) 100%)',
+          background: 'linear-gradient(135deg, rgba(var(--bg-base-rgb),0.34) 0%, rgba(var(--bg-base-rgb),0.22) 50%, rgba(var(--bg-base-rgb),0.4) 100%)',
           backdropFilter: 'blur(8px)'
         }}
       />
@@ -329,59 +329,59 @@ export default function HomePage() {
       </div>
 
       {/* Main Glass Panel */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-6 pt-2 pb-[72px] lg:pb-20 flex flex-col flex-1 min-h-0 items-center justify-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-6 pt-4 lg:pt-2 pb-28 sm:pb-32 lg:pb-20 flex flex-col flex-1 min-h-0 items-center justify-start lg:justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="rounded-[24px] lg:rounded-3xl overflow-hidden flex flex-col w-full max-h-full"
+          className="rounded-[24px] lg:rounded-3xl overflow-hidden flex flex-col w-full lg:max-h-full"
           style={{ 
-            background: 'linear-gradient(135deg, rgba(25,28,38,0.46) 0%, rgba(28,30,42,0.38) 100%)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            boxShadow: '0 25px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
+            background: 'var(--page-card-bg)',
+            border: '1px solid var(--page-card-border)',
+            boxShadow: 'var(--page-card-shadow), inset 0 1px 0 rgba(255,255,255,0.08)',
             backdropFilter: 'blur(16px)'
           }}
         >
           {/* Header Section */}
-          <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+          <div className="flex flex-col gap-3 px-3 py-3 border-b sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: 'var(--page-card-border)' }}>
             {/* Left section - Flex 1 to balance the right section */}
             <div className="flex-1 min-w-0">
               <h1 
                 className="text-base font-black tracking-wide"
-                style={{ fontFamily: "'Oswald', sans-serif", color: '#d4a053', letterSpacing: '0.05em' }}
+                style={{ fontFamily: "'Oswald', sans-serif", color: 'var(--page-heading)', letterSpacing: '0.05em' }}
               >
                 DANH NHÂN ĐẤT VIỆT
               </h1>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                 Danh sách anh hùng dân tộc
               </p>
             </div>
             
             {/* Center section - Exactly in the middle */}
-            <div className="flex justify-center flex-shrink-0 gap-2">
+            <div className="flex justify-center flex-shrink-0 gap-2 flex-wrap sm:flex-nowrap">
               <button 
                 onClick={() => setInfoModal('sulieu')}
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer" 
-                style={{ background: 'rgba(255,255,255,0.08)' }}
+                style={{ background: 'var(--page-card-soft)' }}
               >
-                <BookOpen size={14} style={{ color: 'rgba(255,255,255,0.72)' }} />
-                <span className="text-xs font-medium leading-none" style={{ color: 'rgba(255,255,255,0.8)' }}>Sử liệu</span>
+                <BookOpen size={14} style={{ color: 'var(--text-secondary)' }} />
+                <span className="text-xs font-medium leading-none" style={{ color: 'var(--text-primary)' }}>Sử liệu</span>
               </button>
               <button 
                 onClick={() => setInfoModal('quansu')}
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer" 
-                style={{ background: 'rgba(255,255,255,0.08)' }}
+                style={{ background: 'var(--page-card-soft)' }}
               >
-                <Sword size={14} style={{ color: 'rgba(255,255,255,0.72)' }} />
-                <span className="text-xs font-medium leading-none" style={{ color: 'rgba(255,255,255,0.8)' }}>Quân sự</span>
+                <Sword size={14} style={{ color: 'var(--text-secondary)' }} />
+                <span className="text-xs font-medium leading-none" style={{ color: 'var(--text-primary)' }}>Quân sự</span>
               </button>
               <button 
                 onClick={() => setInfoModal('timeline')}
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer" 
-                style={{ background: 'rgba(255,255,255,0.08)' }}
+                style={{ background: 'var(--page-card-soft)' }}
               >
-                <History size={14} style={{ color: 'rgba(255,255,255,0.72)' }} />
-                <span className="text-xs font-medium leading-none" style={{ color: 'rgba(255,255,255,0.8)' }}>Timeline</span>
+                <History size={14} style={{ color: 'var(--text-secondary)' }} />
+                <span className="text-xs font-medium leading-none" style={{ color: 'var(--text-primary)' }}>Timeline</span>
               </button>
             </div>
 
@@ -397,10 +397,10 @@ export default function HomePage() {
                 {username.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-white text-xs font-medium truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                <p className="text-xs font-medium truncate" style={{ fontFamily: "'Poppins', sans-serif", color: 'var(--text-primary)' }}>
                   {username}
                 </p>
-                <p className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                <p className="text-[10px] truncate" style={{ color: 'var(--text-muted)' }}>
                   {roleDisplay}
                 </p>
               </div>
@@ -503,7 +503,7 @@ export default function HomePage() {
             </div>
 
             <div className="lg:hidden">
-            <div className="flex flex-col items-center">
+            <div className="homepage-mobile-sheet flex flex-col items-center rounded-[24px] p-3 sm:p-4">
               {/* Large Central Carousel */}
               <div className="relative w-full max-w-md mb-4">
                 <motion.div
@@ -606,7 +606,7 @@ export default function HomePage() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 hidden md:flex gap-2">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -744,8 +744,8 @@ export default function HomePage() {
                 <X size={18} className="text-white" />
               </button>
 
-              <div className="flex">
-                <div className="w-2/5 relative flex items-center justify-center p-3" style={portraitFrameStyle}>
+              <div className="flex flex-col sm:flex-row">
+                <div className="w-full sm:w-2/5 relative flex items-center justify-center p-3" style={portraitFrameStyle}>
                   <img 
                     src={currentHero.image} 
                     alt={currentHero.name}
@@ -760,7 +760,7 @@ export default function HomePage() {
                   />
                 </div>
                 
-                <div className="flex-1 p-6">
+                <div className="flex-1 p-5 sm:p-6">
                   <h2 className="text-2xl font-black mb-1" style={{ fontFamily: "'Oswald', sans-serif", color: '#d4a053' }}>
                     {currentHero.name}
                   </h2>

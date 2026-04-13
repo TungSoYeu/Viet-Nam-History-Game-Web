@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
-import { authFetch, getAuthHeaders } from '../utils/authFetch';
+import { authFetch } from '../utils/authFetch';
 import { useToast } from './Toast';
 import { getActiveClassroomName } from '../utils/classroomContext';
 import { getRoleLabel, isTeacherRole, normalizeRole } from '../utils/roleUtils';

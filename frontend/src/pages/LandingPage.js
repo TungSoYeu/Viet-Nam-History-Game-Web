@@ -54,7 +54,7 @@ export default function LandingPage() {
   return (
     <AnimatedPage>
       <div
-        className="relative min-h-[100dvh] flex flex-col items-center justify-center p-6"
+        className="theme-page relative min-h-[100dvh] flex flex-col items-center justify-center p-4 sm:p-6"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setParallaxOffset({ x: 0, y: 0 })}
       >
@@ -87,7 +87,7 @@ export default function LandingPage() {
         <div 
           className="fixed inset-0 z-10 pointer-events-none"
           style={{ 
-            background: 'radial-gradient(circle at center, rgba(15, 23, 42, 0.16) 0%, rgba(15, 23, 42, 0.62) 100%)',
+            background: 'radial-gradient(circle at center, rgba(var(--bg-base-rgb), 0.08) 0%, rgba(var(--bg-base-rgb), 0.54) 100%)',
             backdropFilter: 'blur(2px)'
           }}
         ></div>
@@ -109,17 +109,17 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-6xl sm:text-6xl lg:text-7xl font-black mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]"
-            style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #f0d48a 0%, #d4a053 50%, #f0d48a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.08em' }}
+            className="text-4xl sm:text-6xl lg:text-7xl font-black mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.35)]"
+            style={{ fontFamily: "'Playfair Display', serif", background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.08em' }}
           >
             Danh Nhân Đất Việt 
           </motion.h1>
 
           {/* Tagline */}
-          <p className="text-lg sm:text-xl mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ color: '#f0d48a', fontFamily: "'Playfair Display', serif" }}>
+          <p className="text-base sm:text-xl mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]" style={{ color: 'var(--page-heading)', fontFamily: "'Playfair Display', serif" }}>
             "Chinh phục Chủ đề 4: Lịch sử Việt Nam"
           </p>
-          <p className="text-sm sm:text-base mb-10 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" style={{ color: 'rgba(255,255,255,0.8)' }}>
+          <p className="text-sm sm:text-base mb-8 sm:mb-10 drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]" style={{ color: 'var(--text-secondary)' }}>
             Hệ thống trò chơi tương tác củng cố và khắc sâu kiến thức
           </p>
 
@@ -128,7 +128,7 @@ export default function LandingPage() {
             onClick={() => navigate('/login')}
             className="w-full sm:w-auto mx-auto"
           >
-            <div className="btn-primary text-lg px-10 py-4 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(212,160,83,0.3)] hover:shadow-[0_0_50px_rgba(212,160,83,0.5)] transition-all">
+            <div className="btn-primary text-base sm:text-lg px-8 sm:px-10 py-4 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(212,160,83,0.3)] hover:shadow-[0_0_50px_rgba(212,160,83,0.5)] transition-all">
               Khám Phá Sử Việt
               <ChevronRight size={22} className="group-hover:translate-x-1 transition-transform" />
             </div>
@@ -146,7 +146,7 @@ export default function LandingPage() {
               { icon: <Shield size={14} />, text: 'PvP Đối Kháng' },
               { icon: <Trophy size={14} />, text: 'Bảng Xếp Hạng' },
             ].map((f, i) => (
-              <span key={i} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold backdrop-blur-sm drop-shadow-md hover-scale-subtle" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.9)' }}>
+              <span key={i} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold backdrop-blur-sm drop-shadow-md hover-scale-subtle" style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)', color: 'var(--text-primary)' }}>
                 {f.icon} {f.text}
               </span>
             ))}

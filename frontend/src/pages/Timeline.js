@@ -37,7 +37,7 @@ export default function Timeline() {
   }, []);
 
   if (loading) return (
-    <div className="min-h-screen p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="theme-page min-h-screen p-8" style={{ background: 'var(--page-bg-gradient)' }}>
       <div className="max-w-3xl mx-auto pt-12">
         <div className="skeleton skeleton-text" style={{ width: 120, height: 12, margin: '0 auto 16px' }} />
         <div className="skeleton skeleton-text" style={{ width: 280, height: 28, margin: '0 auto 12px' }} />
@@ -48,7 +48,7 @@ export default function Timeline() {
   );
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="theme-page min-h-screen" style={{ background: 'var(--page-bg-gradient)' }}>
       <div className="responsive-container py-8 sm:py-12">
         {/* Header */}
         <header className="parchment-panel max-w-4xl mx-auto mb-10 rounded-[32px] px-6 py-7 text-center sm:px-10">
@@ -96,7 +96,7 @@ export default function Timeline() {
                   setSelectedLesson(null);
                 }}
                 className="px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all text-sm"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
+                style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)', color: 'var(--text-secondary)' }}
               >
                 <ArrowLeft size={16} /> Quay lại Chủ đề
               </button>
@@ -163,12 +163,12 @@ export default function Timeline() {
 
       {/* Lesson Detail Modal */}
       {selectedLesson && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }} onClick={() => setSelectedLesson(null)}>
-          <div className="max-w-md w-full rounded-2xl p-8 animate-fade-in-scale" style={{ background: '#16213e', border: '1px solid rgba(255,255,255,0.1)' }} onClick={e => e.stopPropagation()}>
+        <div className="page-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setSelectedLesson(null)}>
+          <div className="page-modal-card max-w-md w-full rounded-2xl p-8 animate-fade-in-scale" onClick={e => e.stopPropagation()}>
             <div className="text-center">
               <span className="text-4xl mb-3 block">📜</span>
               <h2 className="text-xl font-black text-white mb-1 uppercase" style={{ background: 'linear-gradient(135deg, #f0d48a, #d4a053)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{selectedLesson.title}</h2>
-              <p className="text-sm italic mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>"Học sử để hiểu gốc rễ, chơi sử để rèn trí tuệ."</p>
+              <p className="text-sm italic mb-8" style={{ color: 'var(--text-muted)' }}>"Học sử để hiểu gốc rễ, chơi sử để rèn trí tuệ."</p>
             </div>
             
             <button 
@@ -179,7 +179,8 @@ export default function Timeline() {
             </button>
             <button 
               onClick={() => setSelectedLesson(null)}
-              className="w-full py-3 text-sm font-semibold text-gray-400 hover:text-gray-200 transition-colors"
+              className="w-full py-3 text-sm font-semibold transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Quay lại
             </button>

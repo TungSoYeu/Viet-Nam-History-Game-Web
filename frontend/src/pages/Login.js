@@ -178,9 +178,9 @@ export default function Login() {
   };
 
   const inputStyle = {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1.5px solid rgba(255,255,255,0.1)',
-    color: 'white',
+    background: 'var(--input-surface)',
+    border: '1.5px solid var(--input-border)',
+    color: 'var(--text-primary)',
   };
 
   const inputFocusStyle = "w-full px-4 py-3 rounded-xl text-sm outline-none transition-all focus:border-amber-500/50";
@@ -194,13 +194,13 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative" style={{ background: 'transparent' }}>
+    <div className="theme-page auth-page flex flex-col items-center justify-center min-h-screen px-4 py-6 sm:py-8 relative" style={{ background: 'transparent' }}>
       {/* Decorative orbs */}
       <div className="absolute top-[-20%] right-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(212,160,83,0.4) 0%, transparent 70%)' }}></div>
       <div className="absolute bottom-[-20%] left-[-15%] w-[50vw] h-[50vw] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(185,28,28,0.4) 0%, transparent 70%)' }}></div>
 
       <div className="relative z-10 w-full max-w-md animate-fade-in">
-        <div className={`rounded-3xl p-6 sm:p-8 transition-all shadow-2xl relative overflow-hidden ${formShake ? 'animate-shake' : ''}`} style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(212,160,83,0.3)', backdropFilter: 'blur(24px)' }}>
+        <div className={`auth-card rounded-3xl p-5 sm:p-8 transition-all relative overflow-hidden ${formShake ? 'animate-shake' : ''}`}>
           {/* Subtle inner glow */}
           <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,160,83,0.6), transparent)' }}></div>
         {/* Logo */}
@@ -208,10 +208,10 @@ export default function Login() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-2 shadow-[0_0_20px_rgba(212,160,83,0.3)] mx-auto" style={{ background: 'linear-gradient(135deg, rgba(212,160,83,0.15), rgba(185,28,28,0.1))', border: '1px solid rgba(212,160,83,0.4)', textShadow: 'none' }}>
             <Landmark size={32} style={{ color: '#d4a053' }} />
           </div>
-          <h1 className="text-2xl sm:text-[28px] font-black mt-2 leading-tight drop-shadow-md" style={{ fontFamily: "'Playfair Display', serif", background: 'linear-gradient(135deg, #fceabb, #f8b500)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 2px 10px rgba(212,160,83,0.2)' }}>
+          <h1 className="text-2xl sm:text-[28px] font-black mt-2 leading-tight drop-shadow-md" style={{ fontFamily: "'Playfair Display', serif", background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 2px 10px rgba(212,160,83,0.2)' }}>
             {isRegister ? "Ghi Danh Sử Sách" : "Danh Nhân Đất Việt"}
           </h1>
-          <p className="text-[14px] mt-2 font-medium tracking-wide" style={{ color: '#cbd5e1' }}>
+          <p className="text-[14px] mt-2 font-medium tracking-wide" style={{ color: 'var(--text-secondary)' }}>
             {isRegister 
               ? (registerStep === 1 ? "Bước 1/2 — Tài khoản" : "Bước 2/2 — Thông tin cá nhân")
               : "Đăng nhập để tiếp tục"
@@ -241,7 +241,7 @@ export default function Login() {
             {(!isRegister || registerStep === 1) && (
               <>
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                     <User size={13} /> Tên đăng nhập
                   </label>
                   <input 
@@ -252,7 +252,7 @@ export default function Login() {
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                     <Lock size={13} /> Mật mã
                   </label>
                   <div className="relative">
@@ -267,7 +267,7 @@ export default function Login() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors hover:bg-white/10"
-                      style={{ color: 'rgba(255,255,255,0.55)' }}
+                      style={{ color: 'var(--text-muted)' }}
                       aria-label={showPassword ? "Ẩn mật mã" : "Hiện mật mã"}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -278,7 +278,7 @@ export default function Login() {
                 {isRegister && (
                   <>
                     <div>
-                      <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                      <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                         <Mail size={13} /> Email (không bắt buộc)
                       </label>
                       <input 
@@ -289,7 +289,7 @@ export default function Login() {
                       />
                     </div>
                     <div>
-                      <label className="flex items-center gap-1.5 text-xs font-semibold mb-2" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                      <label className="flex items-center gap-1.5 text-xs font-semibold mb-2" style={{ color: 'var(--field-label)' }}>
                         <User size={13} /> Vai trò tài khoản
                       </label>
                       <div className="grid grid-cols-2 gap-3">
@@ -308,14 +308,10 @@ export default function Login() {
                                   setTeacherCode('');
                                 }
                               }}
-                              className="rounded-2xl p-4 text-left transition"
-                              style={{
-                                background: active ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.05)',
-                                border: active ? '1.5px solid rgba(245,158,11,0.45)' : '1.5px solid rgba(255,255,255,0.08)',
-                              }}
+                              className={`auth-option-card rounded-2xl p-4 text-left transition${active ? ' active' : ''}`}
                             >
-                              <div className="text-sm font-black text-white">{option.title}</div>
-                              <div className="mt-1 text-[11px]" style={{ color: 'rgba(255,255,255,0.65)' }}>{option.desc}</div>
+                              <div className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>{option.title}</div>
+                              <div className="mt-1 text-[11px]" style={{ color: 'var(--text-muted)' }}>{option.desc}</div>
                             </button>
                           );
                         })}
@@ -330,7 +326,7 @@ export default function Login() {
             {isRegister && registerStep === 2 && (
               <>
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                     <User size={13} /> Họ và tên
                   </label>
                   <input 
@@ -341,18 +337,18 @@ export default function Login() {
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                     <BookOpen size={13} /> Ngày sinh
                   </label>
                   <input 
                     type="date" value={dateOfBirth} 
                     onChange={e => setDateOfBirth(e.target.value)} 
-                    className={inputFocusStyle} style={{ ...inputStyle, colorScheme: 'dark' }} required
+                    className={inputFocusStyle} style={inputStyle} required
                     aria-label="Ngày sinh"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                  <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                     <MapPin size={13} /> Trường học
                   </label>
                   <select 
@@ -381,7 +377,7 @@ export default function Login() {
                 </div>
                 {selectedRole === 'teacher' && (
                   <div>
-                    <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'rgba(212,160,83,0.8)' }}>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold mb-1.5" style={{ color: 'var(--field-label)' }}>
                       <Lock size={13} /> Mã giáo viên
                     </label>
                     <input
@@ -390,7 +386,7 @@ export default function Login() {
                       value={teacherCode}
                       onChange={e => setTeacherCode(e.target.value)}
                       className={inputFocusStyle}
-                      style={{ background: 'rgba(239,68,68,0.06)', border: '1.5px solid rgba(239,68,68,0.15)', color: 'white' }}
+                      style={{ background: 'rgba(239,68,68,0.06)', border: '1.5px solid rgba(239,68,68,0.15)', color: 'var(--text-primary)' }}
                       required
                       aria-label="Mã giáo viên"
                     />
@@ -405,7 +401,7 @@ export default function Login() {
                 <button 
                   type="button" onClick={() => setRegisterStep(1)}
                   className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10"
-                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
+                  style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)', color: 'var(--text-secondary)' }}
                   aria-label="Quay lại bước 1"
                 >
                   <ArrowLeft size={18} />
@@ -438,9 +434,9 @@ export default function Login() {
           {!isRegister && (
             <div className="mt-6 flex flex-col items-center gap-4">
               <div className="flex items-center w-full gap-3">
-                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
-                <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.55)' }}>HOẶC</span>
-                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.1)' }}></div>
+                <div className="h-px flex-1" style={{ background: 'var(--page-card-border)' }}></div>
+                <span className="text-[10px] font-bold" style={{ color: 'var(--text-muted)' }}>HOẶC</span>
+                <div className="h-px flex-1" style={{ background: 'var(--page-card-border)' }}></div>
               </div>
               {hasGoogleLogin ? (
                 <GoogleLogin
@@ -468,7 +464,7 @@ export default function Login() {
 
         {/* Switch auth mode */}
         <div className="mt-8 text-center border-t border-white/5 pt-5 relative z-10 w-full">
-          <button onClick={switchToRegister} className="text-[13px] font-bold transition-all hover:text-white" style={{ color: 'rgba(212,160,83,0.85)', letterSpacing: '0.02em' }}>
+          <button onClick={switchToRegister} className="text-[13px] font-bold transition-all" style={{ color: 'var(--page-heading)', letterSpacing: '0.02em' }}>
             {isRegister ? "Đã có tài khoản? ← Đăng nhập" : "Chưa có tài khoản? Ghi danh →"}
           </button>
         </div>
