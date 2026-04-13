@@ -68,7 +68,7 @@ export default function PvPBattle() {
   if (!challengeId || !questions || questions.length === 0) {
     return (
       <AnimatedPage>
-        <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white">
+        <div className="theme-page game-screen p-8 text-center flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white">
           <h2 className="text-2xl font-bold text-red-500 mb-4 uppercase tracking-widest">Mất kết nối với trận đấu</h2>
           <p className="mb-8 opacity-70">Dữ liệu trận đấu không khả dụng (có thể do bạn đã tải lại trang).</p>
           <BouncyButton onClick={() => navigate('/pvp')}>
@@ -82,7 +82,7 @@ export default function PvPBattle() {
   if (isFinished) {
     return (
       <AnimatedPage>
-        <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white relative">
+        <div className="theme-page game-screen p-8 text-center flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white relative">
           <ParticlesBackground type="embers" />
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
@@ -105,7 +105,7 @@ export default function PvPBattle() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen bg-slate-900 text-white relative flex flex-col p-6">
+      <div className="theme-page game-screen min-h-screen bg-slate-900 text-white relative flex flex-col p-6">
         <ParticlesBackground type="embers" />
         
         <div className="relative z-10 max-w-2xl mx-auto w-full flex-1 flex flex-col">

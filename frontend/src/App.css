@@ -66,6 +66,17 @@
   --profile-info-surface: rgba(30, 64, 175, 0.24);
   --parchment-panel-bg: linear-gradient(135deg, rgba(34, 29, 22, 0.6) 0%, rgba(46, 39, 30, 0.52) 100%);
   --parchment-panel-soft-bg: linear-gradient(135deg, rgba(39, 33, 24, 0.46) 0%, rgba(52, 44, 34, 0.38) 100%);
+  --game-surface: rgba(15, 23, 42, 0.76);
+  --game-surface-strong: rgba(15, 23, 42, 0.88);
+  --game-surface-soft: rgba(255, 255, 255, 0.04);
+  --game-surface-subtle: rgba(255, 255, 255, 0.06);
+  --game-border: rgba(255, 255, 255, 0.08);
+  --game-border-strong: rgba(255, 255, 255, 0.14);
+  --game-text: #f8fafc;
+  --game-text-secondary: rgba(226, 232, 240, 0.82);
+  --game-text-muted: rgba(203, 213, 225, 0.68);
+  --game-text-faint: rgba(148, 163, 184, 0.9);
+  --game-overlay: rgba(2, 6, 23, 0.82);
 }
 
 :root[data-theme='light'] {
@@ -120,6 +131,17 @@
   --profile-info-surface: rgba(37, 99, 235, 0.12);
   --parchment-panel-bg: linear-gradient(135deg, rgba(255, 249, 239, 0.82) 0%, rgba(246, 236, 214, 0.74) 100%);
   --parchment-panel-soft-bg: linear-gradient(135deg, rgba(255, 251, 243, 0.72) 0%, rgba(246, 239, 226, 0.64) 100%);
+  --game-surface: rgba(255, 250, 242, 0.88);
+  --game-surface-strong: rgba(255, 247, 236, 0.94);
+  --game-surface-soft: rgba(139, 94, 42, 0.06);
+  --game-surface-subtle: rgba(255, 255, 255, 0.72);
+  --game-border: rgba(148, 113, 70, 0.18);
+  --game-border-strong: rgba(148, 113, 70, 0.26);
+  --game-text: #1f2937;
+  --game-text-secondary: rgba(36, 48, 65, 0.82);
+  --game-text-muted: rgba(71, 85, 105, 0.72);
+  --game-text-faint: rgba(100, 116, 139, 0.92);
+  --game-overlay: rgba(28, 24, 18, 0.56);
 }
 
 /* ============================
@@ -1163,7 +1185,7 @@ textarea:focus-visible {
 }
 
 .fullscreen-toggle-btn:hover {
-  background: rgba(30, 41, 59, 1) !important;
+  background: var(--nav-hover) !important;
   transform: scale(1.05);
   transition: all 0.2s ease;
 }
@@ -1459,6 +1481,145 @@ body:has(.fullscreen-active) .app-content {
 .theme-page {
   position: relative;
   color: var(--text-primary);
+}
+
+.game-screen {
+  position: relative;
+  color: var(--game-text);
+}
+
+.game-panel {
+  background: var(--game-surface);
+  border: 1px solid var(--game-border);
+  backdrop-filter: blur(12px);
+}
+
+.game-panel-strong {
+  background: var(--game-surface-strong);
+  border: 1px solid var(--game-border);
+  backdrop-filter: blur(16px);
+}
+
+.game-surface-soft {
+  background: var(--game-surface-soft);
+  border: 1px solid var(--game-border);
+}
+
+.game-chip-muted {
+  background: var(--game-surface-soft);
+  border: 1px solid var(--game-border);
+  color: var(--game-text-secondary);
+}
+
+.game-button-secondary {
+  background: var(--game-surface-subtle);
+  border: 1px solid var(--game-border);
+  color: var(--game-text);
+}
+
+.game-input {
+  background: var(--input-surface);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+.game-overlay {
+  background: var(--game-overlay);
+}
+
+.game-text-secondary {
+  color: var(--game-text-secondary) !important;
+}
+
+.game-text-muted {
+  color: var(--game-text-muted) !important;
+}
+
+.game-text-faint {
+  color: var(--game-text-faint) !important;
+}
+
+.App.theme-light .game-screen [class*="bg-slate-950"],
+.App.theme-light .game-screen [class*="bg-slate-900"] {
+  background-color: var(--game-surface-strong) !important;
+}
+
+.App.theme-light .game-screen [class*="bg-slate-800"] {
+  background-color: var(--game-surface) !important;
+}
+
+.App.theme-light .game-screen [class*="border-white/"] {
+  border-color: var(--game-border) !important;
+}
+
+.App.theme-light .game-screen [class*="text-white/"] {
+  color: var(--game-text-muted) !important;
+}
+
+.App.theme-light .game-screen [class*="text-white"]:not([class*="text-white/"]):not([class*="bg-emerald-"]):not([class*="bg-green-"]):not([class*="bg-red-"]):not([class*="bg-rose-"]):not([class*="bg-sky-"]):not([class*="bg-amber-"]):not([class*="bg-blue-"]) {
+  color: var(--game-text) !important;
+}
+
+.App.theme-light .game-screen [class*="text-slate-100"],
+.App.theme-light .game-screen [class*="text-slate-200"] {
+  color: var(--game-text-secondary) !important;
+}
+
+.App.theme-light .game-screen [class*="text-slate-300"],
+.App.theme-light .game-screen [class*="text-slate-400"],
+.App.theme-light .game-screen [class*="text-slate-500"],
+.App.theme-light .game-screen [class*="text-gray-400"] {
+  color: var(--game-text-muted) !important;
+}
+
+.App.theme-light .game-screen [class*="hover:bg-white/5"]:hover,
+.App.theme-light .game-screen [class*="hover:bg-slate-700"]:hover {
+  background-color: rgba(139, 94, 42, 0.12) !important;
+}
+
+.App.theme-light .game-screen [class*="hover:text-white"]:hover {
+  color: var(--game-text) !important;
+}
+
+.App.theme-light .game-screen input,
+.App.theme-light .game-screen textarea,
+.App.theme-light .game-screen select {
+  color: var(--text-primary);
+}
+
+.App.theme-light .game-screen [style*="#1a1a2e"],
+.App.theme-light .game-screen [style*="#16213e"],
+.App.theme-light .game-screen [style*="#0f3460"],
+.App.theme-light .game-screen [style*="#020617"],
+.App.theme-light .game-screen [style*="#0f172a"],
+.App.theme-light .game-screen [style*="#1E293B"],
+.App.theme-light .game-screen [style*="15, 23, 42"],
+.App.theme-light .game-screen [style*="7, 11, 20"] {
+  background: var(--game-surface-strong) !important;
+  border-color: var(--game-border) !important;
+}
+
+.App.theme-light .game-screen [style*="#94a3b8"],
+.App.theme-light .game-screen [style*="#64748b"] {
+  color: var(--game-text-faint) !important;
+}
+
+.App.theme-light .game-screen [style*="255,255,255,0.5"],
+.App.theme-light .game-screen [style*="255,255,255,0.55"],
+.App.theme-light .game-screen [style*="255,255,255,0.6"],
+.App.theme-light .game-screen [style*="255,255,255,0.7"],
+.App.theme-light .game-screen [style*="255, 255, 255, 0.5"],
+.App.theme-light .game-screen [style*="255, 255, 255, 0.55"],
+.App.theme-light .game-screen [style*="255, 255, 255, 0.6"],
+.App.theme-light .game-screen [style*="255, 255, 255, 0.7"] {
+  color: var(--game-text-muted) !important;
+}
+
+.App.theme-light .game-screen [style*="255,255,255,0.75"],
+.App.theme-light .game-screen [style*="255,255,255,0.8"],
+.App.theme-light .game-screen [style*="255, 255, 255, 0.75"],
+.App.theme-light .game-screen [style*="255, 255, 255, 0.8"] {
+  color: var(--game-text-secondary) !important;
 }
 
 .theme-glass-card {

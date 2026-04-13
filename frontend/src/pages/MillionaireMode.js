@@ -457,7 +457,7 @@ export default function MillionaireMode() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="theme-page game-screen min-h-screen flex flex-col items-center justify-center p-8">
         <SkeletonLoader variant="card" count={2} className="max-w-xl" />
       </div>
     );
@@ -465,7 +465,7 @@ export default function MillionaireMode() {
 
   if (!currentSet && !finished) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
@@ -473,7 +473,7 @@ export default function MillionaireMode() {
 
   if (finished) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white px-4 py-8 flex items-center justify-center">
+      <div className="theme-page game-screen min-h-screen bg-slate-950 text-white px-4 py-8 flex items-center justify-center">
         <Confetti active={true} count={90} />
         <div className="w-full max-w-4xl rounded-[32px] border border-amber-500/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
@@ -544,7 +544,7 @@ export default function MillionaireMode() {
 
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-transparent text-white p-1.5 sm:p-2">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden bg-transparent text-white p-1.5 sm:p-2">
       <div className="mx-auto flex h-full w-full flex-col min-h-0">
 
         {/* ═══ COMPACT HEADER BAR ═══ */}

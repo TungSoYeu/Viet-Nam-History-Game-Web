@@ -308,7 +308,7 @@ export default function MatchingMode() {
 
   if (loading && !roundState.round) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-transparent">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-transparent">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-4 border-amber-400/30 border-t-amber-400 animate-spin" />
           <span className="text-sm font-bold text-amber-300 tracking-wide animate-pulse">Đang tải dữ liệu kết nối...</span>
@@ -319,7 +319,7 @@ export default function MatchingMode() {
 
   if (!roundState.round) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center px-6 bg-transparent">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 bg-transparent">
         <div className="rounded-3xl border border-amber-400/20 bg-slate-900/80 p-8 max-w-md shadow-2xl">
           <div className="text-5xl mb-4">📭</div>
           <p className="text-lg font-bold text-amber-300">Chưa có vòng nối hợp lệ</p>
@@ -338,7 +338,7 @@ export default function MatchingMode() {
     const totalPossible = activeConnectingRounds.length * 50;
     const percent = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
     return (
-      <div className="min-h-screen p-4 flex items-center justify-center bg-transparent">
+      <div className="theme-page game-screen min-h-screen p-4 flex items-center justify-center bg-transparent">
         <div className="max-w-lg w-full rounded-[28px] text-center shadow-2xl overflow-hidden"
           style={{ background: "linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(7,11,20,0.98) 100%)", border: "1px solid rgba(255,255,255,0.08)" }}
         >
@@ -390,7 +390,7 @@ export default function MatchingMode() {
   }
 
   return (
-    <div className="h-screen flex flex-col p-2 sm:p-3 bg-transparent relative z-10 overflow-hidden">
+    <div className="theme-page game-screen h-screen flex flex-col p-2 sm:p-3 bg-transparent relative z-10 overflow-hidden">
       <div className="max-w-[1600px] mx-auto flex flex-col h-full w-full min-h-0">
 
         {/* ═══ HEADER BAR ═══ */}
