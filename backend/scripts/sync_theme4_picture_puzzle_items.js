@@ -38,8 +38,10 @@ async function main() {
 
     if (Array.isArray(content?.requirements?.notes)) {
       content.requirements.notes = content.requirements.notes.map((note) =>
-        typeof note === "string" && /^Đuổi hình bắt chữ:/i.test(note)
-          ? "Đuổi hình bắt chữ: 11 câu, mỗi câu gồm 2 đến 4 hình ảnh để ghép thành đáp án lịch sử hoàn chỉnh."
+        typeof note === "string" &&
+        (/^Đuổi hình bắt chữ:/i.test(note) ||
+          /^Xâu chuỗi diễn biến:/i.test(note))
+          ? "Xâu chuỗi diễn biến: xem video tư liệu rồi sắp xếp các khung hình theo đúng trình tự thời gian của sự kiện lịch sử."
           : note
       );
     }
@@ -53,7 +55,7 @@ async function main() {
     console.log(`Previous items: ${previousItems.length}`);
     console.log(`Current items: ${nextItems.length}`);
     console.log(
-      `Answers: ${nextItems.map((item) => item.answer).join(" | ")}`
+      `Titles: ${nextItems.map((item) => item.title || item.id).join(" | ")}`
     );
 
     process.exit(0);

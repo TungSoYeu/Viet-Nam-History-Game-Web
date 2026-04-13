@@ -99,16 +99,18 @@ export const theme4Modes = [
   },
   {
     id: "picture-puzzle",
-    name: "Đuổi hình bắt chữ",
-    desc: "Quan sát 2-4 hình và ghép đáp án.",
-    longDesc: "Kết dính các mẫu ảnh manh mối để ghép lại thành sự kiện/danh nhân hoàn chỉnh.",
+    name: "Mảnh vỡ lịch sử",
+    desc: "Xem video và xếp khung hình theo đúng trình tự.",
+    longDesc:
+      "Người chơi xem video tư liệu ngắn, sau đó sắp xếp các khung hình theo diễn biến từ sớm đến muộn để tái hiện chính xác mạch sự kiện lịch sử.",
     path: "/territory-map",
     bgImage: "/assets/images/bg-picture-puzzle.svg",
     gradient: "linear-gradient(135deg, rgba(234, 88, 12, 0.8), rgba(249, 115, 22, 0.8))",
-    stats: "11 câu | 2-4 hình/câu",
-    rewardText: "10 XP / đáp án đúng",
-    difficulty: "Dễ",
-    difficultyDetail: "Thiên về suy luận hình ảnh nên trực quan, dễ tiếp cận ở những vòng đầu.",
+    stats: "2 video | 15 khung hình",
+    rewardText: "20 XP / lượt đúng",
+    difficulty: "Trung bình",
+    difficultyDetail:
+      "Đòi hỏi ghi nhớ mạch video và sắp xếp đúng diễn biến thay vì chỉ đoán một đáp án chữ.",
     progress: 58,
   },
 ];

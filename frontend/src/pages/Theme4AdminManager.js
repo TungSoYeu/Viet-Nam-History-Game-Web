@@ -71,9 +71,16 @@ const CFG = {
     h: "Mỗi câu hỏi nhanh có 4 lựa chọn, 1 đáp án đúng và phần giải thích.",
   },
   "picture-puzzle": {
-    t: { prompt: "", images: [""], answer: "", acceptedAnswers: [""], explanation: "" },
-    a: { images: "", acceptedAnswers: "" },
-    h: "Mỗi câu gồm prompt, các ảnh gợi ý, đáp án đúng và các cách viết được chấp nhận.",
+    t: {
+      title: "",
+      instruction: "",
+      videoUrl: "",
+      timeLimitSeconds: 90,
+      xpReward: 20,
+      frames: [{ imageUrl: "", order: 1, caption: "" }],
+    },
+    a: { frames: { imageUrl: "", order: 1, caption: "" } },
+    h: "Mỗi lượt gồm video tham khảo và các khung hình. Học sinh xem video rồi sắp xếp lại ảnh theo đúng trình tự diễn biến.",
   },
 };
 
@@ -111,6 +118,11 @@ const FIELD_LABELS = {
   group: "Nhóm dữ kiện",
   content: "Nội dung",
   images: "Các ảnh gợi ý",
+  videoUrl: "Link video",
+  frames: "Các khung hình",
+  order: "Thứ tự đúng",
+  timeLimitSeconds: "Thời gian (giây)",
+  xpReward: "XP thưởng",
 };
 
 const TYPE_OPTION_LABELS = {
@@ -156,7 +168,7 @@ const itemLabel = (modeId, item, idx) => {
   if (modeId === "crossword-decoding") return item.title || item.keyword || `Ô chữ ${idx + 1}`;
   if (modeId === "historical-flow") return item.title || "Bộ dữ kiện";
   if (modeId === "lightning-fast") return item.content || `Câu ${idx + 1}`;
-  if (modeId === "picture-puzzle") return item.answer || `Câu ${idx + 1}`;
+  if (modeId === "picture-puzzle") return item.title || `Lượt ${idx + 1}`;
   return item.title || item.id || `Mục ${idx + 1}`;
 };
 

@@ -21,7 +21,7 @@ import MatchingMode from './pages/MatchingMode';
 import PvPMode from './pages/PvPMode';
 import PvPBattle from './pages/PvPBattle';
 import ChangePassword from './pages/ChangePassword';
-import TerritoryMap from './pages/TerritoryMap';
+import TerritoryMap from './pages/PictureSequenceMode';
 import Theme4AdminManager from './pages/Theme4AdminManager';
 import Leaderboard from './pages/Leaderboard';
 import ChronologicalMode from './pages/ChronologicalMode';
