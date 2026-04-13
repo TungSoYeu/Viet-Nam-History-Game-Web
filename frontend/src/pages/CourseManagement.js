@@ -29,14 +29,14 @@ function SectionCard({ title, subtitle, children }) {
     <div
       className="rounded-3xl p-5 sm:p-6"
       style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "var(--page-card-soft)",
+        border: "1px solid var(--page-card-border)",
       }}
     >
       <div className="mb-4">
-        <h2 className="text-lg sm:text-xl font-black text-white">{title}</h2>
+        <h2 className="text-lg sm:text-xl font-black" style={{ color: 'var(--text-primary)' }}>{title}</h2>
         {subtitle ? (
-          <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
             {subtitle}
           </p>
         ) : null}
@@ -188,30 +188,30 @@ export default function CourseManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-amber-300" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%)" }}>
+      <div className="min-h-screen flex items-center justify-center theme-page" style={{ color: 'var(--viet-gold)', background: "var(--page-bg-gradient)" }}>
         Đang tải khoá học...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-4 py-6 sm:px-6" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%)" }}>
+    <div className="min-h-screen px-4 py-6 sm:px-6 theme-page" style={{ background: "var(--page-bg-gradient)" }}>
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
         <div
           className="rounded-[32px] p-6 sm:p-8"
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "var(--page-card-soft)",
+            border: "1px solid var(--page-card-border)",
           }}
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-amber-300">
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]" style={{ background: 'var(--nav-hover)', color: 'var(--viet-gold)' }}>
             <Users size={15} />
             {getRoleLabel(role)}
           </div>
-          <h1 className="mt-4 text-3xl sm:text-4xl font-black text-white">
+          <h1 className="mt-4 text-3xl sm:text-4xl font-black" style={{ color: 'var(--text-primary)' }}>
             Quản Lý Khoá Học
           </h1>
-          <p className="mt-3 max-w-3xl text-sm sm:text-base" style={{ color: "rgba(255,255,255,0.58)" }}>
+          <p className="mt-3 max-w-3xl text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
             {headerText}
           </p>
         </div>
@@ -223,8 +223,8 @@ export default function CourseManagement() {
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <div className="text-white font-bold">{joinPreview.name}</div>
-                <div className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <div className="font-bold" style={{ color: 'var(--text-primary)' }}>{joinPreview.name}</div>
+                <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
                   Giáo viên: {joinPreview.teacher?.fullName || joinPreview.teacher?.username || "Ẩn danh"}
                 </div>
               </div>
@@ -254,16 +254,16 @@ export default function CourseManagement() {
                     value={newClassName}
                     onChange={(event) => setNewClassName(event.target.value)}
                     placeholder="Ví dụ: 12A1 - Ôn tập Bài 7"
-                    className="w-full rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 outline-none bg-slate-900/60 shadow-inner"
-                    style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                    className="w-full rounded-2xl px-4 py-3 outline-none shadow-inner"
+                    style={{ background: 'var(--nav-surface-solid)', color: 'var(--text-primary)', border: "1px solid var(--page-card-border)" }}
                   />
                   <textarea
                     value={newClassDescription}
                     onChange={(event) => setNewClassDescription(event.target.value)}
                     placeholder="Mô tả ngắn về lớp hoặc tiết học"
-                    className="w-full rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 outline-none bg-slate-900/60 shadow-inner resize-none"
+                    className="w-full rounded-2xl px-4 py-3 outline-none shadow-inner resize-none"
                     rows={2}
-                    style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                    style={{ background: 'var(--nav-surface-solid)', color: 'var(--text-primary)', border: "1px solid var(--page-card-border)" }}
                   />
                   <button
                     type="submit"
@@ -287,8 +287,8 @@ export default function CourseManagement() {
                   value={joinCode}
                   onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
                   placeholder="Nhập mã lớp"
-                  className="w-full rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 outline-none bg-slate-900/60 shadow-inner"
-                  style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                  className="w-full rounded-2xl px-4 py-3 outline-none shadow-inner"
+                  style={{ background: 'var(--nav-surface-solid)', color: 'var(--text-primary)', border: "1px solid var(--page-card-border)" }}
                 />
                 <button
                   type="button"
@@ -307,7 +307,7 @@ export default function CourseManagement() {
               subtitle="Chọn một lớp làm lớp đang hoạt động để học thuật, trò chơi và dữ liệu được lọc đúng theo lớp."
             >
               {allClasses.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+                <div className="rounded-2xl border border-dashed px-4 py-8 text-center text-sm" style={{ color: "var(--text-muted)", borderColor: 'var(--page-card-border)' }}>
                   {isTeacher ? "Bạn chưa tạo lớp nào." : "Bạn chưa tham gia lớp nào."}
                 </div>
               ) : (
@@ -322,26 +322,26 @@ export default function CourseManagement() {
                         onClick={() => setSelectedClassId(classroom._id)}
                         className="w-full rounded-2xl p-4 text-left transition"
                         style={{
-                          background: selected ? "rgba(245,158,11,0.12)" : "rgba(255,255,255,0.03)",
+                          background: selected ? "var(--nav-active)" : "var(--page-card-muted)",
                           border: active
-                            ? "1px solid rgba(245,158,11,0.45)"
-                            : "1px solid rgba(255,255,255,0.08)",
+                            ? "1px solid var(--viet-gold)"
+                            : "1px solid var(--page-card-border)",
                         }}
                       >
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <div className="font-black text-white">{classroom.name}</div>
-                            <div className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+                            <div className="font-black" style={{ color: 'var(--text-primary)' }}>{classroom.name}</div>
+                            <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
                               {classroom.description || "Không có mô tả"}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             {active ? (
-                              <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-black uppercase text-emerald-300">
+                              <span className="rounded-full px-3 py-1 text-xs font-black uppercase" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
                                 Đang hoạt động
                               </span>
                             ) : null}
-                            <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-black uppercase text-slate-200">
+                            <span className="rounded-full px-3 py-1 text-xs font-black uppercase" style={{ background: 'var(--nav-surface)', color: 'var(--text-primary)' }}>
                               {classroom.studentsCount} học sinh
                             </span>
                           </div>
@@ -360,14 +360,14 @@ export default function CourseManagement() {
               subtitle={selectedClass ? "Đây là lớp dùng để lọc nội dung học thuật và trò chơi." : "Chọn một lớp ở bên trái để xem chi tiết."}
             >
               {!selectedClass ? (
-                <div className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+                <div className="text-sm" style={{ color: "var(--text-muted)" }}>
                   Chưa có lớp nào được chọn.
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <div className="text-xl font-black text-white">{selectedClass.name}</div>
-                    <div className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                    <div className="text-xl font-black" style={{ color: 'var(--text-primary)' }}>{selectedClass.name}</div>
+                    <div className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
                       {selectedClass.description || "Không có mô tả"}
                     </div>
                   </div>
@@ -392,7 +392,8 @@ export default function CourseManagement() {
                         setActiveClassIdState("");
                         toast.success("Đã bỏ chọn lớp đang hoạt động.");
                       }}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black uppercase text-white"
+                      className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-xs font-black uppercase"
+                      style={{ borderColor: 'var(--page-card-border)', background: 'var(--nav-surface)', color: 'var(--text-primary)' }}
                     >
                       Bỏ Chọn
                     </button>
@@ -401,14 +402,15 @@ export default function CourseManagement() {
                   {isTeacher ? (
                     <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
                       <div className="space-y-3">
-                        <div className="rounded-2xl bg-slate-900/60 px-4 py-3">
-                          <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Mã lớp</div>
+                        <div className="rounded-2xl px-4 py-3" style={{ background: 'var(--nav-surface-solid)' }}>
+                          <div className="text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-muted)' }}>Mã lớp</div>
                           <div className="mt-1 flex items-center justify-between gap-3">
-                            <div className="text-lg font-black text-amber-300">{selectedClass.joinCode}</div>
+                            <div className="text-lg font-black" style={{ color: 'var(--viet-gold)' }}>{selectedClass.joinCode}</div>
                             <button
                               type="button"
                               onClick={() => handleCopy(selectedClass.joinCode, "Đã sao chép mã lớp.")}
-                              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-2 text-xs font-black uppercase text-white"
+                              className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase transition hover:-translate-y-0.5"
+                              style={{ borderColor: 'var(--page-card-border)', color: 'var(--text-primary)', background: 'var(--nav-hover)' }}
                             >
                               <Copy size={14} />
                               Sao chép
@@ -416,13 +418,14 @@ export default function CourseManagement() {
                           </div>
                         </div>
 
-                        <div className="rounded-2xl bg-slate-900/60 px-4 py-3">
-                          <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Đường link tham gia</div>
-                          <div className="mt-1 break-all text-sm text-white">{buildJoinUrl(selectedClass.joinToken)}</div>
+                        <div className="rounded-2xl px-4 py-3" style={{ background: 'var(--nav-surface-solid)' }}>
+                          <div className="text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-muted)' }}>Đường link tham gia</div>
+                          <div className="mt-1 break-all text-sm" style={{ color: 'var(--text-primary)' }}>{buildJoinUrl(selectedClass.joinToken)}</div>
                           <button
                             type="button"
                             onClick={() => handleCopy(buildJoinUrl(selectedClass.joinToken), "Đã sao chép đường link tham gia.")}
-                            className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-2 text-xs font-black uppercase text-white"
+                            className="mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase transition hover:-translate-y-0.5"
+                            style={{ borderColor: 'var(--page-card-border)', color: 'var(--text-primary)', background: 'var(--nav-hover)' }}
                           >
                             <Copy size={14} />
                             Sao chép link
@@ -430,13 +433,13 @@ export default function CourseManagement() {
                         </div>
                       </div>
 
-                      <div className="rounded-2xl bg-white p-3">
+                      <div className="rounded-2xl bg-white p-3 border" style={{ borderColor: 'var(--page-card-border)' }}>
                         <img
                           src={buildQrImageUrl(selectedClass.joinToken)}
                           alt={`QR tham gia lớp ${selectedClass.name}`}
                           className="h-40 w-40 rounded-xl object-cover"
                         />
-                        <div className="mt-2 flex items-center justify-center gap-2 text-xs font-black uppercase text-slate-700">
+                        <div className="mt-2 flex items-center justify-center gap-2 text-xs font-black uppercase" style={{ color: '#000' }}>
                           <QrCode size={14} />
                           QR tham gia
                         </div>
@@ -445,13 +448,13 @@ export default function CourseManagement() {
                   ) : null}
 
                   {isTeacher ? (
-                    <div className="rounded-2xl bg-slate-900/60 p-4">
-                      <div className="mb-3 flex items-center gap-2 text-sm font-black uppercase text-amber-300">
+                    <div className="rounded-2xl p-4" style={{ background: 'var(--nav-surface-solid)' }}>
+                      <div className="mb-3 flex items-center gap-2 text-sm font-black uppercase" style={{ color: 'var(--viet-gold)' }}>
                         <Users size={16} />
                         Danh Sách Học Sinh
                       </div>
                       {(selectedClass.students || []).length === 0 ? (
-                        <div className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+                        <div className="text-sm" style={{ color: "var(--text-muted)" }}>
                           Chưa có học sinh nào tham gia lớp này.
                         </div>
                       ) : (
@@ -459,17 +462,18 @@ export default function CourseManagement() {
                           {selectedClass.students.map((student) => (
                             <div
                               key={student._id}
-                              className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+                              className="flex items-center justify-between rounded-2xl border px-4 py-3"
+                              style={{ borderColor: 'var(--page-card-border)', background: 'var(--nav-surface)' }}
                             >
                               <div>
-                                <div className="font-bold text-white">
+                                <div className="font-bold" style={{ color: 'var(--text-primary)' }}>
                                   {student.fullName || student.username}
                                 </div>
-                                <div className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
+                                <div className="text-xs" style={{ color: "var(--text-secondary)" }}>
                                   @{student.username}
                                 </div>
                               </div>
-                              <div className="text-sm font-black text-amber-300">
+                              <div className="text-sm font-black" style={{ color: 'var(--viet-gold)' }}>
                                 {student.experience || 0} XP
                               </div>
                             </div>
@@ -482,7 +486,8 @@ export default function CourseManagement() {
                   <div className="flex flex-wrap gap-3">
                     <Link
                       to="/leaderboard"
-                      className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black uppercase text-white"
+                      className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-xs font-black uppercase transition hover:-translate-y-0.5"
+                      style={{ borderColor: 'var(--page-card-border)', background: 'var(--nav-hover)', color: 'var(--text-primary)' }}
                     >
                       <Users size={16} />
                       Bảng Phong Thần
@@ -491,14 +496,16 @@ export default function CourseManagement() {
                       <>
                         <Link
                           to="/teacher/content"
-                          className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black uppercase text-white"
+                          className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-xs font-black uppercase transition hover:-translate-y-0.5"
+                          style={{ borderColor: 'var(--page-card-border)', background: 'var(--nav-hover)', color: 'var(--text-primary)' }}
                         >
                           <BookOpenCheck size={16} />
                           Soạn Học Thuật
                         </Link>
                         <Link
                           to="/teacher/theme4"
-                          className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black uppercase text-white"
+                          className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-xs font-black uppercase transition hover:-translate-y-0.5"
+                          style={{ borderColor: 'var(--page-card-border)', background: 'var(--nav-hover)', color: 'var(--text-primary)' }}
                         >
                           <Shield size={16} />
                           Soạn Chủ Đề 4
