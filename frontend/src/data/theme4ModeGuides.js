@@ -65,13 +65,14 @@ export const theme4ModeGuides = {
     sample: "Trả lời đúng 3 câu liên tục -> Nhận 3 ngọn lửa thưởng."
   },
   picturePuzzle: {
-    objective: "Suy luận và ghép các hình ảnh thành nội dung lịch sử.",
+    objective: "Xem video rồi xếp các khung hình theo đúng diễn biến lịch sử.",
     rules: [
-      "11 vòng chơi, quan sát 2 - 4 hình ảnh từng lượt.",
-      "Ghép nội dung các hình để tạo tên sự kiện hoặc nhân vật."
+      "Mỗi lượt chơi gắn với một video tư liệu lịch sử.",
+      "Sau khi xem, sắp xếp các khung hình từ sớm đến muộn theo đúng nội dung video.",
+      "Có thể kiểm tra giữa chừng rồi tiếp tục chỉnh lại thứ tự nếu chưa đúng."
     ],
-    scoring: "+10 XP mỗi vòng giải được hình ảnh.",
-    sample: "Hình 'Cần' ghép với hình 'Vương' -> Phong trào 'Cần Vương'."
+    scoring: "Hoàn thành đúng một lượt sắp xếp để nhận XP của video đó.",
+    sample: "Xem video Trận Ngọc Hồi rồi xếp lại 10 khung hình theo đúng mạch tiến công của quân Tây Sơn."
   }
 };
 

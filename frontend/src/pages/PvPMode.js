@@ -277,15 +277,15 @@ export default function PvPMode() {
     }
 
     return (
-      <div
-        className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
-        style={pageStyles.page}
-      >
+        <div
+          className="theme-page game-screen h-full min-h-0 flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
+          style={pageStyles.page}
+        >
         <div className="max-w-[1180px] w-full mx-auto flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
           <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <button
               onClick={() => navigate("/modes")}
-              className="inline-flex items-center gap-2 text-sm font-semibold transition-colors"
+              className="game-action-btn game-action-btn--secondary self-start text-sm"
               style={pageStyles.textSecondary}
             >
               <ArrowLeft size={18} /> Quay lại
@@ -378,7 +378,7 @@ export default function PvPMode() {
 
   return (
     <div
-      className="theme-page game-screen h-screen p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-hidden"
+      className="theme-page game-screen h-full min-h-0 p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-hidden"
       style={pageStyles.page}
     >
       <div
@@ -450,7 +450,7 @@ export default function PvPMode() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={() => setActiveRole("nguoi-goi-y")}
-                  className={`rounded-xl px-5 py-3.5 text-sm font-black uppercase tracking-[0.15em] transition-colors ${
+                  className={`game-action-btn text-sm ${
                     activeRole === "nguoi-goi-y" ? "bg-pink-600 text-white" : ""
                   }`}
                   style={
@@ -467,7 +467,7 @@ export default function PvPMode() {
                 </button>
                 <button
                   onClick={() => setActiveRole("nguoi-doan")}
-                  className={`rounded-xl px-5 py-3.5 text-sm font-black uppercase tracking-[0.15em] transition-colors ${
+                  className={`game-action-btn text-sm ${
                     activeRole === "nguoi-doan" ? "bg-emerald-600 text-white" : ""
                   }`}
                   style={
@@ -504,7 +504,7 @@ export default function PvPMode() {
               <button
                 onClick={phase === "prep-ready" ? startPrepPhase : undefined}
                 disabled={phase === "prep"}
-                className="rounded-[1.2rem] px-6 py-4 font-black text-white inline-flex items-center justify-center gap-2 disabled:opacity-50"
+                className="game-action-btn w-full text-white disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #db2777, #a855f7)" }}
               >
                 <Play size={18} /> BẮT ĐẦU
@@ -512,7 +512,7 @@ export default function PvPMode() {
               <button
                 onClick={phase === "prep" ? toggleTimerRunning : undefined}
                 disabled={phase !== "prep"}
-                className="rounded-[1.2rem] px-6 py-4 font-black disabled:opacity-50"
+                className="game-action-btn game-action-btn--secondary w-full disabled:opacity-50"
                 style={pageStyles.subtleButton}
               >
                 {phase === "prep" && !timerRunning ? "TIẾP TỤC" : "DỪNG"}
@@ -575,7 +575,7 @@ export default function PvPMode() {
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
               <button
                 disabled
-                className="rounded-[1.2rem] px-6 py-4 font-black text-white disabled:opacity-50"
+                className="game-action-btn game-action-btn--success w-full text-white disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
               >
                 <Play size={18} className="inline-block mr-2" />
@@ -583,7 +583,7 @@ export default function PvPMode() {
               </button>
               <button
                 onClick={toggleTimerRunning}
-                className="rounded-[1.2rem] px-6 py-4 font-black"
+                className="game-action-btn game-action-btn--secondary w-full"
                 style={pageStyles.subtleButton}
               >
                 {timerRunning ? "DỪNG" : "TIẾP TỤC"}
@@ -591,7 +591,7 @@ export default function PvPMode() {
               <button
                 onClick={() => submitKeywordResult(true)}
                 disabled={!timerRunning}
-                className="rounded-[1.2rem] px-6 py-4 font-black text-white disabled:opacity-50 active:scale-[0.98] transition-transform"
+                className="game-action-btn game-action-btn--success w-full text-white disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
               >
                 Đoán Đúng
@@ -599,14 +599,14 @@ export default function PvPMode() {
               <button
                 onClick={() => submitKeywordResult(false)}
                 disabled={!timerRunning}
-                className="rounded-[1.2rem] px-6 py-4 font-black text-white disabled:opacity-50 active:scale-[0.98] transition-transform"
+                className="game-action-btn game-action-btn--danger w-full text-white disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #ef4444, #b91c1c)" }}
               >
                 Bỏ Qua
               </button>
               <button
                 onClick={resetRound}
-                className="rounded-[1.2rem] px-6 py-4 font-black"
+                className="game-action-btn game-action-btn--secondary w-full"
                 style={pageStyles.subtleButton}
               >
                 Chơi Lại Gói
@@ -663,14 +663,14 @@ export default function PvPMode() {
             <div className="grid gap-3 sm:grid-cols-2">
               <button
                 onClick={() => startPackage(selectedPackage)}
-                className="rounded-[1.2rem] px-6 py-4 font-black text-white"
+                className="game-action-btn w-full text-white"
                 style={{ background: "linear-gradient(135deg, #db2777, #a855f7)" }}
               >
                 Chơi Lại Gói Này
               </button>
               <button
                 onClick={resetRound}
-                className="rounded-[1.2rem] px-6 py-4 font-black text-white"
+                className="game-action-btn game-action-btn--success w-full text-white"
                 style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
               >
                 Chọn Gói Khác
