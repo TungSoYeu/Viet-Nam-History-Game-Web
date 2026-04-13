@@ -430,37 +430,37 @@ export default function HomePage() {
                 <div
                   className="rounded-2xl xl:rounded-3xl p-3 xl:p-5"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
-                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: 'var(--page-card-soft)',
+                    border: '1px solid var(--page-card-border)',
                     boxShadow: '0 18px 48px rgba(0,0,0,0.25)',
                     backdropFilter: 'blur(18px)'
                   }}
                 >
-                  <div className="text-[10px] xl:text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: 'rgba(212,160,83,0.9)' }}>
+                  <div className="text-[10px] xl:text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: 'var(--viet-gold)' }}>
                     Hồ sơ đang chọn
                   </div>
-                  <h2 className="mt-1 xl:mt-2 text-xl xl:text-[1.65rem] font-black text-white" style={{ fontFamily: "'Oswald', sans-serif" }}>
+                  <h2 className="mt-1 xl:mt-2 text-xl xl:text-[1.65rem] font-black" style={{ fontFamily: "'Oswald', sans-serif", color: 'var(--text-primary)' }}>
                     {currentHero.name}
                   </h2>
-                  <div className="mt-1 inline-flex rounded-full px-2 py-0.5 xl:px-3 xl:py-1 text-[9px] xl:text-[11px] font-black uppercase tracking-[0.18em]" style={{ background: 'rgba(212,160,83,0.14)', color: '#f0d48a', border: '1px solid rgba(212,160,83,0.2)' }}>
+                  <div className="mt-1 inline-flex rounded-full px-2 py-0.5 xl:px-3 xl:py-1 text-[9px] xl:text-[11px] font-black uppercase tracking-[0.18em]" style={{ background: 'var(--page-chip-bg)', color: 'var(--page-chip-text)', border: '1px solid var(--page-chip-border)' }}>
                     {currentHero.title}
                   </div>
-                  <p className="mt-2 xl:mt-3 text-[11px] xl:text-xs leading-relaxed max-h-[64px] overflow-y-auto custom-scrollbar" style={{ color: 'rgba(255,255,255,0.82)' }}>
+                  <p className="mt-2 xl:mt-3 text-[11px] xl:text-xs leading-relaxed max-h-[64px] overflow-y-auto custom-scrollbar" style={{ color: 'var(--text-secondary)' }}>
                     {currentHero.description}
                   </p>
 
                   <div className="mt-2 xl:mt-3 grid grid-cols-3 gap-2">
-                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.55)' }}>Chiến công</div>
-                      <div className="mt-0.5 text-lg xl:text-xl font-black text-white">{currentHero.stats.wins}</div>
+                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)' }}>
+                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>Chiến công</div>
+                      <div className="mt-0.5 text-lg xl:text-xl font-black" style={{ color: 'var(--text-primary)' }}>{currentHero.stats.wins}</div>
                     </div>
-                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.55)' }}>Mốc</div>
-                      <div className="mt-0.5 text-lg xl:text-xl font-black text-white">{currentHero.stats.time}</div>
+                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)' }}>
+                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>Mốc</div>
+                      <div className="mt-0.5 text-lg xl:text-xl font-black" style={{ color: 'var(--text-primary)' }}>{currentHero.stats.time}</div>
                     </div>
-                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.55)' }}>Cấp</div>
-                      <div className="mt-0.5 text-lg xl:text-xl font-black text-white">{currentHero.stats.level}</div>
+                    <div className="rounded-xl p-2 xl:p-3 flex flex-col justify-center items-center" style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)' }}>
+                      <div className="text-[8px] xl:text-[9px] uppercase font-black tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>Cấp</div>
+                      <div className="mt-0.5 text-lg xl:text-xl font-black" style={{ color: 'var(--text-primary)' }}>{currentHero.stats.level}</div>
                     </div>
                   </div>
                 </div>
@@ -468,12 +468,12 @@ export default function HomePage() {
                 <div
                   className="rounded-2xl xl:rounded-3xl p-3 xl:p-5"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(212,160,83,0.08), rgba(255,255,255,0.04))',
-                    border: '1px solid rgba(212,160,83,0.18)',
+                    background: 'var(--page-card-soft)',
+                    border: '1px solid var(--page-card-border)',
                     backdropFilter: 'blur(16px)'
                   }}
                 >
-                  <div className="text-[10px] xl:text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: 'rgba(212,160,83,0.9)' }}>
+                  <div className="text-[10px] xl:text-[11px] font-black uppercase tracking-[0.24em]" style={{ color: 'var(--viet-gold)' }}>
                     Thành tựu nổi bật
                   </div>
                   <div className="mt-2 xl:mt-3 space-y-1.5 xl:space-y-2">
@@ -481,12 +481,12 @@ export default function HomePage() {
                       <div
                         key={achievement}
                         className="rounded-xl px-3 py-1.5 xl:px-3 xl:py-2"
-                        style={{ background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.08)' }}
+                        style={{ background: 'var(--nav-surface)', border: '1px solid var(--page-card-border)' }}
                       >
-                        <div className="text-[9px] xl:text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: 'rgba(255,255,255,0.52)' }}>
+                        <div className="text-[9px] xl:text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: 'var(--text-muted)' }}>
                           Mốc {idx + 1}
                         </div>
-                        <div className="mt-1 text-xs xl:text-sm font-semibold text-white">{achievement}</div>
+                        <div className="mt-1 text-xs xl:text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{achievement}</div>
                       </div>
                     ))}
                   </div>
@@ -560,7 +560,7 @@ export default function HomePage() {
 
               {/* Compact Character List */}
               <div className="w-full mt-3">
-                <p className="text-xs font-medium mb-2 uppercase tracking-wider text-center" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                <p className="text-xs font-medium mb-2 uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
                   Các vị anh hùng
                 </p>
                 <div className="flex justify-center gap-1.5 flex-wrap">

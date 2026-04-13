@@ -148,19 +148,19 @@ export default function HeroCarousel({
                 onClick={() => onSelect?.(mappedIndex)}
                 className={`rounded-xl border px-3 py-2 xl:px-3 xl:py-2.5 text-left transition ${
                   active
-                    ? 'border-amber-300/40 bg-amber-400/10 shadow-[0_0_24px_rgba(212,160,83,0.14)]'
-                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8'
+                    ? 'border-amber-400 bg-[rgba(212,160,83,0.15)] shadow-[0_0_24px_rgba(212,160,83,0.14)]'
+                    : 'border-[var(--page-card-border)] bg-[var(--page-card-soft)] hover:border-amber-400/50 hover:bg-[var(--nav-hover)]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-[9px] xl:text-[10px] font-black uppercase tracking-[0.24em] text-white/50">
+                    <div className="text-[9px] xl:text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: 'var(--text-muted)' }}>
                       Danh nhân
                     </div>
-                    <div className="mt-0.5 xl:mt-1 text-xs xl:text-sm font-black text-white">{hero.name}</div>
-                    <div className="mt-0 text-[10px] xl:text-xs text-white/65">{hero.era}</div>
+                    <div className="mt-0.5 xl:mt-1 text-xs xl:text-sm font-black" style={{ color: 'var(--text-primary)' }}>{hero.name}</div>
+                    <div className="mt-0 text-[10px] xl:text-xs" style={{ color: 'var(--text-secondary)' }}>{hero.era}</div>
                   </div>
-                  <div className="text-xs font-black text-amber-300">{String(mappedIndex + 1).padStart(2, '0')}</div>
+                  <div className="text-xs font-black" style={{ color: 'var(--viet-gold)' }}>{String(mappedIndex + 1).padStart(2, '0')}</div>
                 </div>
               </button>
             );

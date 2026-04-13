@@ -217,7 +217,7 @@ export default function Leaderboard() {
                 </div>
                 
                 <div className="text-center mb-3 sm:mb-4 px-1">
-                  <p className="font-black text-white text-xs sm:text-sm md:text-base truncate w-20 sm:w-32 md:w-40">{user.username}</p>
+                  <p className="font-black text-xs sm:text-sm md:text-base truncate w-20 sm:w-32 md:w-40" style={{ color: 'var(--text-primary)' }}>{user.username}</p>
                   <div className="mt-2 flex justify-center">
                     <RankBadge xp={user.experience} compact />
                   </div>
