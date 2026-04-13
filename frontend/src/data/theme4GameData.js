@@ -132,79 +132,79 @@ export const teammatePackages = [
     title: "Gói 1: Danh nhân Ngô Quyền",
     keywords: [
       "Kháng chiến",
-      "Quân Nam Hán",
-      "Hoằng Tháo",
-      "Kỉ nguyên độc lập",
-      "Hoằng Tháo",
-      "Đóng cọc",
       "Bạch Đằng",
+      "Quân Nam Hán",
+      "Đóng cọc",
+      "Hoằng Tháo",
+      "Kết thúc",
+      "Mở đầu",
+      "Năm 938",
       "Bắc thuộc",
-      "Nhử địch",
-      "Kiều Công Tiễn",
+      "Độc lập",
     ],
   },
   {
     id: "understanding-package-2",
-    title: "Gói 2",
+    title: "Gói 2: Danh nhân Lý Thường Kiệt",
     keywords: [
-      "Vạn Kiếp",
-      "Hai Bà Trưng",
-      "Kháng chiến chống quân Nam Hán",
-      "Kế thanh dã",
-      "Kháng lệnh triều đình",
-      "Phá Tống bình Chiêm",
-      "Yết Kiêu",
-      "Nam quốc sơn hà",
-      "Khởi nghĩa Lam Sơn",
-      "Lý Thường Kiệt",
+      "1075",
+      "Phòng tuyến",
+      "Quân Tống",
+      "Giảng hòa",
+      "Tiên phát chế nhân",
+      "Mềm dẻo",
+      "Nam Quốc sơn hà",
+      "Kết thúc chiến tranh",
+      "Như Nguyệt",
+      "Đại Việt",
     ],
   },
   {
     id: "understanding-package-3",
-    title: "Gói 3",
+    title: "Gói 3: Danh nhân Trần Quốc Tuấn",
     keywords: [
-      "Lê Hoàn",
-      "Hội nghị Diên Hồng",
-      "Thành Cổ Loa",
+      "Hào khí Đông A",
+      "Vườn không nhà trống",
+      "Đức Thánh Trần",
+      "Hịch tướng sĩ",
       "Ô Mã Nhi",
-      "Tâm công",
-      "Bình Ngô Đại Cáo",
-      "Hành quân \"thần tốc\"",
-      "Giảng hòa",
-      "Nguyễn Trãi",
-      "Hưng Đạo Đại Vương",
+      "Bạch Đằng",
+      "Quân Mông - Nguyên",
+      "Rút lui chiến lược",
+      "Đoàn kết",
+      "Khoan thư sức dân",
     ],
   },
   {
     id: "understanding-package-4",
-    title: "Gói 4",
+    title: "Gói 4: Danh nhân Lê Thái Tổ",
     keywords: [
-      "Hào Khí Đông A",
-      "Hội nghị Bình Than",
-      "Thái hậu Dương Vân Nga",
+      "Hồ Gươm",
+      "Khởi nghĩa Lam Sơn",
+      "Hội thề Lũng Nhai",
+      "Chi Lăng – Xương Giang",
+      "Bình Định Vương",
+      "Kim Quy",
       "Vây thành diệt viện",
-      "Quang Trung",
-      "Hiệp ước Hác-măng",
-      "Phòng tuyến Như Nguyệt",
-      "Phong trào Tây Sơn",
-      "Đóng cọc",
-      "Sông Bạch Đằng",
+      "Hội thề Đông Quan",
+      "Tốt Động – Chúc Động",
+      "Tâm công",
     ],
   },
   {
     id: "understanding-package-5",
-    title: "Gói 5",
+    title: "Gói 5: Danh nhân Quang Trung",
     keywords: [
-      "Nguyễn Chích",
-      "Phù Lê diệt Trịnh",
+      "Anh hùng áo vải",
+      "Phong trào Tây Sơn",
+      "Tam kiệt",
+      "Ngọc Hồi – Đống Đa",
+      "Chiếu khuyến nông",
+      "Đại phá quân Thanh",
       "Rạch Gầm - Xoài Mút",
-      "Dĩ đoản chế trường",
-      "Hội thề Đông Quan",
-      "Bà Triệu",
-      "Chiến tranh Trịnh - Nguyễn",
-      "Hồ Nguyên Trừng",
-      "Hai Bà Trưng",
-      "Chiến tranh nhân dân",
+      "Thần tốc, táo bạo, bất ngờ",
+      "Bắc Bình Vương",
+      "Kháng chiến quân Xiêm",
     ],
   },
 ];
@@ -928,123 +928,40 @@ export const lightningFastQuestions = buildLightningFastQuestions(
 
 export const picturePuzzleItems = [
   {
-    images: [
-      picturePuzzleImage("mode8_ngo_quyen_ngo.png"),
-      picturePuzzleImage("mode8_ngo_quyen_quyen_anh.png"),
+    id: "bach-dang-sequence",
+    title: "Chiến thắng Bạch Đằng",
+    instruction:
+      "Xem video và sắp xếp 5 khung hình theo đúng trình tự diễn biến của chiến thắng Bạch Đằng.",
+    videoUrl: "https://www.youtube.com/watch?v=cPEcXv8qJBc",
+    timeLimitSeconds: 90,
+    xpReward: 20,
+    frames: [
+      { imageUrl: picturePuzzleImage("mode8_sequence_bach_dang_1.png"), order: 1 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_bach_dang_2.png"), order: 2 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_bach_dang_3.png"), order: 3 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_bach_dang_4.png"), order: 4 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_bach_dang_5.png"), order: 5 },
     ],
-    prompt: "Đây là nhân vật nào?",
-    answer: "Ngô Quyền",
-    acceptedAnswers: ["Ngô Quyền"],
-    explanation: "Ghép 'ngô' và 'quyền anh' để suy ra nhân vật Ngô Quyền."
   },
   {
-    images: [
-      picturePuzzleImage("mode8_vuon_khong_nha_trong_vuon.png"),
-      picturePuzzleImage("mode8_vuon_khong_nha_trong_khong.png"),
-      picturePuzzleImage("mode8_vuon_khong_nha_trong_nha.png"),
-      picturePuzzleImage("mode8_vuon_khong_nha_trong_trong.png"),
+    id: "ngoc-hoi-sequence",
+    title: "Trận Ngọc Hồi",
+    instruction:
+      "Xem video và sắp xếp 10 khung hình từ giai đoạn mở đầu đến khi quân Tây Sơn công phá thành công phòng tuyến Ngọc Hồi.",
+    videoUrl: "https://www.youtube.com/watch?v=TBHt6smccP8",
+    timeLimitSeconds: 150,
+    xpReward: 20,
+    frames: [
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_1.png"), order: 1 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_2.png"), order: 2 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_3.png"), order: 3 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_4.png"), order: 4 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_5.png"), order: 5 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_6.png"), order: 6 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_7.png"), order: 7 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_8.png"), order: 8 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_9.png"), order: 9 },
+      { imageUrl: picturePuzzleImage("mode8_sequence_ngoc_hoi_10.png"), order: 10 },
     ],
-    prompt: "Đây là một kế hoạch quân sự tiêu biểu trong LSVN thời nhà Trần?",
-    answer: "Vườn không nhà trống",
-    acceptedAnswers: ["Vườn không nhà trống"],
-    explanation:
-      "Ghép 'vườn', 'không', 'nhà' và 'trống' để suy ra kế sách vườn không nhà trống."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_ho_quy_ly_ho.png"),
-      picturePuzzleImage("mode8_ho_quy_ly_quy.png"),
-      picturePuzzleImage("mode8_ho_quy_ly_ly.png"),
-    ],
-    prompt: "Đây là nhân vật nào?",
-    answer: "Hồ Quý Ly",
-    acceptedAnswers: ["Hồ Quý Ly"],
-    explanation: "Ghép 'hồ', 'quý' và 'ly' để suy ra nhân vật Hồ Quý Ly."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_thang_long_thang.png"),
-      picturePuzzleImage("mode8_thang_long_long.png"),
-    ],
-    prompt: "Đây là tên của kinh đô của nước Đại Việt dưới thời Lý, Trần, Lê Sơ?",
-    answer: "Thăng Long",
-    acceptedAnswers: ["Thăng Long"],
-    explanation: "Ghép 'thăng' và 'long' để suy ra kinh đô Thăng Long."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_ngoc_hoi_dong_da_ngoc.png"),
-      picturePuzzleImage("mode8_ngoc_hoi_dong_da_hoi.png"),
-      picturePuzzleImage("mode8_ngoc_hoi_dong_da_dong_da.png"),
-    ],
-    prompt: "Đây là tên của một trận đánh chống ngoại xâm do Quang Trung lãnh đạo?",
-    answer: "Trận Ngọc Hồi - Đống Đa",
-    acceptedAnswers: ["Trận Ngọc Hồi - Đống Đa", "Ngọc Hồi - Đống Đa"],
-    explanation: "Ghép 'ngọc', 'hồi' và 'Đống Đa' để suy ra trận Ngọc Hồi - Đống Đa."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_au_lac_au.png"),
-      picturePuzzleImage("mode8_au_lac_lac.png"),
-    ],
-    prompt: "Đây là tên của một nước?",
-    answer: "Nước Âu Lạc",
-    acceptedAnswers: ["Nước Âu Lạc", "Âu Lạc"],
-    explanation: "Ghép 'Âu' và 'lạc' để suy ra tên nước Âu Lạc."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_tien_phat_che_nhan_tien.png"),
-      picturePuzzleImage("mode8_tien_phat_che_nhan_phat.png"),
-      picturePuzzleImage("mode8_tien_phat_che_nhan_che.png"),
-      picturePuzzleImage("mode8_tien_phat_che_nhan_nhan.png"),
-    ],
-    prompt: "Đây là tên của một kế sách quân sự thời Lý?",
-    answer: "Tiên phát chế nhân",
-    acceptedAnswers: ["Tiên phát chế nhân"],
-    explanation:
-      "Ghép 'tiên', 'phát', 'chế' và 'nhân' để suy ra kế sách 'Tiên phát chế nhân'."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_tay_son_tay.png"),
-      picturePuzzleImage("mode8_tay_son_son.png"),
-    ],
-    prompt: "Đây là tên của một phong trào tiêu biểu trong lịch sử Việt Nam?",
-    answer: "Phong trào Tây Sơn",
-    acceptedAnswers: ["Phong trào Tây Sơn", "Tây Sơn"],
-    explanation: "Ghép 'tây' và 'sơn' để suy ra phong trào Tây Sơn."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_nguyen_trung_truc_nguyen.png"),
-      picturePuzzleImage("mode8_nguyen_trung_truc_trung_truc.png"),
-    ],
-    prompt: "Đây là nhân vật nào?",
-    answer: "Nguyễn Trung Trực",
-    acceptedAnswers: ["Nguyễn Trung Trực"],
-    explanation:
-      "Ghép ký tự Hán gợi 'Nguyễn' với hình gợi 'trung trực' để suy ra Nguyễn Trung Trực."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_o_ma_nhi_o.png"),
-      picturePuzzleImage("mode8_o_ma_nhi_ma.png"),
-      picturePuzzleImage("mode8_o_ma_nhi_nhi.png"),
-    ],
-    prompt: "Đây là nhân vật nào?",
-    answer: "Ô Mã Nhi",
-    acceptedAnswers: ["Ô Mã Nhi"],
-    explanation: "Ghép 'ô', 'mã' và 'nhi' để suy ra nhân vật Ô Mã Nhi."
-  },
-  {
-    images: [
-      picturePuzzleImage("mode8_yen_the_yen.png"),
-      picturePuzzleImage("mode8_yen_the_the.png"),
-    ],
-    prompt: "Đây là tên của cuộc khởi nghĩa?",
-    answer: "Khởi nghĩa Yên Thế",
-    acceptedAnswers: ["Khởi nghĩa Yên Thế", "Yên Thế"],
-    explanation: "Ghép 'yên' và 'thế' để suy ra cuộc khởi nghĩa Yên Thế."
   }
 ];

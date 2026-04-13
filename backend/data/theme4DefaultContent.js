@@ -23,7 +23,7 @@ const theme4Content = {
       "Giải mã ô chữ: 5 từ khóa hàng dọc, mỗi từ khóa có từ 5 đến 10 câu hỏi hàng ngang.",
       "Dòng chảy lịch sử: kéo thả dữ kiện vào 4 tiêu chí bối cảnh, diễn biến, kết quả - ý nghĩa và di sản để lại.",
       "Nhanh như chớp: 30 câu nhận biết, 60 giây chính và thêm 10 giây nhịp nhanh, có chuỗi lửa theo số câu đúng liên tiếp.",
-      "Đuổi hình bắt chữ: 11 câu, mỗi câu gồm 2 đến 4 hình ảnh để ghép thành đáp án lịch sử hoàn chỉnh.",
+      "Xâu chuỗi diễn biến: xem video tư liệu rồi sắp xếp các khung hình theo đúng trình tự thời gian của sự kiện lịch sử.",
     ],
   },
   modeDataKeys: {
@@ -39,7 +39,7 @@ const theme4Content = {
   modes: theme4Modes,
   gameData: theme4GameData,
   meta: {
-    version: "theme4-default-v2",
+    version: "theme4-default-v3",
     source: "default",
   },
 };

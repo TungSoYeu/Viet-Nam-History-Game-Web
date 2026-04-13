@@ -92,16 +92,16 @@ const theme4Modes = [
   },
   {
     id: "picture-puzzle",
-    name: "Đuổi hình bắt chữ",
-    desc: "Ghép từ khóa từ 2-4 hình ảnh để ra đáp án lịch sử.",
+    name: "Xâu chuỗi diễn biến",
+    desc: "Xem video và xếp khung hình theo đúng trình tự.",
     longDesc:
-      "Mỗi câu gồm từ 2 đến 4 hình ảnh. Học sinh xác định từ khóa của từng hình rồi ghép lại để tạo thành một nội dung lịch sử hoàn chỉnh như sự kiện, phong trào, địa danh, nhân vật hoặc khái niệm.",
+      "Học sinh xem video tư liệu ngắn, sau đó sắp xếp các khung hình theo diễn biến từ sớm đến muộn để tái hiện đúng trình tự lịch sử của sự kiện.",
     path: "/territory-map",
     bgImage: "/assets/images/bg-picture-puzzle.svg",
     gradient:
       "linear-gradient(135deg, rgba(234, 88, 12, 0.8), rgba(249, 115, 22, 0.8))",
-    stats: "11 câu | 2-4 hình/câu",
-    rewardText: "10 XP / đáp án đúng",
+    stats: "2 video | 15 khung hình",
+    rewardText: "20 XP / lượt đúng",
   },
 ];
 
