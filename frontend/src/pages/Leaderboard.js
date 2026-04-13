@@ -104,7 +104,7 @@ export default function Leaderboard() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="theme-page min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'var(--page-bg-gradient)' }}>
       <div className="w-full max-w-4xl">
         <SkeletonLoader variant="podium" className="mb-12" />
         <SkeletonLoader variant="list" count={5} />
@@ -135,7 +135,7 @@ export default function Leaderboard() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="theme-page min-h-screen p-4 sm:p-8 flex flex-col items-center relative" style={{ background: 'var(--page-bg-gradient)' }}>
         <ParticlesBackground type="dust" />
         
         {/* Header */}
@@ -143,7 +143,7 @@ export default function Leaderboard() {
           <div className="flex justify-center sm:justify-start">
             <BouncyButton onClick={() => navigate('/modes')}>
               <div className="px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all text-sm"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)' }}
+                style={{ background: 'var(--page-card-soft)', border: '1px solid var(--page-card-border)', color: 'var(--text-secondary)' }}
               >
                 <ArrowLeft size={18} /> Quay lại
               </div>
@@ -170,12 +170,12 @@ export default function Leaderboard() {
                 onClick={() => setActiveTab(tab.id)}
                 className="rounded-2xl px-4 py-3 text-left transition disabled:opacity-50"
                 style={{
-                  background: active ? 'rgba(245,158,11,0.14)' : 'rgba(255,255,255,0.04)',
-                  border: active ? '1px solid rgba(245,158,11,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  background: active ? 'rgba(245,158,11,0.14)' : 'var(--page-card-muted)',
+                  border: active ? '1px solid rgba(245,158,11,0.4)' : '1px solid var(--page-card-border)',
                 }}
               >
-                <div className="text-sm font-black text-white">{tab.label}</div>
-                <div className="text-[11px]" style={{ color: 'rgba(255,255,255,0.6)' }}>{tab.hint}</div>
+                <div className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>{tab.label}</div>
+                <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{tab.hint}</div>
               </button>
             );
           })}
@@ -237,8 +237,8 @@ export default function Leaderboard() {
         {/* Runner Up List (4th - 10th) with Ancient Border */}
         <div className="w-full max-w-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-10 shadow-2xl relative z-10" 
           style={{ 
-            background: 'rgba(255,255,255,0.04)', 
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--page-card-soft)', 
+            border: '1px solid var(--page-card-border)',
           }}
         >
           {/* Decorative Corner Borders */}
@@ -254,7 +254,7 @@ export default function Leaderboard() {
             className="flex flex-col gap-3 sm:gap-4 relative z-10"
           >
             {runnerUpData.length === 0 ? (
-              <p className="text-center py-8 font-bold italic" style={{ color: 'rgba(255,255,255,0.55)' }}>Bảng danh dự còn để trống...</p>
+              <p className="text-center py-8 font-bold italic" style={{ color: 'var(--text-muted)' }}>Bảng danh dự còn để trống...</p>
             ) : (
               runnerUpData.map((user, idx) => {
                 const rank = idx + 4;
@@ -268,16 +268,16 @@ export default function Leaderboard() {
                     whileHover={{ scale: 1.02, x: 5 }}
                     className={`flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all cursor-default`}
                     style={{ 
-                      background: isTop5 ? 'rgba(212,160,83,0.08)' : 'rgba(255,255,255,0.03)', 
-                      border: isTop5 ? '1px solid rgba(212,160,83,0.2)' : '1px solid rgba(255,255,255,0.06)',
+                      background: isTop5 ? 'rgba(212,160,83,0.08)' : 'var(--page-card-muted)', 
+                      border: isTop5 ? '1px solid rgba(212,160,83,0.2)' : '1px solid var(--page-card-border)',
                       boxShadow: isTop5 ? '0 4px 16px rgba(0,0,0,0.2)' : 'none'
                     }}
                   >
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                       <span className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-black rounded-lg text-xs sm:text-sm shrink-0`} 
                         style={{ 
-                          background: isTop5 ? 'rgba(212,160,83,0.2)' : 'rgba(255,255,255,0.06)', 
-                          color: isTop5 ? '#f0d48a' : 'rgba(255,255,255,0.5)' 
+                          background: isTop5 ? 'rgba(212,160,83,0.2)' : 'var(--page-card-soft)', 
+                          color: isTop5 ? '#f0d48a' : 'var(--text-muted)' 
                         }}>
                         {rank}
                       </span>
@@ -291,20 +291,20 @@ export default function Leaderboard() {
                       </div>
                       <div className="min-w-0 flex-1 ml-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-1.5 truncate">
+                          <h3 className="font-black text-sm sm:text-base flex items-center gap-1.5 truncate" style={{ color: 'var(--text-primary)' }}>
                             {user.username}
                             {isTop5 && <Star size={12} className="text-amber-500 fill-amber-500 shrink-0" />}
                           </h3>
                           <RankBadge xp={user.experience} compact />
                         </div>
-                        <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold uppercase" style={{ color: 'var(--text-muted)' }}>
                            <MapPin size={10} /> <span className="truncate">{user.province || user.city || 'Ẩn danh'}</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-2">
                       <p className="text-base sm:text-xl font-black text-amber-400">{user.experience.toLocaleString()}</p>
-                      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)' }}>Kinh nghiệm</p>
+                      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Kinh nghiệm</p>
                     </div>
                   </motion.div>
                 );
@@ -314,7 +314,7 @@ export default function Leaderboard() {
         </div>
 
         <div className="mt-12 sm:mt-16 text-center pb-4 relative z-10">
-           <p className="font-bold italic mb-6 text-sm sm:text-base" style={{ color: 'rgba(255,255,255,0.55)' }}>Hãy rèn luyện sử sách để được ghi danh trên Bảng Phong Thần!</p>
+           <p className="font-bold italic mb-6 text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>Hãy rèn luyện sử sách để được ghi danh trên Bảng Phong Thần!</p>
            <BouncyButton onClick={() => navigate('/modes')}>
              <div className="btn-primary px-8 sm:px-12 py-3 sm:py-4 shadow-xl flex items-center gap-3 text-sm sm:text-base">
                <Trophy size={20} /> TIẾP TỤC TRANH TÀI

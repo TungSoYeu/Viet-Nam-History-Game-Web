@@ -51,13 +51,12 @@ export default function ModeSelection() {
   if (selectedMode) {
     return (
       <AnimatedPage>
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+        <div className="theme-page min-h-screen flex flex-col items-center justify-center p-4 sm:p-8" style={{ background: 'var(--page-bg-gradient)' }}>
           <ParticlesBackground type="dust" />
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="max-w-2xl w-full rounded-3xl overflow-hidden relative z-10" 
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 16px 48px rgba(0,0,0,0.3)' }}
+            className="theme-glass-card max-w-2xl w-full rounded-3xl overflow-hidden relative z-10"
           >
             {/* Header banner */}
             <div 
@@ -87,14 +86,14 @@ export default function ModeSelection() {
 
             {/* Body */}
             <div className="p-6 sm:p-10">
-              <p className="text-base sm:text-lg leading-relaxed mt-2 mb-8 text-center" style={{ color: 'rgba(255,255,255,0.8)', fontStyle: 'italic' }}>
+              <p className="text-base sm:text-lg leading-relaxed mt-2 mb-8 text-center" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
                 "{selectedMode.longDesc}"
               </p>
 
               <div className="flex items-center gap-6 mb-8 justify-center">
                 <ProgressRing percent={selectedMode.progress || 0} size={64} strokeWidth={6} />
                 <div className="text-left">
-                  <div className="text-[10px] uppercase font-bold tracking-widest text-gray-300 mb-1">Độ khó</div>
+                  <div className="text-[10px] uppercase font-bold tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Độ khó</div>
                   <div className={`px-3 py-1 rounded text-xs font-bold w-max ${
                     selectedMode.difficulty === 'Dễ' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
                     selectedMode.difficulty === 'Trung bình' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
@@ -122,7 +121,7 @@ export default function ModeSelection() {
                 <button 
                   onClick={() => setSelectedMode(null)}
                   className="w-full py-3 rounded-2xl font-semibold uppercase text-sm transition-all hover:bg-white/10"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  style={{ background: 'var(--page-card-soft)', color: 'var(--text-secondary)', border: '1px solid var(--page-card-border)' }}
                 >
                   ← Quay Lại
                 </button>
@@ -136,7 +135,7 @@ export default function ModeSelection() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen flex flex-col relative" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+      <div className="theme-page min-h-screen flex flex-col relative" style={{ background: 'var(--page-bg-gradient)' }}>
         <ParticlesBackground type="dust" />
         <div className="responsive-container py-8 sm:py-12 relative z-10">
           {/* Header */}

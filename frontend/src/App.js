@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 import './App.css';
 import Navbar from './components/Navbar';
+import ThemeToggle from './components/ThemeToggle';
 import { AuthGuard, TeacherGuard } from './components/RouteGuards';
 import { ToastProvider } from './components/Toast';
 
@@ -33,15 +34,16 @@ import NotFound from './pages/NotFound';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import FullscreenGameWrapper from './components/FullscreenGameWrapper';
 import { GOOGLE_CLIENT_ID } from './config/env';
+import useThemeMode from './hooks/useThemeMode';
 
 const gameRoutes = ['/survival', '/time-attack', '/matching', '/pvp', '/chronological', '/millionaire', '/territory-map', '/guess-character', '/reveal-picture'];
 
-function AppContent() {
+function AppContent({ theme, setTheme }) {
   const location = useLocation();
   const isGameRoute = gameRoutes.some(route => location.pathname === route || location.pathname.startsWith(route + '/'));
 
   return (
-    <div className="App">
+    <div className={`App app-shell theme-${theme}`}>
       <div
         className="app-global-bg"
         aria-hidden="true"
@@ -49,6 +51,7 @@ function AppContent() {
       />
       <div className="app-global-overlay" aria-hidden="true" />
       {!isGameRoute && <Navbar />}
+      {!isGameRoute && <ThemeToggle theme={theme} setTheme={setTheme} />}
       <main className={`app-content${isGameRoute ? ' fullscreen-mode' : ''}`}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
@@ -86,10 +89,11 @@ function AppContent() {
 }
 
 function App() {
+  const { theme, setTheme } = useThemeMode();
   const appShell = (
     <ToastProvider>
       <Router>
-        <AppContent />
+        <AppContent theme={theme} setTheme={setTheme} />
       </Router>
     </ToastProvider>
   );
