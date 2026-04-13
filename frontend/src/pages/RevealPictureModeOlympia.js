@@ -463,6 +463,7 @@ export default function RevealPictureModeOlympia() {
   return (
     <div
       className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 md:p-6"
+      style={{ background: "var(--page-bg-gradient)" }}
     >
       <div className="w-full max-w-6xl mx-auto flex flex-col h-full gap-4 min-h-0">
         <div className="w-full flex-shrink-0 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
@@ -510,8 +511,8 @@ export default function RevealPictureModeOlympia() {
           <div
             className="relative w-full rounded-3xl overflow-hidden shadow-2xl"
             style={{
-              border: "4px solid rgba(212,160,83,0.3)",
-              background: "#0f3460",
+              border: "4px solid var(--page-card-border)",
+              background: "var(--nav-surface-solid)",
               aspectRatio: "1 / 1",
             }}
           >
@@ -522,7 +523,7 @@ export default function RevealPictureModeOlympia() {
                 backgroundSize: "contain",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
-                backgroundColor: "#1E293B",
+                backgroundColor: "var(--bg-base)",
               }}
             />
 
@@ -546,22 +547,22 @@ export default function RevealPictureModeOlympia() {
                   className={`border origin-center flex items-center justify-center transition-all duration-700 shadow-lg ${
                     clue.revealed ? "opacity-0 pointer-events-none scale-0 rotate-[360deg]" : ""
                   } ${
-                    canSelect ? "cursor-pointer hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:border-amber-400" : ""
+                    canSelect ? "cursor-pointer hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:border-[var(--viet-gold)]" : ""
                   } ${
-                    isCurrentAndNotRevealed ? "ring-4 ring-amber-500 z-10 border-amber-400" : ""
+                    isCurrentAndNotRevealed ? "ring-4 ring-[var(--viet-gold)] z-10" : ""
                   }`}
                   style={{
-                    background: "linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)",
-                    borderColor: isCurrentAndNotRevealed ? "#f59e0b" : "#8f7346",
-                    boxShadow: isCurrentAndNotRevealed ? "inset 0 0 48px rgba(245, 158, 11, 0.4)" : "inset 0 0 36px rgba(0,0,0,0.92)",
+                    background: "var(--nav-surface-solid)",
+                    borderColor: isCurrentAndNotRevealed ? "var(--viet-gold)" : "var(--page-card-border)",
+                    boxShadow: isCurrentAndNotRevealed ? "inset 0 0 48px var(--viet-gold-glow)" : "var(--page-card-shadow)",
                   }}
                 >
                   {!clue.revealed && (
                     <div className="flex flex-col items-center">
-                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isCurrentAndNotRevealed ? "text-amber-300" : "text-amber-200/70"}`}>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] transition-colors" style={{ color: isCurrentAndNotRevealed ? 'var(--viet-gold)' : 'var(--text-muted)' }}>
                         Góc {index + 1}
                       </span>
-                      <span className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-200 to-amber-600">
+                      <span className="text-2xl md:text-4xl font-black" style={{ color: 'var(--viet-gold)' }}>
                         ?
                       </span>
                     </div>
