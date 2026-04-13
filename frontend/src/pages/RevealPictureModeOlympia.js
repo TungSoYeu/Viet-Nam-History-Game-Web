@@ -386,8 +386,7 @@ export default function RevealPictureModeOlympia() {
   if (loading && !pictureData) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-500"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="theme-page game-screen min-h-screen flex items-center justify-center text-2xl font-bold text-amber-500"
       >
         Đang tải dữ liệu trang sử...
       </div>
@@ -397,8 +396,7 @@ export default function RevealPictureModeOlympia() {
   if (!pictureData || !clues.length) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-500"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-500"
       >
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
@@ -408,8 +406,7 @@ export default function RevealPictureModeOlympia() {
   if (isFinished) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center p-4"
-        style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}
+        className="theme-page game-screen min-h-screen flex flex-col items-center justify-center p-4"
       >
         <div
           className="p-8 rounded-3xl shadow-2xl max-w-2xl w-full text-center"
@@ -465,7 +462,7 @@ export default function RevealPictureModeOlympia() {
 
   return (
     <div
-      className="h-screen flex flex-col overflow-hidden p-4 md:p-6 theme-page"
+      className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 md:p-6"
       style={{ background: "var(--page-bg-gradient)" }}
     >
       <div className="w-full max-w-6xl mx-auto flex flex-col h-full gap-4 min-h-0">

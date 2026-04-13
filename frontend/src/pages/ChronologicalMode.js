@@ -331,7 +331,7 @@ export default function ChronologicalMode() {
 
   if (loading || (totalRounds > 0 && !boardReady)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Đang tải dòng chảy lịch sử...
       </div>
     );
@@ -339,14 +339,14 @@ export default function ChronologicalMode() {
 
   if (!currentRound || totalRounds === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Chưa có bộ dữ kiện hợp lệ cho chế độ chơi này.
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-4 text-white sm:px-6">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-4 text-white sm:px-6">
       <div className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
         <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">

@@ -257,7 +257,7 @@ export default function PvPMode() {
     if (loading && !remoteTeammatePackages) {
       return (
         <div
-          className="theme-page h-screen flex flex-col overflow-hidden items-center justify-center px-6 text-center text-2xl font-bold"
+          className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center px-6 text-center text-2xl font-bold"
           style={{ ...pageStyles.page, color: "var(--page-heading)" }}
         >
           Đang tải gói từ khóa đồng đội...
@@ -268,7 +268,7 @@ export default function PvPMode() {
     if (!activePackages.length) {
       return (
         <div
-          className="theme-page h-screen flex flex-col overflow-hidden items-center justify-center text-center px-6 text-2xl font-bold"
+          className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center text-center px-6 text-2xl font-bold"
           style={{ ...pageStyles.page, color: "var(--page-heading)" }}
         >
           Chưa có gói câu hỏi cho chế độ chơi này.
@@ -278,7 +278,7 @@ export default function PvPMode() {
 
     return (
       <div
-        className="theme-page h-screen flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
+        className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
         style={pageStyles.page}
       >
         <div className="max-w-[1180px] w-full mx-auto flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
@@ -378,7 +378,7 @@ export default function PvPMode() {
 
   return (
     <div
-      className="theme-page h-screen p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-hidden"
+      className="theme-page game-screen h-screen p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-hidden"
       style={pageStyles.page}
     >
       <div

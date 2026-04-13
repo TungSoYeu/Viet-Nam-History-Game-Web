@@ -299,7 +299,7 @@ export default function GuessCharacterMode() {
   if (loading && sourceItems.length === 0 && !selectedSubmodeId) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent"
+        className="theme-page game-screen min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent"
       >
         Đang tải dữ liệu nhận diện...
       </div>
@@ -309,7 +309,7 @@ export default function GuessCharacterMode() {
   if (!selectedSubmodeId) {
     return (
       <div
-        className="p-3 md:p-4 h-screen w-full flex flex-col overflow-y-auto custom-scrollbar bg-transparent"
+        className="theme-page game-screen p-3 md:p-4 h-screen w-full flex flex-col overflow-y-auto custom-scrollbar bg-transparent"
       >
         <div className="max-w-[1600px] mx-auto flex flex-col w-full min-h-0 pb-4">
         <div
@@ -400,7 +400,7 @@ export default function GuessCharacterMode() {
   if (loading && items.length === 0) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent"
+        className="theme-page game-screen min-h-screen flex items-center justify-center text-2xl font-bold text-amber-400 bg-transparent"
       >
         Đang chuẩn bị mode nhỏ...
       </div>
@@ -410,7 +410,7 @@ export default function GuessCharacterMode() {
   if (!currentItem) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-transparent"
+        className="theme-page game-screen min-h-screen flex flex-col items-center justify-center px-6 text-center bg-transparent"
       >
         <div className="text-2xl font-bold text-amber-400">
           Chưa có dữ liệu hợp lệ cho mode nhỏ này.
@@ -427,7 +427,7 @@ export default function GuessCharacterMode() {
 
   return (
     <div
-      className="p-3 md:p-4 h-screen w-full flex flex-col overflow-hidden bg-transparent"
+      className="theme-page game-screen p-3 md:p-4 h-screen w-full flex flex-col overflow-hidden bg-transparent"
     >
       <div className="max-w-[1600px] mx-auto flex flex-col w-full h-full min-h-0 items-center">
       {/* === Compact Header === */}

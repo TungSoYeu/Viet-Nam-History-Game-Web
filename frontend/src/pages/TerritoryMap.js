@@ -216,7 +216,7 @@ export default function TerritoryMap() {
 
   if (loading || (activePicturePuzzleItems.length > 0 && !sessionReady)) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Đang chuẩn bị phần đuổi hình bắt chữ...
       </div>
     );
@@ -224,7 +224,7 @@ export default function TerritoryMap() {
 
   if (!currentItem && !finished) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen h-screen flex items-center justify-center bg-slate-950 text-amber-300">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
@@ -232,7 +232,7 @@ export default function TerritoryMap() {
 
   if (finished) {
     return (
-      <div className="h-screen bg-[radial-gradient(circle_at_top,#1d4ed8_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center overflow-hidden">
+      <div className="theme-page game-screen h-screen bg-[radial-gradient(circle_at_top,#1d4ed8_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center overflow-hidden">
         <Confetti active={true} count={80} />
         <div className="w-full max-w-3xl rounded-[32px] border border-sky-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
@@ -288,7 +288,7 @@ export default function TerritoryMap() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#0f766e_0%,#020617_72%)] px-4 py-4 text-white sm:px-6">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#0f766e_0%,#020617_72%)] px-4 py-4 text-white sm:px-6">
       <div className="mx-auto flex h-full w-full max-w-6xl flex-1 flex-col gap-4 min-h-0">
         <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">

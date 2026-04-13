@@ -100,7 +100,7 @@ export default function SurvivalMode() {
 
   if (isVictory) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(34,197,94,0.1) 0%, #1a1a2e 70%)' }}>
+      <div className="theme-page game-screen h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden">
         <Confetti active={true} count={80} />
         <div className="animate-bounce-in">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1))', border: '2px solid rgba(34,197,94,0.3)' }}>
@@ -108,10 +108,10 @@ export default function SurvivalMode() {
           </div>
         </div>
         <h2 className="text-3xl sm:text-4xl font-black mb-3 uppercase" style={{ background: 'linear-gradient(135deg, #86efac, #22c55e)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Chinh Phục Thành Công!</h2>
-        <p className="text-base mb-8 max-w-md" style={{ color: 'rgba(255,255,255,0.5)' }}>Bạn đã vượt qua 10 thử thách lịch sử với số điểm tuyệt đối!</p>
+        <p className="text-base mb-8 max-w-md game-text-muted">Bạn đã vượt qua 10 thử thách lịch sử với số điểm tuyệt đối!</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button onClick={() => window.location.reload()} className="px-8 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-[1.02]" style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)' }}>🔄 Tiếp Tục Ải Khác</button>
-          <button onClick={() => navigate('/modes')} className="px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02]" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>← Về Sa Bàn</button>
+          <button onClick={() => navigate('/modes')} className="px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02]" style={{ background: 'var(--game-surface-subtle)', border: '1px solid var(--game-border)', color: 'var(--game-text-secondary)' }}>← Về Sa Bàn</button>
         </div>
       </div>
     );
@@ -119,33 +119,33 @@ export default function SurvivalMode() {
 
   if (isFailed) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 40%, rgba(239,68,68,0.08) 0%, #1a1a2e 70%)' }}>
+      <div className="theme-page game-screen h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden">
         <div className="animate-shake">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1))', border: '2px solid rgba(239,68,68,0.3)' }}>
             <AlertCircle size={48} className="text-red-400" />
           </div>
         </div>
         <h2 className="text-3xl sm:text-4xl font-black mb-3 uppercase" style={{ background: 'linear-gradient(135deg, #fca5a5, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Thử Thách Thất Bại</h2>
-        <p className="text-base mb-8 max-w-md italic" style={{ color: 'rgba(255,255,255,0.5)' }}>"Chưa đủ kiến thức để vượt ải. Hãy quay lại dùi mài sử học!"</p>
+        <p className="text-base mb-8 max-w-md italic game-text-muted">"Chưa đủ kiến thức để vượt ải. Hãy quay lại dùi mài sử học!"</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button onClick={() => window.location.reload()} className="px-8 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-[1.02]" style={{ background: 'linear-gradient(135deg, #dc2626, #ef4444)' }}>🔄 Thử Lại Ngay</button>
-          <button onClick={() => navigate('/timeline')} className="px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02]" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>📚 Vào Học Thuật</button>
+          <button onClick={() => navigate('/timeline')} className="px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02]" style={{ background: 'var(--game-surface-subtle)', border: '1px solid var(--game-border)', color: 'var(--game-text-secondary)' }}>📚 Vào Học Thuật</button>
         </div>
       </div>
     );
   }
 
   if (loading) return (
-    <div className="h-screen flex flex-col overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center">
       <div className="text-center">
         <div className="w-12 h-12 rounded-full border-4 border-t-red-400 border-r-transparent border-b-transparent border-l-transparent animate-spin mx-auto mb-4"></div>
-        <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Đang dàn trận...</p>
+        <p className="text-sm font-semibold game-text-muted">Đang dàn trận...</p>
       </div>
     </div>
   );
 
   if (questions.length === 0) return (
-    <div className="h-screen flex flex-col overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center">
       <div className="text-center">
         <p className="text-red-400 mb-4 font-semibold">Chưa thể tải dữ liệu câu hỏi.</p>
         <button onClick={() => navigate('/modes')} className="btn-primary px-6 py-3 text-sm">Quay lại</button>
@@ -156,13 +156,13 @@ export default function SurvivalMode() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden p-4 sm:p-6 bg-transparent relative z-10 text-white">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 sm:p-6 bg-transparent relative z-10 text-white">
       <ComboIndicator streak={streak} show={!loading && !isFailed && !isVictory} />
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
         {/* Top Bar */}
         <div className="grid grid-cols-[1fr_auto_1fr] items-center mb-6">
           <div className="flex justify-start">
-            <button onClick={() => navigate('/modes')} className="text-sm font-semibold flex items-center gap-1 transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <button onClick={() => navigate('/modes')} className="text-sm font-semibold flex items-center gap-1 transition-colors" style={{ color: 'var(--game-text-muted)' }}>
               <ArrowLeft size={18} /> <span className="hidden sm:inline">Thoát</span>
             </button>
           </div>
@@ -171,7 +171,7 @@ export default function SurvivalMode() {
             <span className="text-xs font-bold text-red-400 uppercase text-center">Tử Chiến</span>
           </div>
           <div className="flex justify-end">
-            <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>{currentIndex + 1}/10</span>
+            <span className="text-sm font-bold" style={{ color: 'var(--game-text-secondary)' }}>{currentIndex + 1}/10</span>
           </div>
         </div>
 
@@ -181,19 +181,19 @@ export default function SurvivalMode() {
         </div>
 
         {/* Question Card */}
-        <div className="flex-1 flex flex-col rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl" style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="flex-1 flex flex-col rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl" style={{ background: 'var(--game-surface-strong)', border: '1px solid var(--game-border)' }}>
           <div className="flex justify-between mb-6">
             <span className="text-xs font-bold uppercase" style={{ color: 'rgba(212,160,83,0.7)' }}>Thử thách #{currentIndex + 1}</span>
             <span className="score-badge gold">⭐ {score} XP</span>
           </div>
-          <h2 className="text-lg sm:text-xl font-bold text-white mb-8 leading-relaxed">"{currentQuestion.content}"</h2>
+          <h2 className="text-lg sm:text-xl font-bold mb-8 leading-relaxed" style={{ color: 'var(--game-text)' }}>"{currentQuestion.content}"</h2>
           
           <Questions question={currentQuestion} onAnswer={handleAnswer} feedback={feedback} />
 
           {feedback && (
             <div className={`mt-6 p-5 rounded-xl border animate-fade-in ${feedback.correct ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
               <p className={`font-bold text-base mb-2 ${feedback.correct ? 'text-green-400' : 'text-red-400'}`}>{feedback.correct ? '✅' : '❌'} {feedback.message}</p>
-              <p className="text-sm italic mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm italic mb-4 game-text-muted">
                 Đáp án và giải thích sẽ chỉ được công bố khi hoàn thành chế độ.
               </p>
               <button onClick={nextQuestion} className="btn-primary px-6 py-3 text-sm flex items-center gap-2 mx-auto">

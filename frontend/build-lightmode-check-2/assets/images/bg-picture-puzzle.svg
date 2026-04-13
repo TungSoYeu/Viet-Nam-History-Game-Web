@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="70" x2="1460" y2="850" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9A3412"/>
+      <stop offset="0.46" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#155E75"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FDBA74" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0.08"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" rx="48" fill="url(#bg)"/>
+  <circle cx="266" cy="164" r="190" fill="#F97316" fill-opacity="0.08"/>
+  <circle cx="1304" cy="728" r="250" fill="#06B6D4" fill-opacity="0.08"/>
+
+  <g filter="url(#shadow)">
+    <rect x="246" y="160" width="302" height="224" rx="32" transform="rotate(-8 246 160)" fill="#0B1120" stroke="#FDBA74" stroke-opacity="0.18"/>
+    <rect x="590" y="166" width="302" height="224" rx="32" transform="rotate(6 590 166)" fill="#0B1120" stroke="#67E8F9" stroke-opacity="0.18"/>
+    <rect x="934" y="172" width="302" height="224" rx="32" transform="rotate(-4 934 172)" fill="#0B1120" stroke="#FDBA74" stroke-opacity="0.18"/>
+    <rect x="446" y="462" width="302" height="224" rx="32" transform="rotate(-5 446 462)" fill="#0B1120" stroke="#67E8F9" stroke-opacity="0.18"/>
+    <rect x="790" y="466" width="302" height="224" rx="32" transform="rotate(7 790 466)" fill="#0B1120" stroke="#FDBA74" stroke-opacity="0.18"/>
+  </g>
+
+  <g opacity="0.8">
+    <rect x="290" y="232" width="180" height="118" rx="24" fill="url(#tile)"/>
+    <rect x="654" y="216" width="184" height="122" rx="24" fill="url(#tile)"/>
+    <rect x="986" y="226" width="176" height="116" rx="24" fill="url(#tile)"/>
+    <rect x="500" y="530" width="184" height="122" rx="24" fill="url(#tile)"/>
+    <rect x="846" y="526" width="188" height="126" rx="24" fill="url(#tile)"/>
+
+    <path d="M344 286h72M686 278h98M1030 282h84M548 594h88M896 590h86" stroke="#F8FAFC" stroke-opacity="0.18" stroke-width="16" stroke-linecap="round"/>
+    <path d="M330 320h112M674 312h136M1012 316h122M532 628h122M880 624h118" stroke="#F8FAFC" stroke-opacity="0.12" stroke-width="14" stroke-linecap="round"/>
+  </g>
+
+  <g opacity="0.92">
+    <path d="M1180 182c13 0 25 10 25 24v26h25c14 0 24 11 24 25v26c0 13-10 24-24 24h-25v26c0 13-12 24-25 24h-26c-14 0-24-11-24-24v-26h-25c-14 0-24-11-24-24v-26c0-14 10-25 24-25h25v-26c0-14 10-24 24-24h26Z" fill="#F8FAFC" fill-opacity="0.12" stroke="#F8FAFC" stroke-opacity="0.1"/>
+    <path d="M792 648c13 0 25 10 25 24v22h21c14 0 24 11 24 24v22c0 13-10 24-24 24h-21v22c0 13-12 24-25 24h-22c-14 0-24-11-24-24v-22h-21c-14 0-24-11-24-24v-22c0-13 10-24 24-24h21v-22c0-14 10-24 24-24h22Z" fill="#F8FAFC" fill-opacity="0.1" stroke="#F8FAFC" stroke-opacity="0.08"/>
+  </g>
+
+  <rect x="96" y="96" width="1408" height="708" rx="38" stroke="#F8FAFC" stroke-opacity="0.08" stroke-width="2"/>
+</svg>
