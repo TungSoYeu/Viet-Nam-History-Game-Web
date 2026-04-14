@@ -1,11 +1,6 @@
 const multer = require('multer');
 const path = require('path');
-
-// Use memory storage for Vercel (serverless has no persistent filesystem)
-// The file buffer will be uploaded to Vercel Blob in the route handler
 const storage = multer.memoryStorage();
-
-// Check file type
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|webp/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -17,8 +12,6 @@ function checkFileType(file, cb) {
         cb(new Error('Chỉ chấp nhận file ảnh (jpeg, jpg, png, webp)!'));
     }
 }
-
-// Init upload
 const upload = multer({
     storage: storage,
     limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
