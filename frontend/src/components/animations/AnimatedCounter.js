@@ -1,14 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-
-/**
- * AnimatedCounter — Animated number counting up from 0 to target.
- * Desktop-optimized with large typography and hover glow.
- *
- * @param {number} end - Target number
- * @param {string} suffix - Text after number (e.g. "+")
- * @param {string} label - Description label
- * @param {number} duration - Animation duration in ms
- */
 export default function AnimatedCounter({ end = 0, suffix = '', label = '', duration = 2000, icon }) {
   const [count, setCount] = useState(0);
   const [visible, setVisible] = useState(false);
