@@ -4,22 +4,22 @@ import { motion } from 'framer-motion';
 const pageVariants = {
   initial: {
     opacity: 0,
-    x: "100vw", // Trượt từ bên phải màn hình
+    x: "100vw", 
   },
   in: {
     opacity: 1,
-    x: 0, // Dừng tại chỗ
+    x: 0, 
   },
   out: {
     opacity: 0,
-    x: "-100vw", // Trượt sang trái khi biến mất
+    x: "-100vw", 
   },
 };
 
 const pageTransition = {
   type: "spring",
-  stiffness: 70, // Độ cứng của lò xo (càng cao càng nhanh)
-  damping: 15,    // Độ nảy (càng thấp càng nảy)
+  stiffness: 70,
+  damping: 15,    
 };
 
 const AnimatedPage = ({ children }) => {
