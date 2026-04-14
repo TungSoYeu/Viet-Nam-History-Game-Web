@@ -8,13 +8,9 @@ const connectDB = async () => {
     if (mongoose.connection.readyState === 1) {
         return cachedConnection;
     }
-
-    // Connection in progress — wait for it instead of creating another
     if (connectionPromise) {
         return connectionPromise;
     }
-
-    // Currently connecting (readyState = 2) or disconnecting (readyState = 3), wait
     if (mongoose.connection.readyState === 2) {
         return new Promise((resolve, reject) => {
             mongoose.connection.once('connected', () => resolve(cachedConnection));
@@ -27,7 +23,6 @@ const connectDB = async () => {
             throw new Error("Biến môi trường MONGO_URI chưa được thiết lập.");
         }
 
-        // Store the promise to prevent race conditions on cold start
         connectionPromise = mongoose.connect(process.env.MONGO_URI, {
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000,
