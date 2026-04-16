@@ -12,7 +12,6 @@ import RankBadge from '../components/RankBadge';
 import { fetchClassroomLeaderboard } from '../services/classroomClient';
 import { getActiveClassroomId, getActiveClassroomName } from '../utils/classroomContext';
 
-// Danh sách các danh nhân tiêu biểu để làm avatar mặc định
 const HISTORICAL_AVATARS = [
   "/assets/images/ngo_quyen.png",
   "/assets/images/le_loi.png",
@@ -66,7 +65,7 @@ export default function Leaderboard() {
 
   const getPodiumStyles = (index) => {
     switch (index) {
-      case 0: // Gold
+      case 0: 
         return {
           gradientBg: "linear-gradient(135deg, #ca8a04, #eab308)",
           border: "border-yellow-500/50",
@@ -77,7 +76,7 @@ export default function Leaderboard() {
           shadow: "shadow-[0_10px_40px_rgba(234,179,8,0.3)]",
           delay: 0.2
         };
-      case 1: // Silver
+      case 1: 
         return {
           gradientBg: "linear-gradient(135deg, #64748b, #94a3b8)",
           border: "border-slate-400/50",
@@ -88,7 +87,7 @@ export default function Leaderboard() {
           shadow: "shadow-[0_10px_30px_rgba(148,163,184,0.2)]",
           delay: 0.1
         };
-      case 2: // Bronze
+      case 2: 
         return {
           gradientBg: "linear-gradient(135deg, #c2410c, #ea580c)",
           border: "border-orange-500/50",
