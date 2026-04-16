@@ -1,12 +1,4 @@
 import { useEffect, useState } from 'react';
-
-/**
- * ComboIndicator — Shows combo streak badge during gameplay.
- * Desktop-optimized with fixed position and large typography.
- *
- * @param {number} streak - Current consecutive correct answers
- * @param {boolean} show - Whether to display the indicator
- */
 export default function ComboIndicator({ streak = 0, show = false }) {
   const [displayStreak, setDisplayStreak] = useState(0);
   const [key, setKey] = useState(0);
