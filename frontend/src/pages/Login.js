@@ -1,4 +1,3 @@
-// frontend/src/pages/Login.js
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
@@ -28,7 +27,7 @@ export default function Login() {
   const [formShake, setFormShake] = useState(false);
   const hasGoogleLogin = Boolean(GOOGLE_CLIENT_ID);
 
-  // --- STATE CHO ĐỊA CHỈ TRƯỜNG ---
+
   const { provinces: rawProvinces } = useProvinces();
   const [districts, setDistricts] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState(null);
