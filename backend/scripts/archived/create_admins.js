@@ -20,8 +20,6 @@ const createAdmins = async () => {
                 console.log(`⚠️  Tài khoản ${adminData.username} đã tồn tại. Đang cập nhật quyền Admin...`);
                 existingUser.role = 'admin';
                 existingUser.experience = 9999;
-                
-                // Tránh lỗi duplicate key từ MongoDB cho những email rỗng cũ
                 if (existingUser.email && existingUser.email.trim() === '') {
                     existingUser.email = undefined;
                 }
