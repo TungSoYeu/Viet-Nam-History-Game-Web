@@ -10,15 +10,6 @@ const SHAPES = ['■', '●', '▲', '◆', '★'];
 function randomBetween(a, b) {
   return Math.random() * (b - a) + a;
 }
-
-/**
- * Confetti — Pure CSS confetti burst animation.
- * Desktop-optimized with wide spread across the viewport.
- *
- * @param {boolean} active - Whether confetti is showing
- * @param {number} count - Number of particles
- * @param {function} onComplete - Callback when animation ends
- */
 export default function Confetti({ active = false, count = 50, onComplete }) {
   const [particles, setParticles] = useState([]);
 
