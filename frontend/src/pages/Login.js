@@ -13,7 +13,7 @@ export default function Login() {
   const navigate = useNavigate();
   const toast = useToast();
   const [isRegister, setIsRegister] = useState(false);
-  const [registerStep, setRegisterStep] = useState(1); // Multi-step: 1 or 2
+  const [registerStep, setRegisterStep] = useState(1); 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
