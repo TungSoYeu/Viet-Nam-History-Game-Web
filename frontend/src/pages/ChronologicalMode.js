@@ -346,7 +346,7 @@ export default function ChronologicalMode() {
   }
 
   return (
-    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-4 text-white sm:px-6">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[radial-gradient(circle_at_top,#1f2937_0%,#020617_70%)] px-4 py-4 text-white sm:px-6">
       <div className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 min-h-0">
         <div className="grid gap-3 flex-shrink-0 sm:gap-4 rounded-[28px] border border-white/10 bg-slate-900/80 p-3 sm:p-4 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center">
           <div className="flex justify-center md:justify-start">
@@ -367,7 +367,6 @@ export default function ChronologicalMode() {
             <h1 className="vn-safe-heading mt-3 text-2xl font-black tracking-[0.08em] text-white sm:text-3xl">
               Câu {roundIndex + 1}/{totalRounds}
             </h1>
-            <p className="mt-2 text-sm text-slate-300">{currentRound.instruction}</p>
           </div>
 
           <div className="flex items-center justify-center gap-3 md:justify-end">
@@ -394,10 +393,6 @@ export default function ChronologicalMode() {
               <div>
                 <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
                   Các Dữ Kiện Lịch Sử
-                </div>
-                <div className="mt-2 text-sm text-slate-300">
-                  Kéo dữ kiện vào đúng dòng. Dữ kiện thừa phải được giữ lại ngoài
-                  4 hộp.
                 </div>
               </div>
               <button
@@ -441,60 +436,50 @@ export default function ChronologicalMode() {
             </div>
 
             <div className="mt-4 flex-1 min-h-0 flex flex-col gap-4">
-              {!roundStarted && !feedback ? (
-                <div className="flex flex-1 items-center justify-center rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
-                  Bộ dữ kiện đang được ẩn. Bấm{" "}
-                  <span className="mx-1 font-black text-sky-200">BẮT ĐẦU</span>
-                  để mở câu {roundIndex + 1} và chạy {ROUND_TIME} giây.
-                </div>
-              ) : (
-                <>
-                  <div
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={(event) => handleDrop(event, "")}
-                    className="rounded-2xl border border-dashed border-white/10 bg-slate-950/50 px-4 py-3 text-center text-sm text-slate-400"
-                  >
-                    Kéo dữ kiện thừa hoặc dữ kiện muốn bỏ ra khỏi hộp về vùng này.
-                  </div>
+              <div
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => handleDrop(event, "")}
+                className="rounded-2xl border border-dashed border-white/10 bg-slate-950/50 px-4 py-3 text-center text-sm font-bold text-slate-300"
+              >
+                Kéo dữ kiện thừa hoặc dữ kiện muốn bỏ ra khỏi hộp về vùng này.
+              </div>
 
-                  <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto pr-1">
-                    {availableSentences.length > 0 ? (
-                      <div className="grid gap-3 lg:grid-cols-2">
-                        {availableSentences.map((sentence) => (
-                          <div
-                            key={`${currentRound.id}-${sentence.id}`}
-                            draggable={timerRunning}
-                            onDragStart={(event) => handleDragStart(event, sentence.id)}
-                            className={`rounded-[22px] border p-4 ${
-                              incorrectIds.includes(sentence.id)
-                                ? "border-rose-400/40 bg-rose-500/10"
-                                : "border-white/10 bg-slate-950/60"
-                            } ${timerRunning ? "cursor-grab" : "opacity-70"}`}
-                          >
-                            <div className="flex flex-wrap items-center justify-between gap-3">
-                              <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/15 text-sm font-black text-amber-300">
-                                {sentence.id}
-                              </div>
-                              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                Đang để ngoài
-                              </div>
-                            </div>
-
-                            <div className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base">
-                              {sentence.text}
-                            </div>
+              <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto pr-1">
+                {availableSentences.length > 0 ? (
+                  <div className="grid gap-3 lg:grid-cols-2">
+                    {availableSentences.map((sentence) => (
+                      <div
+                        key={`${currentRound.id}-${sentence.id}`}
+                        draggable={timerRunning}
+                        onDragStart={(event) => handleDragStart(event, sentence.id)}
+                        className={`rounded-[22px] border p-4 ${
+                          incorrectIds.includes(sentence.id)
+                            ? "border-rose-400/40 bg-rose-500/10"
+                            : "border-white/10 bg-slate-950/60"
+                        } ${timerRunning ? "cursor-grab" : "opacity-70"}`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/15 text-sm font-black text-amber-300">
+                            {sentence.id}
                           </div>
-                        ))}
+                          <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                            Đang để ngoài
+                          </div>
+                        </div>
+
+                        <div className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base">
+                          {sentence.text}
+                        </div>
                       </div>
-                    ) : (
-                      <div className="rounded-[24px] border border-dashed border-white/10 bg-slate-950/40 px-4 py-6 text-center text-sm text-slate-400">
-                        Không còn dữ kiện nào ở ngoài. Kiểm tra lại để chắc rằng
-                        không có đáp án thừa bị đặt nhầm vào 4 dòng.
-                      </div>
-                    )}
+                    ))}
                   </div>
-                </>
-              )}
+                ) : (
+                  <div className="rounded-[24px] border border-dashed border-white/10 bg-slate-950/40 px-4 py-6 text-center text-sm text-slate-400">
+                    Không còn dữ kiện nào ở ngoài. Kiểm tra lại để chắc rằng
+                    không có đáp án thừa bị đặt nhầm vào 4 dòng.
+                  </div>
+                )}
+              </div>
 
               {feedback && (
                 <div
@@ -534,102 +519,59 @@ export default function ChronologicalMode() {
               Bốn Dòng Lịch Sử
             </div>
             <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto pr-1">
-              {!roundStarted && !feedback ? (
-                <div className="rounded-[24px] border border-dashed border-sky-400/20 bg-sky-500/10 px-4 py-8 text-center text-sm text-slate-100">
-                  Bốn dòng lịch sử sẽ chỉ hiện ra sau khi bấm{" "}
-                  <span className="font-black text-sky-200">BẮT ĐẦU</span>.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {groupedLines.map((line) => (
-                    <div
-                      key={line.id}
-                      className={`rounded-[24px] border p-4 ${lineColors[line.id]}`}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-xs font-black uppercase tracking-[0.22em] text-amber-300/80">
-                            {line.label}
-                          </div>
-                          <div className="mt-1 text-base font-bold text-white sm:text-lg">
-                            {line.title}
-                          </div>
+              <div className="space-y-3">
+                {groupedLines.map((line) => (
+                  <div
+                    key={line.id}
+                    className={`rounded-[24px] border p-4 ${lineColors[line.id]}`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-xs font-black uppercase tracking-[0.22em] text-amber-300/80">
+                          {line.label}
                         </div>
-                        <div className="rounded-full bg-white/5 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-slate-300">
-                          {line.items.length}/{line.required}
+                        <div className="mt-1 text-lg font-bold text-white sm:text-xl">
+                          {line.title}
                         </div>
                       </div>
-
-                      <div
-                        className="mt-3 space-y-2 min-h-[92px]"
-                        onDragOver={(event) => event.preventDefault()}
-                        onDrop={(event) => handleDrop(event, line.id)}
-                      >
-                        {line.items.length > 0 ? (
-                          line.items.map((item) => (
-                            <div
-                              key={`${line.id}-${item.id}`}
-                              draggable={timerRunning}
-                              onDragStart={(event) => handleDragStart(event, item.id)}
-                              className={`rounded-2xl border bg-slate-800/90 px-4 py-3 text-sm leading-6 text-slate-200 ${
-                                timerRunning ? "cursor-grab" : "opacity-70"
-                              } ${
-                                incorrectIds.includes(item.id)
-                                  ? "border-rose-400/40"
-                                  : "border-white/10"
-                              }`}
-                            >
-                              <span className="mr-2 font-black text-amber-300">
-                                {item.id}.
-                              </span>
-                              {item.text}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="rounded-2xl border border-dashed border-white/10 px-4 py-4 text-sm text-slate-500">
-                            Chưa có dữ kiện nào trong dòng này.
-                          </div>
-                        )}
+                      <div className="rounded-full bg-white/5 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-slate-300">
+                        {line.items.length}/{line.required}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            <div className="rounded-[24px] border border-white/10 bg-slate-950/50 p-4">
-              <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                Tiến Độ {totalRounds} Câu
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {activeHistoricalFlowSets.map((flowSet, index) => {
-                  const isCurrent = index === roundIndex;
-                  const isDone = index < roundIndex || (finished && index === roundIndex);
-
-                  return (
                     <div
-                      key={flowSet.id || index}
-                      className={`rounded-2xl border px-4 py-3 ${
-                        isDone
-                          ? "border-emerald-400/30 bg-emerald-500/10"
-                          : isCurrent
-                            ? "border-amber-400/30 bg-amber-500/10"
-                            : "border-white/10 bg-slate-800/80"
-                      }`}
+                      className="mt-3 space-y-2 min-h-[110px]"
+                      onDragOver={(event) => event.preventDefault()}
+                      onDrop={(event) => handleDrop(event, line.id)}
                     >
-                      <div className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                        Câu {index + 1}
-                      </div>
-                      <div className="mt-1 text-sm font-bold text-white">
-                        {index < roundIndex || (finished && index === roundIndex)
-                          ? "Đã hoàn thành"
-                          : index === roundIndex
-                            ? "Đang thực hiện"
-                            : "Chưa mở"}
-                      </div>
+                      {line.items.length > 0 ? (
+                        line.items.map((item) => (
+                          <div
+                            key={`${line.id}-${item.id}`}
+                            draggable={timerRunning}
+                            onDragStart={(event) => handleDragStart(event, item.id)}
+                            className={`rounded-2xl border bg-slate-800/90 px-4 py-3 text-base leading-6 text-slate-200 ${
+                              timerRunning ? "cursor-grab" : "opacity-70"
+                            } ${
+                              incorrectIds.includes(item.id)
+                                ? "border-rose-400/40"
+                                : "border-white/10"
+                            }`}
+                          >
+                            <span className="mr-2 font-black text-amber-300">
+                              {item.id}.
+                            </span>
+                            {item.text}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-white/10 px-4 py-4 text-sm text-slate-500">
+                          Chưa có dữ kiện nào trong dòng này.
+                        </div>
+                      )}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

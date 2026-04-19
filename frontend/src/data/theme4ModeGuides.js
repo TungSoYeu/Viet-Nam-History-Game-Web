@@ -12,11 +12,12 @@ export const theme4ModeGuides = {
   teammate: {
     objective: "Phối hợp đồng đội để hiểu ý và đoán từ khóa lịch sử.",
     rules: [
-      "5 gói câu hỏi, mỗi gói 10 từ khóa.",
-      "Một người gợi ý, người còn lại đoán đáp án tương ứng."
+      "6 gói câu hỏi, mỗi gói 10 từ khóa.",
+      "Người gợi ý có 30 giây để ghi nhớ, người đoán có 60 giây để xử lý gói.",
+      "Từ nào chưa đoán được có thể bỏ qua và quay lại ở cuối hàng chờ."
     ],
     scoring: "Hoạt động lớp học rèn phản xạ, không đặt nặng điểm số.",
-    sample: "Gợi ý: '1427, viện binh Minh thua' -> Đoán: 'Chi Lăng Xương Giang'."
+    sample: "Gợi ý: 'năm 981, đánh tan quân Tống trên sông lớn' -> Đoán: 'Lê Hoàn'."
   },
   recognition: {
     objective: "Nhận diện nhanh từ khóa hoặc hình ảnh, lược đồ lịch sử.",

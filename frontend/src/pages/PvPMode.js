@@ -1,13 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, Flag, Play, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, Clock3, Play, RefreshCw, Users } from "lucide-react";
 import { teammatePackages } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import { logGameTelemetry, resetModeSessionId } from "../utils/gameHelpers";
 
-const PREP_SECONDS = 10;
+const PREP_SECONDS = 30;
 const ROUND_SECONDS = 60;
 const MODE_ID = "understanding-teammates";
+
+const getShownKeywordsCountForPackage = (
+  selectedPackage,
+  phase,
+  keywordAttempts,
+  keywordQueue
+) => {
+  if (!selectedPackage) return 0;
+  if (phase !== "play" && phase !== "finished") return 0;
+
+  const shownIndexes = new Set(keywordAttempts.map((item) => item.keywordIndex));
+  const currentIndex = keywordQueue[0];
+
+  if (Number.isInteger(currentIndex)) {
+    shownIndexes.add(currentIndex);
+  }
+
+  return Math.min(shownIndexes.size, selectedPackage.keywords.length);
+};
 
 export default function PvPMode() {
   const navigate = useNavigate();
@@ -18,11 +37,11 @@ export default function PvPMode() {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [phase, setPhase] = useState("select");
   const [timeLeft, setTimeLeft] = useState(PREP_SECONDS);
-  const [keywordIndex, setKeywordIndex] = useState(0);
-  const [activeRole, setActiveRole] = useState("nguoi-goi-y");
+  const [keywordQueue, setKeywordQueue] = useState([]);
   const [finishReason, setFinishReason] = useState(null);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [keywordResults, setKeywordResults] = useState([]);
+  const [keywordStatuses, setKeywordStatuses] = useState([]);
+  const [keywordAttempts, setKeywordAttempts] = useState([]);
   const startedAtRef = useRef(Date.now());
   const sessionActiveRef = useRef(false);
   const activePackages = Array.isArray(remoteTeammatePackages)
@@ -95,6 +114,11 @@ export default function PvPMode() {
     successBorder: isLightMode
       ? "1px solid rgba(34, 197, 94, 0.28)"
       : "1px solid rgba(34, 197, 94, 0.38)",
+    warningText: isLightMode ? "#b45309" : "#fbbf24",
+    warningSurface: isLightMode ? "rgba(245, 158, 11, 0.12)" : "rgba(245, 158, 11, 0.18)",
+    warningBorder: isLightMode
+      ? "1px solid rgba(245, 158, 11, 0.24)"
+      : "1px solid rgba(245, 158, 11, 0.34)",
     dangerText: isLightMode ? "#b91c1c" : "#f87171",
     dangerSurface: isLightMode ? "rgba(239, 68, 68, 0.12)" : "rgba(239, 68, 68, 0.2)",
     dangerBorder: isLightMode
@@ -102,20 +126,17 @@ export default function PvPMode() {
       : "1px solid rgba(239, 68, 68, 0.38)",
   };
 
+  const buildInitialQueue = (pkg) =>
+    Array.isArray(pkg?.keywords) ? pkg.keywords.map((_, index) => index) : [];
+
   const endSession = (payload) => {
     if (!sessionActiveRef.current) return;
     logGameTelemetry(MODE_ID, "session_end", payload);
     sessionActiveRef.current = false;
   };
 
-  const getShownKeywordsCount = () => {
-    if (!selectedPackage) return 0;
-    if (phase !== "play" && phase !== "finished") return 0;
-    return Math.min(keywordIndex + 1, selectedPackage.keywords.length);
-  };
-
-  const getKeywordResultStyle = (result) => {
-    if (!result) {
+  const getKeywordResultStyle = (status) => {
+    if (!status || status.status === "pending") {
       return {
         background: "var(--page-card-soft)",
         color: "var(--text-primary)",
@@ -123,17 +144,19 @@ export default function PvPMode() {
       };
     }
 
-    return result.isCorrect
-      ? {
-          background: pageStyles.successSurface,
-          color: pageStyles.successText,
-          border: pageStyles.successBorder,
-        }
-      : {
-          background: pageStyles.dangerSurface,
-          color: pageStyles.dangerText,
-          border: pageStyles.dangerBorder,
-        };
+    if (status.status === "correct") {
+      return {
+        background: pageStyles.successSurface,
+        color: pageStyles.successText,
+        border: pageStyles.successBorder,
+      };
+    }
+
+    return {
+      background: pageStyles.warningSurface,
+      color: pageStyles.warningText,
+      border: pageStyles.warningBorder,
+    };
   };
 
   useEffect(() => {
@@ -145,7 +168,6 @@ export default function PvPMode() {
           clearInterval(timer);
           if (phase === "prep") {
             setPhase("play");
-            setActiveRole("nguoi-doan");
             setTimerRunning(true);
             return ROUND_SECONDS;
           }
@@ -154,7 +176,12 @@ export default function PvPMode() {
               solved: false,
               reason: "time_up",
               packageId: selectedPackage.id,
-              shownKeywords: Math.min(keywordIndex + 1, selectedPackage.keywords.length),
+              shownKeywords: getShownKeywordsCountForPackage(
+                selectedPackage,
+                phase,
+                keywordAttempts,
+                keywordQueue
+              ),
               durationMs: Date.now() - startedAtRef.current,
             });
           }
@@ -168,18 +195,18 @@ export default function PvPMode() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [keywordIndex, phase, selectedPackage, timerRunning]);
+  }, [keywordAttempts, keywordQueue, phase, selectedPackage, timerRunning]);
 
   const startPackage = (pkg) => {
     sessionActiveRef.current = false;
     setSelectedPackage(pkg);
     setPhase("prep-ready");
     setTimeLeft(PREP_SECONDS);
-    setKeywordIndex(0);
-    setActiveRole("nguoi-goi-y");
+    setKeywordQueue(buildInitialQueue(pkg));
     setFinishReason(null);
     setTimerRunning(false);
-    setKeywordResults([]);
+    setKeywordStatuses((pkg?.keywords || []).map(() => ({ status: "pending", attempts: 0 })));
+    setKeywordAttempts([]);
   };
 
   const startPrepPhase = () => {
@@ -201,40 +228,68 @@ export default function PvPMode() {
       endSession({
         solved: phase === "finished" && finishReason === "completed",
         packageId: selectedPackage.id,
-        shownKeywords: getShownKeywordsCount(),
+        shownKeywords: getShownKeywordsCountForPackage(
+          selectedPackage,
+          phase,
+          keywordAttempts,
+          keywordQueue
+        ),
         durationMs: Date.now() - startedAtRef.current,
       });
     }
     setSelectedPackage(null);
     setPhase("select");
     setTimeLeft(PREP_SECONDS);
-    setKeywordIndex(0);
-    setActiveRole("nguoi-goi-y");
+    setKeywordQueue([]);
     setFinishReason(null);
     setTimerRunning(false);
-    setKeywordResults([]);
+    setKeywordStatuses([]);
+    setKeywordAttempts([]);
   };
 
   const submitKeywordResult = (isCorrect) => {
-    if (!selectedPackage) return;
+    if (!selectedPackage || !keywordQueue.length) return;
 
-    setKeywordResults((prev) => [
+    const currentKeywordIndex = keywordQueue[0];
+    const currentKeyword = selectedPackage.keywords[currentKeywordIndex];
+
+    setKeywordAttempts((prev) => [
       ...prev,
       {
-        keywordIndex,
-        keyword: selectedPackage.keywords[keywordIndex],
+        keywordIndex: currentKeywordIndex,
+        keyword: currentKeyword,
         isCorrect,
       },
     ]);
 
+    setKeywordStatuses((prev) => {
+      const next = [...prev];
+      const previous = next[currentKeywordIndex] || { status: "pending", attempts: 0 };
+
+      next[currentKeywordIndex] = {
+        ...previous,
+        status: isCorrect ? "correct" : "retry",
+        attempts: (previous.attempts || 0) + 1,
+        isCorrect,
+      };
+
+      return next;
+    });
+
     logGameTelemetry(MODE_ID, "answer_submitted", {
       correct: isCorrect,
       questionType: "keyword_cycle",
-      keywordIndex,
+      keywordIndex: currentKeywordIndex,
       packageId: selectedPackage.id,
     });
-    
-    if (keywordIndex + 1 >= selectedPackage.keywords.length) {
+
+    const nextQueue = isCorrect
+      ? keywordQueue.slice(1)
+      : [...keywordQueue.slice(1), currentKeywordIndex];
+
+    setKeywordQueue(nextQueue);
+
+    if (isCorrect && nextQueue.length === 0) {
       endSession({
         solved: true,
         packageId: selectedPackage.id,
@@ -246,7 +301,6 @@ export default function PvPMode() {
       setPhase("finished");
       return;
     }
-    setKeywordIndex((prev) => prev + 1);
   };
 
   const toggleTimerRunning = () => {
@@ -257,7 +311,7 @@ export default function PvPMode() {
     if (loading && !remoteTeammatePackages) {
       return (
         <div
-          className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center px-6 text-center text-2xl font-bold"
+          className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar items-center justify-center px-6 text-center text-2xl font-bold"
           style={{ ...pageStyles.page, color: "var(--page-heading)" }}
         >
           Đang tải gói từ khóa đồng đội...
@@ -268,7 +322,7 @@ export default function PvPMode() {
     if (!activePackages.length) {
       return (
         <div
-          className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center text-center px-6 text-2xl font-bold"
+          className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar items-center justify-center text-center px-6 text-2xl font-bold"
           style={{ ...pageStyles.page, color: "var(--page-heading)" }}
         >
           Chưa có gói câu hỏi cho chế độ chơi này.
@@ -278,7 +332,7 @@ export default function PvPMode() {
 
     return (
         <div
-          className="theme-page game-screen h-full min-h-0 flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8"
+          className="theme-page game-screen h-full min-h-0 flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-6 lg:p-8"
           style={pageStyles.page}
         >
         <div className="max-w-[1180px] w-full mx-auto flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
@@ -346,7 +400,7 @@ export default function PvPMode() {
                       {pkg.title}
                     </h2>
                     <p className="mt-3 text-sm leading-6" style={pageStyles.textSecondary}>
-                      Bắt đầu lượt ghi nhớ 10 giây rồi chuyển sang người đoán trong 60 giây.
+                      Bắt đầu lượt ghi nhớ 30 giây rồi chuyển sang người đoán trong 60 giây.
                     </p>
                     <div
                       className="mt-auto inline-flex items-center gap-2 pt-5 text-xs font-black uppercase tracking-[0.16em]"
@@ -365,10 +419,25 @@ export default function PvPMode() {
     );
   }
 
-  const currentKeyword = selectedPackage?.keywords[keywordIndex];
+  const currentKeywordIndex = keywordQueue[0] ?? -1;
+  const currentKeyword =
+    currentKeywordIndex >= 0 ? selectedPackage?.keywords[currentKeywordIndex] : "";
   const totalKeywords = selectedPackage?.keywords.length || 0;
-  const keywordProgress = totalKeywords > 0 ? ((keywordIndex + 1) / totalKeywords) * 100 : 0;
-  const correctCount = keywordResults.filter((item) => item.isCorrect).length;
+  const correctCount = keywordStatuses.filter((item) => item?.status === "correct").length;
+  const retryCount = keywordStatuses.filter((item) => item?.status === "retry").length;
+  const remainingCount = keywordQueue.length;
+  const keywordProgress = totalKeywords > 0 ? (correctCount / totalKeywords) * 100 : 0;
+  const completedKeywords = selectedPackage
+    ? selectedPackage.keywords.filter((_, index) => keywordStatuses[index]?.status === "correct")
+    : [];
+  const queuedRetryKeywords = selectedPackage
+    ? keywordQueue
+        .slice(1)
+        .filter((index) => keywordStatuses[index]?.status === "retry")
+        .map((index) => selectedPackage.keywords[index])
+    : [];
+  const isRetryTurn =
+    currentKeywordIndex >= 0 && keywordStatuses[currentKeywordIndex]?.status === "retry";
   const phaseTitle =
     phase === "prep" || phase === "prep-ready"
       ? "Ghi Nhớ Từ Khóa"
@@ -378,7 +447,7 @@ export default function PvPMode() {
 
   return (
     <div
-      className="theme-page game-screen h-full min-h-0 p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-hidden"
+      className="theme-page game-screen h-full min-h-0 p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar"
       style={pageStyles.page}
     >
       <div
@@ -432,68 +501,23 @@ export default function PvPMode() {
 
         {(phase === "prep" || phase === "prep-ready") && (
           <div className="text-center">
-            <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full" style={pageStyles.iconRing}>
-              <Flag size={44} className="text-amber-500" />
-            </div>
-            <p className="text-lg sm:text-xl font-bold mb-3" style={pageStyles.textPrimary}>
-              Người gợi ý có 10 giây để nhớ trọn gói từ khóa trước khi người đoán bắt đầu.
-            </p>
-            <p className="mx-auto mb-8 max-w-3xl text-sm leading-7 sm:text-base" style={pageStyles.textSecondary}>
-              {phase === "prep"
-                ? "Đồng hồ đang chạy cho người gợi ý. Khi hết thời gian, màn hình sẽ tự chuyển sang lượt người đoán."
-                : "Nhấn bắt đầu khi cả nhóm đã sẵn sàng bước vào giai đoạn ghi nhớ."}
-            </p>
-            <div className="mb-8 rounded-[1.5rem] p-5 sm:p-6" style={pageStyles.panel}>
-              <p className="mb-4 text-xs font-black uppercase tracking-[0.2em]" style={{ color: "var(--page-heading)" }}>
-                Vai trò lượt này
+            <div className="mb-6 flex flex-col gap-2">
+              <p
+                className="text-xs font-black uppercase tracking-[0.2em]"
+                style={{ color: "var(--page-heading)" }}
+              >
+                Gói từ khóa ghi nhớ
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => setActiveRole("nguoi-goi-y")}
-                  className={`game-action-btn text-sm ${
-                    activeRole === "nguoi-goi-y" ? "bg-pink-600 text-white" : ""
-                  }`}
-                  style={
-                    activeRole === "nguoi-goi-y"
-                      ? undefined
-                      : {
-                          background: "var(--page-card-muted)",
-                          border: "1px solid var(--page-card-border)",
-                          color: "var(--text-secondary)",
-                        }
-                  }
-                >
-                  Người Gợi Ý
-                </button>
-                <button
-                  onClick={() => setActiveRole("nguoi-doan")}
-                  className={`game-action-btn text-sm ${
-                    activeRole === "nguoi-doan" ? "bg-emerald-600 text-white" : ""
-                  }`}
-                  style={
-                    activeRole === "nguoi-doan"
-                      ? undefined
-                      : {
-                          background: "var(--page-card-muted)",
-                          border: "1px solid var(--page-card-border)",
-                          color: "var(--text-secondary)",
-                        }
-                  }
-                >
-                  Người Đoán
-                </button>
-              </div>
-              <p className="mt-4 text-sm leading-7" style={pageStyles.textSecondary}>
-                {activeRole === "nguoi-goi-y"
-                  ? "Người gợi ý nên diễn đạt ngắn gọn, tránh đọc gần giống hoặc lộ trực tiếp từ khóa."
-                  : "Người đoán ưu tiên chốt nhanh đáp án theo mốc thời gian, nhân vật và sự kiện chính."}
+              <p className="text-sm leading-7 sm:text-base" style={pageStyles.textSecondary}>
+                Người gợi ý có {PREP_SECONDS} giây để ghi nhớ trọn bộ 10 từ khóa trước khi màn hình tự chuyển sang lượt đoán.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
               {selectedPackage?.keywords.map((keyword, index) => (
                 <div
                   key={`${keyword}-${index}`}
-                  className="vn-safe-chip min-h-[84px] rounded-[1.2rem] px-4 py-4 text-center text-sm sm:text-base font-bold flex items-center justify-center"
+                  className="vn-safe-chip min-h-[108px] rounded-[1.4rem] px-5 py-5 text-center text-lg sm:text-xl lg:text-2xl font-black leading-tight flex items-center justify-center"
                   style={pageStyles.keywordChip}
                 >
                   {keyword}
@@ -523,64 +547,102 @@ export default function PvPMode() {
 
         {phase === "play" && (
           <div className="text-center">
-            <div className="mb-3 text-xs font-black uppercase tracking-[0.2em]" style={{ color: "var(--page-heading)" }}>
-              Từ khóa {keywordIndex + 1} / {selectedPackage?.keywords.length}
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
+              <div
+                className="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]"
+                style={pageStyles.chip}
+              >
+                Còn lại {remainingCount} / {totalKeywords} từ
+              </div>
+              {isRetryTurn && (
+                <div
+                  className="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]"
+                  style={{
+                    background: pageStyles.warningSurface,
+                    color: pageStyles.warningText,
+                    border: pageStyles.warningBorder,
+                  }}
+                >
+                  Đang quay lại từ đã bỏ qua
+                </div>
+              )}
             </div>
 
             <div
-              className="mb-6 flex min-h-[240px] sm:min-h-[280px] items-center justify-center rounded-[1.8rem] p-6 sm:p-8"
+              className="mb-6 flex min-h-[280px] sm:min-h-[340px] lg:min-h-[400px] items-center justify-center rounded-[2rem] p-6 sm:p-10"
               style={pageStyles.keywordBoard}
             >
               <span
-                className="max-w-[92%] break-words text-3xl sm:text-4xl lg:text-5xl font-black leading-tight"
+                className="max-w-[94%] break-words text-center text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-black leading-tight"
                 style={pageStyles.textPrimary}
               >
                 {currentKeyword}
               </span>
             </div>
 
-            <p className="mx-auto mb-8 max-w-3xl text-sm leading-7 sm:text-base" style={pageStyles.textSecondary}>
-              Đồng đội có nhiệm vụ đưa ra gợi ý phù hợp để người còn lại đoán chính xác từ khóa đang hiển thị.
+            <p className="mx-auto mb-6 max-w-3xl text-sm leading-7 sm:text-base" style={pageStyles.textSecondary}>
+              Bấm <span className="font-black">Bỏ qua</span> để đẩy từ này xuống cuối hàng chờ và quay lại sau khi xử lý các từ khác.
             </p>
 
-            <div className="mb-8 rounded-[1.5rem] p-5 sm:p-6" style={pageStyles.panel}>
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "var(--page-heading)" }}>
-                  Chuỗi đáp án
-                </p>
-                <div className="text-sm font-bold" style={pageStyles.textSecondary}>
-                  Đúng {correctCount}/{keywordResults.length}
+            <div className="mb-8 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-[1.5rem] p-5 sm:p-6 text-left" style={pageStyles.panel}>
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "var(--page-heading)" }}>
+                    Đã chốt đúng
+                  </p>
+                  <div className="text-sm font-bold" style={pageStyles.textSecondary}>
+                    {correctCount} từ
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {completedKeywords.length > 0 ? (
+                    completedKeywords.map((keyword) => (
+                      <span
+                        key={`done-${keyword}`}
+                        className="vn-safe-chip rounded-full px-3 py-2 text-xs font-bold"
+                        style={getKeywordResultStyle({ status: "correct" })}
+                      >
+                        {keyword} ✔
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm" style={pageStyles.textMuted}>
+                      Chưa có từ khóa nào được chốt đúng.
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <div className="flex flex-wrap justify-center gap-2">
-                {keywordResults.length > 0 ? (
-                  keywordResults.map((res) => (
-                    <span
-                      key={`${res.keyword}-${res.keywordIndex}`}
-                      className="vn-safe-chip rounded-full px-3 py-2 text-xs font-bold"
-                      style={getKeywordResultStyle(res)}
-                    >
-                      {res.keyword} {res.isCorrect ? "✔" : "✘"}
+              <div className="rounded-[1.5rem] p-5 sm:p-6 text-left" style={pageStyles.panel}>
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "var(--page-heading)" }}>
+                    Cần quay lại
+                  </p>
+                  <div className="text-sm font-bold" style={pageStyles.textSecondary}>
+                    {Math.max(retryCount - (isRetryTurn ? 1 : 0), 0)} từ chờ
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {queuedRetryKeywords.length > 0 ? (
+                    queuedRetryKeywords.map((keyword, index) => (
+                      <span
+                        key={`retry-${keyword}-${index}`}
+                        className="vn-safe-chip rounded-full px-3 py-2 text-xs font-bold"
+                        style={getKeywordResultStyle({ status: "retry" })}
+                      >
+                        {keyword} ↺
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm" style={pageStyles.textMuted}>
+                      Không có từ nào đang chờ quay lại.
                     </span>
-                  ))
-                ) : (
-                  <span className="text-sm" style={pageStyles.textMuted}>
-                    Chưa có kết quả nào.
-                  </span>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-              <button
-                disabled
-                className="game-action-btn game-action-btn--success w-full text-white disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}
-              >
-                <Play size={18} className="inline-block mr-2" />
-                BẮT ĐẦU
-              </button>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <button
                 onClick={toggleTimerRunning}
                 className="game-action-btn game-action-btn--secondary w-full"
@@ -620,33 +682,53 @@ export default function PvPMode() {
             <div
               className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full"
               style={{
-                background: pageStyles.successSurface,
-                border: pageStyles.successBorder,
+                background:
+                  finishReason === "completed"
+                    ? pageStyles.successSurface
+                    : pageStyles.warningSurface,
+                border:
+                  finishReason === "completed"
+                    ? pageStyles.successBorder
+                    : pageStyles.warningBorder,
               }}
             >
-              <RefreshCw size={44} style={{ color: pageStyles.successText }} />
+              <RefreshCw
+                size={44}
+                style={{
+                  color:
+                    finishReason === "completed"
+                      ? pageStyles.successText
+                      : pageStyles.warningText,
+                }}
+              />
             </div>
 
             <h2
               className="vn-safe-heading mb-3 text-3xl sm:text-4xl font-black"
-              style={{ color: finishReason === "completed" ? pageStyles.successText : pageStyles.dangerText }}
+              style={{
+                color:
+                  finishReason === "completed"
+                    ? pageStyles.successText
+                    : pageStyles.warningText,
+              }}
             >
               {finishReason === "completed" ? "Đã Hoàn Thành Trọn Gói" : "Đã Hết Thời Gian"}
             </h2>
 
             <p className="mx-auto mb-3 max-w-3xl text-sm leading-7 sm:text-base" style={pageStyles.textSecondary}>
               {finishReason === "completed"
-                ? "Toàn bộ từ khóa trong gói đã được xử lý liên tiếp."
-                : "Gói chơi khép lại khi đồng hồ người đoán về 0."}
+                ? "Toàn bộ từ khóa trong gói đã được đoán xong, kể cả các từ từng bị bỏ qua."
+                : "Đồng hồ đã hết. Những từ chưa chốt được vẫn được giữ lại để xem lại nhanh ở bên dưới."}
             </p>
 
             <div className="mb-8 text-base font-bold" style={pageStyles.textPrimary}>
               Kết quả đúng: {correctCount}/{selectedPackage?.keywords.length || 0}
+              {finishReason !== "completed" ? ` • Còn lại ${remainingCount} từ` : ""}
             </div>
 
             <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {selectedPackage?.keywords.map((keyword, index) => {
-                const result = keywordResults[index];
+                const result = keywordStatuses[index];
 
                 return (
                   <div
@@ -654,7 +736,7 @@ export default function PvPMode() {
                     className="vn-safe-chip min-h-[84px] rounded-[1.2rem] px-4 py-4 text-center text-sm sm:text-base font-bold flex items-center justify-center"
                     style={getKeywordResultStyle(result)}
                   >
-                    {keyword} {result ? (result.isCorrect ? "✔" : "✘") : ""}
+                    {keyword} {result?.status === "correct" ? "✔" : result?.status === "retry" ? "↺" : ""}
                   </div>
                 );
               })}

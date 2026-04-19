@@ -137,10 +137,10 @@
   --game-surface-subtle: rgba(255, 255, 255, 0.72);
   --game-border: rgba(148, 113, 70, 0.18);
   --game-border-strong: rgba(148, 113, 70, 0.26);
-  --game-text: #1f2937;
-  --game-text-secondary: rgba(36, 48, 65, 0.82);
-  --game-text-muted: rgba(71, 85, 105, 0.72);
-  --game-text-faint: rgba(100, 116, 139, 0.92);
+  --game-text: #182230;
+  --game-text-secondary: rgba(24, 34, 48, 0.92);
+  --game-text-muted: rgba(44, 55, 74, 0.84);
+  --game-text-faint: rgba(70, 85, 110, 0.96);
   --game-overlay: rgba(28, 24, 18, 0.56);
 }
 
@@ -312,6 +312,7 @@ body:has(.study-page), body:has(.timeline-page),
   font-weight: 900;
   background: linear-gradient(135deg, #f0d48a, #d4a053);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-align: center;
@@ -345,6 +346,7 @@ body:has(.study-page), body:has(.timeline-page),
   font-weight: 900;
   background: var(--gradient-gold);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-align: center;
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.28));
@@ -1752,6 +1754,7 @@ body:has(.fullscreen-active) .app-content {
 .theme-title-gradient {
   background: var(--gradient-gold);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -2045,4 +2048,94 @@ body:has(.fullscreen-active) .app-content {
     padding: 0.58rem 0.78rem;
     font-size: 0.68rem;
   }
+}
+
+/* ============================
+   GAME MODES PREMIUM UI
+   ============================ */
+
+.premium-glass-panel {
+  background: var(--game-surface-strong);
+  border: 1px solid var(--game-border-strong);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 32px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme='light'] .premium-glass-panel {
+  box-shadow: 0 16px 48px rgba(130, 107, 74, 0.12);
+}
+
+.game-clue-tile {
+  background: var(--game-surface-subtle);
+  border: 1px solid var(--game-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.game-clue-tile:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 12px 32px rgba(212, 160, 83, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(212, 160, 83, 0.4);
+}
+
+.game-clue-tile.is-active {
+  border-color: rgba(212, 160, 83, 0.8);
+  box-shadow: 0 0 0 4px rgba(212, 160, 83, 0.2), inset 0 0 48px rgba(212, 160, 83, 0.15);
+  transform: scale(1.02);
+}
+
+.game-clue-tile.is-revealed {
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.game-fixed-tile {
+  background: linear-gradient(135deg, var(--game-surface-strong) 0%, var(--game-surface) 100%);
+  border: 1px solid rgba(212, 160, 83, 0.5);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme='light'] .game-fixed-tile {
+  background: linear-gradient(135deg, rgba(255, 249, 237, 0.98) 0%, rgba(240, 222, 182, 0.98) 100%);
+  box-shadow: 0 18px 36px rgba(130, 107, 74, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.keyword-char-box {
+  border: 1px solid rgba(212, 160, 83, 0.28);
+  background: rgba(212, 160, 83, 0.12);
+  color: var(--page-heading);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+:root[data-theme='light'] .keyword-char-box {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.game-keyword-panel {
+  background: var(--game-surface);
+  border: 1px solid var(--game-border);
+  border-radius: 26px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.game-keyword-panel.is-revealed {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+:root[data-theme='light'] .game-keyword-panel.is-revealed {
+  background: linear-gradient(135deg, rgba(220, 252, 231, 0.7) 0%, rgba(240, 253, 244, 0.88) 100%);
 }

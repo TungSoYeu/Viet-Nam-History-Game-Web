@@ -457,7 +457,7 @@ export default function MillionaireMode() {
 
   if (loading) {
     return (
-      <div className="theme-page game-screen min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="theme-page game-screen min-h-screen flex flex-col items-center justify-center p-8 overflow-y-auto overflow-x-hidden custom-scrollbar">
         <SkeletonLoader variant="card" count={2} className="max-w-xl" />
       </div>
     );
@@ -465,7 +465,7 @@ export default function MillionaireMode() {
 
   if (!currentSet && !finished) {
     return (
-      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar bg-slate-950 text-amber-300">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
@@ -473,7 +473,7 @@ export default function MillionaireMode() {
 
   if (finished) {
     return (
-      <div className="theme-page game-screen min-h-screen bg-slate-950 text-white px-4 py-8 flex items-center justify-center">
+      <div className="theme-page game-screen min-h-screen overflow-y-auto overflow-x-hidden custom-scrollbar bg-slate-950 text-white px-4 py-8 flex items-center justify-center">
         <Confetti active={true} count={90} />
         <div className="w-full max-w-4xl rounded-[32px] border border-amber-500/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
@@ -544,7 +544,7 @@ export default function MillionaireMode() {
 
 
   return (
-    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden bg-transparent text-white p-1.5 sm:p-2">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent text-white p-1.5 sm:p-2">
       <div className="mx-auto flex h-full w-full flex-col min-h-0">
 
         {/* ═══ COMPACT HEADER BAR ═══ */}
@@ -567,15 +567,15 @@ export default function MillionaireMode() {
             </h1>
           </div>
 
-          <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
-            <svg width="64" height="64" viewBox="0 0 64 64" className="absolute -rotate-90">
-              <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
-              <circle cx="32" cy="32" r="28" fill="none" stroke={timerColor} strokeWidth="4"
-                strokeDasharray={2 * Math.PI * 28} strokeDashoffset={2 * Math.PI * 28 * (1 - timerPercent / 100)}
+          <div className="relative flex items-center justify-center w-20 h-20 shrink-0">
+            <svg width="84" height="84" viewBox="0 0 84 84" className="absolute -rotate-90">
+              <circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="5" />
+              <circle cx="42" cy="42" r="36" fill="none" stroke={timerColor} strokeWidth="5"
+                strokeDasharray={2 * Math.PI * 36} strokeDashoffset={2 * Math.PI * 36 * (1 - timerPercent / 100)}
                 strokeLinecap="round" className="transition-all duration-1000"
               />
             </svg>
-            <span className="text-lg font-black" style={{ color: timerColor }}>
+            <span className="text-2xl font-black" style={{ color: timerColor }}>
               {displayTimer}
             </span>
           </div>
@@ -603,7 +603,7 @@ export default function MillionaireMode() {
         <div className="flex flex-col xl:flex-row gap-1.5 flex-1 min-h-0 overflow-hidden">
 
           {/* ── COL 1: Crossword Grid ── */}
-          <div className="xl:w-[68%] 2xl:w-[70%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+          <div className="xl:w-[72%] 2xl:w-[74%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
             style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex-shrink-0 flex items-center justify-between px-2.5 py-1 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
@@ -641,10 +641,10 @@ export default function MillionaireMode() {
                     style={{ gap: BOARD_ROW_LABEL_GAP }}
                   >
                     <div
-                      className="text-right font-black text-slate-400 shrink-0"
+                      className="text-right font-black text-slate-200 shrink-0"
                       style={{
                         width: BOARD_ROW_LABEL_WIDTH, 
-                        fontSize: Math.max(14, Math.floor(cellPx * 0.4)),
+                        fontSize: Math.max(16, Math.floor(cellPx * 0.44)),
                       }}
                     >
                       {row.index + 1}.
@@ -695,9 +695,9 @@ export default function MillionaireMode() {
                   <div
                     key={`${slot.char}-${index}`}
                     style={{
-                      width: Math.max(24, Math.min(cellPx, 40)),
-                      height: Math.max(24, Math.min(cellPx, 40)),
-                      fontSize: Math.max(9, Math.floor(Math.min(cellPx, 40) * 0.42)),
+                      width: Math.max(28, Math.min(cellPx, 46)),
+                      height: Math.max(28, Math.min(cellPx, 46)),
+                      fontSize: Math.max(11, Math.floor(Math.min(cellPx, 46) * 0.44)),
                     }}
                     className={`flex items-center justify-center rounded-lg border font-black uppercase ${
                       slot.visible
@@ -724,72 +724,61 @@ export default function MillionaireMode() {
           </div>
 
           {/* ── COL 2: Question / Controls ── */}
-          <div className="xl:w-[20%] 2xl:w-[18%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+          <div className="xl:w-[28%] 2xl:w-[26%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
             style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
           >
-            <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center"
                   style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.2))" }}
                 >
                   <Puzzle size={13} className="text-amber-400" />
                 </div>
-                <span className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                <span className="text-sm font-black text-amber-300 uppercase tracking-wider">
                   {inCluePhase ? `Câu gợi mở ${clueIndex + 1}/${currentSet.clues.length}` : "Từ khóa cuối"}
                 </span>
               </div>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3">
+            <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto p-4 sm:p-5">
               {inCluePhase ? (
                 <>
                   {cluePhase === "ready" && !clueResult ? (
-                    <div className="rounded-xl p-4"
+                    <div className="rounded-[26px] p-5 text-center"
                       style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.12)" }}
                     >
-                      <div className="text-xs font-black uppercase tracking-wider text-sky-300 mb-2">
-                        Sẵn sàng mở câu hỏi
+                      <div className="text-xs font-black uppercase tracking-wider text-sky-300 mb-4">
+                        Câu gợi mở {clueIndex + 1}
                       </div>
-                      <p className="text-sm leading-relaxed text-slate-300 mb-3">
-                        Bấm bắt đầu để mở câu và chạy {QUESTION_TIME} giây trả lời.
-                      </p>
-                      <div className="flex gap-2">
-                        <button onClick={startClue}
-                          className="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.01]"
+                      <button onClick={startClue}
+                          className="w-full py-4 rounded-2xl text-base font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01]"
                           style={{ background: "linear-gradient(135deg, #38bdf8, #818cf8)", color: "#0f172a" }}
                         >
-                          ▶ Bắt Đầu
-                        </button>
-                        <button disabled
-                          className="px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
-                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-                        >
-                          Dừng
-                        </button>
-                      </div>
+                        ▶ Bắt Đầu
+                      </button>
                     </div>
                   ) : null}
 
                   {cluePhase === "active" && !clueResult ? (
                     <>
-                      <h2 className="text-base sm:text-lg font-bold leading-relaxed text-white mb-3">
+                      <h2 className="mb-4 text-xl font-bold leading-relaxed text-white sm:text-2xl">
                         {currentClue.question}
                       </h2>
                       <div className="flex gap-2 mb-3">
                         <button disabled
-                          className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white/30"
+                          className="px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
                           style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
                         >
                           Bắt đầu
                         </button>
                         <button onClick={toggleTimerRunning}
-                          className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
+                          className="px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
                           style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
                         >
                           {timerRunning ? "⏸ Dừng" : "▶ Tiếp"}
                         </button>
                       </div>
-                      <div className="grid gap-2 grid-cols-2">
+                      <div className="grid gap-3 grid-cols-2">
                         {currentClue.options.map((option, index) => {
                           const selected = choice === option;
                           return (
@@ -797,7 +786,7 @@ export default function MillionaireMode() {
                               key={option}
                               onClick={() => handleAnswer(option, "manual")}
                               disabled={!timerRunning}
-                              className={`rounded-xl p-3 text-left transition-all disabled:opacity-50 ${
+                              className={`rounded-2xl p-4 text-left transition-all disabled:opacity-50 ${
                                 selected
                                   ? "text-white"
                                   : "text-white hover:scale-[1.01]"
@@ -810,7 +799,7 @@ export default function MillionaireMode() {
                               <div className="text-[10px] font-black uppercase tracking-widest text-amber-300/70">
                                 {String.fromCharCode(65 + index)}
                               </div>
-                              <div className="mt-1 text-sm font-bold">{option}</div>
+                              <div className="mt-2 text-base font-bold sm:text-lg">{option}</div>
                             </button>
                           );
                         })}
@@ -856,45 +845,31 @@ export default function MillionaireMode() {
               ) : (
                 <>
                   {keywordPhase === "ready" && !keywordResult ? (
-                    <div className="rounded-xl p-4"
+                    <div className="rounded-[26px] p-5 text-center"
                       style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.12)" }}
                     >
-                      <div className="text-xs font-black uppercase tracking-wider text-sky-300 mb-2">
+                      <div className="text-xs font-black uppercase tracking-wider text-sky-300 mb-4">
                         Từ khóa cuối
                       </div>
-                      <p className="text-sm leading-relaxed text-slate-300 mb-3">
-                        Bấm bắt đầu để mở ô nhập và chạy {QUESTION_TIME} giây giải mã.
-                      </p>
-                      <div className="flex gap-2">
-                        <button onClick={startKeyword}
-                          className="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all hover:scale-[1.01]"
+                      <button onClick={startKeyword}
+                          className="w-full py-4 rounded-2xl text-base font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01]"
                           style={{ background: "linear-gradient(135deg, #38bdf8, #818cf8)", color: "#0f172a" }}
                         >
                           ▶ Bắt Đầu
-                        </button>
-                        <button disabled
-                          className="px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
-                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-                        >
-                          Dừng
-                        </button>
-                      </div>
+                      </button>
                     </div>
                   ) : (
                     <>
-                      <p className="text-sm leading-relaxed text-slate-300 mb-3">
-                        Hãy dùng toàn bộ dữ kiện để giải mã từ khóa.
-                      </p>
                       {!keywordResult && (
                         <div className="flex gap-2 mb-3">
                           <button disabled
-                            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white/30"
+                            className="px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider text-white/30"
                             style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
                           >
                             Bắt đầu
                           </button>
                           <button onClick={toggleTimerRunning}
-                            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
+                            className="px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all hover:bg-white/5"
                             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
                           >
                             {timerRunning ? "⏸ Dừng" : "▶ Tiếp"}
@@ -907,11 +882,11 @@ export default function MillionaireMode() {
                           onChange={(event) => setKeywordInput(event.target.value)}
                           disabled={Boolean(keywordResult) || !timerRunning}
                           placeholder="Nhập từ khóa"
-                          className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-base font-semibold text-white outline-none transition focus:border-amber-400/40 disabled:opacity-60"
+                          className="w-full rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 text-lg font-semibold text-white outline-none transition focus:border-amber-400/40 disabled:opacity-60"
                         />
                         {!keywordResult && (
                           <button type="submit" disabled={!timerRunning || !keywordInput.trim()}
-                            className="mt-3 w-full py-2.5 rounded-xl text-sm font-black uppercase tracking-wider transition-all disabled:opacity-40"
+                            className="mt-4 w-full py-4 rounded-2xl text-base font-black uppercase tracking-[0.18em] transition-all disabled:opacity-40"
                             style={{ background: "linear-gradient(135deg, #fbbf24, #f59e0b)", color: "#0f172a" }}
                           >
                             Kiểm Tra Từ Khóa
@@ -952,7 +927,7 @@ export default function MillionaireMode() {
           </div>
 
           {/* ── COL 3: Progress Sidebar ── */}
-          <div className="xl:w-[12%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
+          <div className="hidden"
             style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex-shrink-0 px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>

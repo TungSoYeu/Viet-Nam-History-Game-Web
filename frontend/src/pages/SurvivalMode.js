@@ -100,7 +100,7 @@ export default function SurvivalMode() {
 
   if (isVictory) {
     return (
-      <div className="theme-page game-screen h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+      <div className="theme-page game-screen h-screen flex flex-col items-center justify-center p-6 text-center overflow-y-auto overflow-x-hidden custom-scrollbar">
         <Confetti active={true} count={80} />
         <div className="animate-bounce-in">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1))', border: '2px solid rgba(34,197,94,0.3)' }}>
@@ -119,7 +119,7 @@ export default function SurvivalMode() {
 
   if (isFailed) {
     return (
-      <div className="theme-page game-screen h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+      <div className="theme-page game-screen h-screen flex flex-col items-center justify-center p-6 text-center overflow-y-auto overflow-x-hidden custom-scrollbar">
         <div className="animate-shake">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1))', border: '2px solid rgba(239,68,68,0.3)' }}>
             <AlertCircle size={48} className="text-red-400" />
@@ -136,7 +136,7 @@ export default function SurvivalMode() {
   }
 
   if (loading) return (
-    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar items-center justify-center">
       <div className="text-center">
         <div className="w-12 h-12 rounded-full border-4 border-t-red-400 border-r-transparent border-b-transparent border-l-transparent animate-spin mx-auto mb-4"></div>
         <p className="text-sm font-semibold game-text-muted">Đang dàn trận...</p>
@@ -145,7 +145,7 @@ export default function SurvivalMode() {
   );
 
   if (questions.length === 0) return (
-    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden items-center justify-center">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar items-center justify-center">
       <div className="text-center">
         <p className="text-red-400 mb-4 font-semibold">Chưa thể tải dữ liệu câu hỏi.</p>
         <button onClick={() => navigate('/modes')} className="btn-primary px-6 py-3 text-sm">Quay lại</button>
@@ -156,7 +156,7 @@ export default function SurvivalMode() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 sm:p-6 bg-transparent relative z-10 text-white">
+    <div className="theme-page game-screen h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-6 bg-transparent relative z-10 text-white">
       <ComboIndicator streak={streak} show={!loading && !isFailed && !isVictory} />
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
         {/* Top Bar */}

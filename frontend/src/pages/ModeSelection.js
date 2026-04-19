@@ -51,7 +51,7 @@ export default function ModeSelection() {
   if (selectedMode) {
     return (
       <AnimatedPage>
-        <div className="theme-page min-h-screen flex flex-col items-center justify-center p-4 sm:p-8" style={{ background: 'var(--page-bg-gradient)' }}>
+        <div className="theme-page min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto overflow-x-hidden custom-scrollbar" style={{ background: 'var(--page-bg-gradient)' }}>
           <ParticlesBackground type="dust" />
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
@@ -135,7 +135,7 @@ export default function ModeSelection() {
 
   return (
     <AnimatedPage>
-      <div className="theme-page min-h-screen flex flex-col relative" style={{ background: 'var(--page-bg-gradient)' }}>
+      <div className="theme-page min-h-screen flex flex-col relative overflow-y-auto overflow-x-hidden custom-scrollbar" style={{ background: 'var(--page-bg-gradient)' }}>
         <ParticlesBackground type="dust" />
         <div className="responsive-container py-8 sm:py-12 relative z-10">
           {/* Header */}
