@@ -461,7 +461,7 @@ export default function MatchingMode() {
 
             {/* ── LEFT: Draggable cards ── */}
             <div className="xl:w-[45%] w-full flex flex-col min-h-0 overflow-hidden rounded-[28px]"
-              style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}
+              style={{ background: "var(--game-surface)", border: "1px solid var(--game-border)" }}
             >
               <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                 <div className="flex items-center gap-2">
@@ -470,10 +470,10 @@ export default function MatchingMode() {
                   >
                     <Package size={16} className="text-amber-400" />
                   </div>
-                  <span className="text-sm font-black text-amber-300 uppercase tracking-wider">Thẻ dữ kiện</span>
+                  <span className="text-sm font-black uppercase tracking-wider" style={{ color: "var(--page-heading)" }}>Thẻ dữ kiện</span>
                 </div>
                 <span className="rounded-full px-3 py-1 text-xs font-bold"
-                  style={{ color: placedCount === roundState.cards.length ? "#34d399" : "#94a3b8", background: "rgba(255,255,255,0.04)" }}
+                  style={{ color: placedCount === roundState.cards.length ? "#10b981" : "var(--game-text-secondary)", background: "var(--game-surface)" }}
                 >
                   {availableCards.length} còn lại
                 </span>
@@ -482,7 +482,7 @@ export default function MatchingMode() {
               {/* Drop zone to return cards */}
               <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, "")}
                 className="flex-shrink-0 mx-3 mt-3 rounded-xl border border-dashed px-3 py-2 text-center text-xs font-bold transition-colors"
-                style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(226,232,240,0.75)", background: "rgba(255,255,255,0.03)" }}
+                style={{ borderColor: "var(--game-border)", color: "var(--game-text-secondary)", background: "var(--game-surface)" }}
               >
                 ↩ Kéo thẻ về đây để bỏ
               </div>
@@ -500,13 +500,13 @@ export default function MatchingMode() {
                           : "opacity-50 cursor-not-allowed"
                       }`}
                       style={{
-                        background: roundStarted && timerRunning && !review ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.01)",
-                        border: `1px solid ${roundStarted && timerRunning && !review ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.04)"}`,
+                        background: roundStarted && timerRunning && !review ? "var(--game-surface-strong)" : "var(--game-surface)",
+                        border: `1px solid ${roundStarted && timerRunning && !review ? "rgba(251,191,36,0.4)" : "var(--game-border)"}`,
                       }}
                     >
                       {item.image ? (
                         <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl overflow-hidden shadow-md"
-                          style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                          style={{ border: "1px solid var(--game-border)" }}
                         >
                           <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                         </div>
@@ -517,7 +517,7 @@ export default function MatchingMode() {
                            📜
                         </div>
                       )}
-                      <span className="flex-1 text-base md:text-lg font-bold text-white leading-snug">{item.content}</span>
+                      <span className="flex-1 text-base md:text-lg font-bold leading-snug" style={{ color: "var(--page-heading)" }}>{item.content}</span>
                       <div className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         style={{ background: "rgba(251,191,36,0.15)" }}
                       >
@@ -536,7 +536,7 @@ export default function MatchingMode() {
 
             {/* ── RIGHT: Answer slots ── */}
             <div className="xl:w-[55%] w-full flex flex-col min-h-0 overflow-hidden rounded-[28px]"
-              style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}
+              style={{ background: "var(--game-surface)", border: "1px solid var(--game-border)" }}
             >
               <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                 <div className="flex items-center gap-2">
@@ -545,10 +545,10 @@ export default function MatchingMode() {
                   >
                     <Target size={16} className="text-emerald-400" />
                   </div>
-                  <span className="text-sm font-black text-emerald-300 uppercase tracking-wider">Ô đáp án</span>
+                  <span className="text-sm font-black uppercase tracking-wider" style={{ color: "var(--page-heading)" }}>Ô đáp án</span>
                 </div>
                 <span className="rounded-full px-3 py-1 text-xs font-bold"
-                  style={{ color: "#94a3b8", background: "rgba(255,255,255,0.04)" }}
+                  style={{ color: "var(--game-text-secondary)", background: "var(--game-surface)" }}
                 >
                   {roundState.slots.length} ô
                 </span>
@@ -559,23 +559,23 @@ export default function MatchingMode() {
                   const placedCard = getCardInSlot(slot.id);
                   const slotReview = review?.evaluation?.[slot.id];
 
-                  let borderColor = "rgba(255,255,255,0.06)";
-                  let bgColor = "rgba(255,255,255,0.015)";
-                  let labelColor = "#e2e8f0";
+                  let borderColor = "var(--game-border)";
+                  let bgColor = "var(--game-surface)";
+                  let labelColor = "var(--page-heading)";
 
                   if (review) {
                     if (slotReview?.isCorrect) {
-                      borderColor = "rgba(52,211,153,0.3)";
-                      bgColor = "rgba(52,211,153,0.06)";
-                      labelColor = "#6ee7b7";
+                      borderColor = "rgba(52,211,153,0.4)";
+                      bgColor = "rgba(52,211,153,0.1)";
+                      labelColor = "#10b981";
                     } else if (slotReview?.card || (!slotReview?.isDistractor && slotReview?.expected)) {
-                      borderColor = "rgba(248,113,113,0.3)";
-                      bgColor = "rgba(248,113,113,0.06)";
-                      labelColor = "#fca5a5";
+                      borderColor = "rgba(248,113,113,0.4)";
+                      bgColor = "rgba(248,113,113,0.1)";
+                      labelColor = "#ef4444";
                     }
                   } else if (roundStarted && timerRunning) {
-                    borderColor = "rgba(99,102,241,0.25)";
-                    bgColor = "rgba(99,102,241,0.04)";
+                    borderColor = "rgba(99,102,241,0.3)";
+                    bgColor = "rgba(99,102,241,0.05)";
                   }
 
                   return (
@@ -583,7 +583,7 @@ export default function MatchingMode() {
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => handleDrop(e, slot.id)}
                       className="flex items-center gap-4 px-4 py-3 md:py-4 rounded-[24px] transition-all duration-200"
-                      style={{ background: bgColor, border: `1.5px solid ${borderColor}` }}
+                      style={{ background: bgColor, borderColor: borderColor, borderWidth: "1.5px", borderStyle: "solid" }}
                     >
                       {/* Slot label */}
                       <div className="shrink-0 w-[42%] min-w-0">
@@ -610,14 +610,14 @@ export default function MatchingMode() {
                             {placedCard.image ? (
                               <img src={placedCard.image} alt={placedCard.content}
                                 className="w-12 h-12 md:w-14 md:h-14 rounded-xl object-cover shrink-0 border"
-                                style={{ borderColor: "rgba(255,255,255,0.1)" }}
+                                style={{ borderColor: "var(--game-border)" }}
                               />
                             ) : null}
-                            <span className="text-base md:text-lg font-bold text-white truncate">{placedCard.content}</span>
+                            <span className="text-base md:text-lg font-bold truncate" style={{ color: "var(--page-heading)" }}>{placedCard.content}</span>
                           </div>
                         ) : (
                           <div className="rounded-2xl border border-dashed py-4 text-center text-sm md:text-base font-bold transition-colors"
-                            style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(226,232,240,0.55)" }}
+                            style={{ borderColor: "var(--game-border)", color: "var(--game-text-faint)" }}
                           >
                             Thả thẻ vào đây
                           </div>
