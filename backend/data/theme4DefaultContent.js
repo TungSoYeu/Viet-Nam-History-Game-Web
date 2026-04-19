@@ -17,7 +17,7 @@ const theme4Content = {
     imagePolicy: "Không sử dụng hình ảnh AI; phải dùng hình ảnh lịch sử chính thống, phổ biến và có giá trị.",
     notes: [
       "Lật mở trang sử: 10 ảnh bí ẩn, mỗi ảnh 2x2 với 4 dữ kiện; tổng 40 dữ kiện và có gợi ý số chữ đáp án.",
-      "Hiểu ý đồng đội: 5 gói, mỗi gói 10 từ khóa; ưu tiên tổ chức như hoạt động tương tác trực tiếp trên lớp.",
+      "Hiểu ý đồng đội: 6 gói, mỗi gói 10 từ khóa; ưu tiên tổ chức như hoạt động tương tác trực tiếp trên lớp và cho phép bỏ qua để quay lại các từ chưa đoán được.",
       "Nhận diện lịch sử: 2 mode nhỏ, mỗi mode 5 câu; gồm nhánh hình ảnh, lược đồ -> từ khóa và nhánh từ khóa -> hình ảnh.",
       "Kết nối lịch sử: 10 câu, gồm 5 nối hình ảnh - thông tin và 5 nối thông tin - thông tin, có 1 phương án nhiễu.",
       "Giải mã ô chữ: 5 từ khóa hàng dọc, mỗi từ khóa có từ 5 đến 10 câu hỏi hàng ngang.",

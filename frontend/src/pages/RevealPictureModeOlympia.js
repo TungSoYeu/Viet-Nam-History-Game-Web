@@ -4,15 +4,17 @@ import {
   ArrowLeft,
   CheckCircle,
   Clock3,
-  HelpCircle,
   Image as ImageIcon,
+  Pause,
+  Play,
   Search,
+  Sparkles,
+  X,
 } from "lucide-react";
 import { revealPictureSets } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
   logGameTelemetry,
-  matchesAnswer,
   resetModeSessionId,
   saveXp,
   shuffleArray,
@@ -21,11 +23,14 @@ import {
 /* eslint-disable react-hooks/exhaustive-deps */
 
 const QUESTION_SECONDS = 15;
-const GUESS_SECONDS = 15;
-const GRID_COLUMNS = 2;
-const GRID_ROWS = 2;
-const GRID_SIZE = GRID_COLUMNS * GRID_ROWS;
+const GRID_SIZE = 4;
 const MODE_ID = "turning-page";
+const CLUE_TILES = [
+  { id: "tile-1", label: "Góc 1", top: "0%", left: "0%" },
+  { id: "tile-2", label: "Góc 2", top: "0%", left: "50%" },
+  { id: "tile-3", label: "Góc 3", top: "50%", left: "0%" },
+  { id: "tile-4", label: "Góc 4", top: "50%", left: "50%" },
+];
 
 const getKeywordGroups = (keyword = "") =>
   keyword
@@ -37,10 +42,10 @@ const getKeywordGroups = (keyword = "") =>
 
 const getKeywordBoxClasses = (keyword = "") => {
   const totalLetters = keyword.replace(/\s/g, "").length;
-  if (totalLetters > 18) return "h-7 min-w-[1.5rem] text-[10px]";
-  if (totalLetters > 12) return "h-8 min-w-[1.8rem] text-xs";
-  if (totalLetters > 8) return "h-9 min-w-[2rem] text-sm";
-  return "h-10 min-w-[2.25rem] text-base";
+  if (totalLetters > 20) return "h-9 min-w-[2rem] text-xs";
+  if (totalLetters > 14) return "h-10 min-w-[2.2rem] text-sm";
+  if (totalLetters > 9) return "h-11 min-w-[2.45rem] text-base";
+  return "h-12 min-w-[2.75rem] text-lg";
 };
 
 export default function RevealPictureModeOlympia() {
@@ -49,22 +54,21 @@ export default function RevealPictureModeOlympia() {
     MODE_ID,
     revealPictureSets
   );
+
   const [pictureData, setPictureData] = useState(null);
   const [clues, setClues] = useState([]);
-  const [currentClueIndex, setCurrentClueIndex] = useState(0);
-  const [phase, setPhase] = useState("question-ready");
+  const [activeClueIndex, setActiveClueIndex] = useState(null);
+  const [questionPhase, setQuestionPhase] = useState("idle");
   const [questionInput, setQuestionInput] = useState("");
   const [guessInput, setGuessInput] = useState("");
   const [questionTimeLeft, setQuestionTimeLeft] = useState(QUESTION_SECONDS);
-  const [guessTimeLeft, setGuessTimeLeft] = useState(GUESS_SECONDS);
   const [questionFeedback, setQuestionFeedback] = useState(null);
   const [guessFeedback, setGuessFeedback] = useState(null);
-  const [guessAttempted, setGuessAttempted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [score, setScore] = useState(100);
   const [xpSaved, setXpSaved] = useState(false);
   const [questionTimerRunning, setQuestionTimerRunning] = useState(false);
-  const [guessTimerRunning, setGuessTimerRunning] = useState(false);
+
   const startedAtRef = useRef(Date.now());
   const sessionActiveRef = useRef(false);
   const questionInputRef = useRef("");
@@ -75,15 +79,10 @@ export default function RevealPictureModeOlympia() {
       : revealPictureSets;
 
   const revealedCount = clues.filter((clue) => clue.revealed).length;
-  const currentClue = clues[currentClueIndex];
+  const allCluesRevealed = clues.length > 0 && revealedCount === clues.length;
+  const currentClue =
+    activeClueIndex !== null && activeClueIndex >= 0 ? clues[activeClueIndex] : null;
   const progressWidth = `${(revealedCount / Math.max(1, clues.length || GRID_SIZE)) * 100}%`;
-  const answerLengthHint = pictureData ? pictureData.answer.replace(/\s/g, "").length : 0;
-  const wordCount = pictureData ? pictureData.answer.trim().split(/\s+/).filter(Boolean).length : 0;
-
-  const answerHintLabel = useMemo(() => {
-    if (!pictureData) return "";
-    return `${answerLengthHint} chữ cái, ${wordCount} từ`;
-  }, [answerLengthHint, pictureData, wordCount]);
 
   const endSession = (payload) => {
     if (!sessionActiveRef.current) return;
@@ -111,27 +110,23 @@ export default function RevealPictureModeOlympia() {
     sessionActiveRef.current = false;
     setPictureData(selected);
     setClues(buildClues(selected));
-    setCurrentClueIndex(0);
-    setPhase("question-ready");
+    setActiveClueIndex(null);
+    setQuestionPhase("idle");
     setQuestionInput("");
     setGuessInput("");
     setQuestionTimeLeft(QUESTION_SECONDS);
-    setGuessTimeLeft(GUESS_SECONDS);
     setQuestionFeedback(null);
     setGuessFeedback(null);
-    setGuessAttempted(false);
     setIsFinished(false);
     setScore(100);
     setXpSaved(false);
     setQuestionTimerRunning(false);
-    setGuessTimerRunning(false);
   };
 
   useEffect(() => {
     questionInputRef.current = questionInput;
   }, [questionInput]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!loading) {
       loadRound(activeRevealPictureSets);
@@ -149,128 +144,106 @@ export default function RevealPictureModeOlympia() {
     });
   };
 
-  const revealCurrentClue = (submittedAnswer = questionInputRef.current, timedOut = false) => {
-    if (!currentClue || currentClue.revealed) return;
+  const closeQuestionOverlay = () => {
+    setQuestionTimerRunning(false);
+    setQuestionPhase("idle");
+    setQuestionInput("");
+    setQuestionTimeLeft(QUESTION_SECONDS);
+    setActiveClueIndex(null);
+  };
 
-    const isCorrect = matchesAnswer(submittedAnswer, [currentClue.a]);
+  const revealCurrentClue = (
+    submittedAnswer = questionInputRef.current,
+    { timedOut = false, skipped = false } = {}
+  ) => {
+    if (!currentClue || currentClue.revealed || activeClueIndex === null) return;
+
+    const acceptedAnswers = [currentClue.a, ...(currentClue.acceptedAnswers || [])];
+    
+    const isCorrect = !skipped && !timedOut && acceptedAnswers.some(
+      (ans) => String(submittedAnswer).trim().toLowerCase() === String(ans).trim().toLowerCase()
+    );
+
+    // Always reveal the tile regardless of answer correctness
+    const shouldReveal = true;
+
+    // Scoring: correct = no penalty, wrong = -10, timeout = -10, skip = -15
+    const penalty = isCorrect ? 0 : skipped ? 15 : 10;
+
     setClues((prev) =>
       prev.map((clue, index) =>
-        index === currentClueIndex
+        index === activeClueIndex
           ? {
               ...clue,
-              revealed: true,
+              revealed: shouldReveal,
               isCorrect,
               userAnswer: submittedAnswer,
             }
           : clue
       )
     );
-    setScore((prev) => Math.max(20, prev - 10));
+    setScore((prev) => Math.max(20, prev - penalty));
     setQuestionFeedback({
+      clueIndex: activeClueIndex,
       correct: isCorrect,
-      answer: currentClue.a,
       timeout: timedOut,
+      skipped,
     });
     setGuessFeedback(null);
-    setGuessAttempted(false);
     setQuestionInput("");
-    setGuessInput("");
-    setGuessTimeLeft(GUESS_SECONDS);
+    setQuestionTimeLeft(QUESTION_SECONDS);
     setQuestionTimerRunning(false);
-    setGuessTimerRunning(false);
-    setPhase("guess-ready");
+    setQuestionPhase("idle");
+    setActiveClueIndex(null);
 
     logGameTelemetry(MODE_ID, "answer_submitted", {
       correct: isCorrect,
       questionType: "keyword_question",
-      clueIndex: currentClueIndex,
+      clueIndex: activeClueIndex,
       timedOut,
-      scoreAfter: Math.max(20, score - 10),
+      skipped,
+      scoreAfter: Math.max(20, score - penalty),
     });
   };
 
-  const startQuestion = () => {
-    if (!currentClue || isFinished) return;
-    startSessionIfNeeded();
-    setQuestionFeedback(null);
-    setGuessFeedback(null);
-    setGuessInput("");
-    setGuessAttempted(false);
-    setQuestionTimeLeft(QUESTION_SECONDS);
-    setPhase("question-active");
-    setQuestionTimerRunning(true);
-  };
-
-  const submitQuestion = () => {
-    if (phase !== "question-active" || !questionTimerRunning) return;
-    revealCurrentClue(questionInput.trim(), false);
-  };
-
-  const moveToNextClue = () => {
-    const unrevealedIndices = clues
-      .map((c, i) => (!c.revealed && i !== currentClueIndex ? i : -1))
-      .filter((i) => i !== -1);
-
-    if (unrevealedIndices.length === 0) {
-      setPhase("final-open");
+  const openClue = (index) => {
+    const targetClue = clues[index];
+    if (!targetClue || targetClue.revealed || isFinished || questionPhase === "active") {
       return;
     }
 
-    let nextIndex = unrevealedIndices.find((i) => i > currentClueIndex);
-    if (nextIndex === undefined) {
-      nextIndex = unrevealedIndices[0];
-    }
-
-    setCurrentClueIndex(nextIndex);
-    setQuestionTimeLeft(QUESTION_SECONDS);
-    setGuessTimeLeft(GUESS_SECONDS);
+    startSessionIfNeeded();
+    setActiveClueIndex(index);
     setQuestionInput("");
-    setGuessInput("");
+    setQuestionTimeLeft(QUESTION_SECONDS);
     setQuestionFeedback(null);
     setGuessFeedback(null);
-    setGuessAttempted(false);
-    setPhase("question-ready");
-    setQuestionTimerRunning(false);
-    setGuessTimerRunning(false);
+    setQuestionPhase("active");
+    setQuestionTimerRunning(true);
+
+    logGameTelemetry(MODE_ID, "question_started", {
+      clueIndex: index,
+      durationSeconds: QUESTION_SECONDS,
+    });
   };
 
-  const handleSelectClue = (index) => {
-    if (clues[index].revealed) return;
-    if (index === currentClueIndex) return;
-    if (phase === "question-active" || phase === "guess-active") return; // Ngăn không cho chuyển ô khi đang chạy giờ
-
-    setCurrentClueIndex(index);
-    setQuestionTimeLeft(QUESTION_SECONDS);
-    setGuessTimeLeft(GUESS_SECONDS);
-    setQuestionInput("");
-    setGuessInput("");
-    setQuestionFeedback(null);
-    setGuessFeedback(null);
-    setGuessAttempted(false);
-    setPhase("question-ready");
-    setQuestionTimerRunning(false);
-    setGuessTimerRunning(false);
-  };
-
-  const startGuessWindow = () => {
-    setGuessFeedback(null);
-    setGuessAttempted(false);
-    setGuessTimeLeft(GUESS_SECONDS);
-    setPhase("guess-active");
-    setGuessTimerRunning(true);
+  const submitQuestion = () => {
+    if (questionPhase !== "active" || !questionTimerRunning) return;
+    revealCurrentClue(questionInput.trim(), { timedOut: false });
   };
 
   const submitGuess = () => {
     if (!pictureData || !guessInput.trim() || isFinished) return;
-    if (phase !== "guess-active" && phase !== "final-open") return;
-    if (phase === "guess-active" && !guessTimerRunning) return;
-    if (phase === "guess-active" && guessAttempted) return;
+    startSessionIfNeeded();
 
-    const isCorrect = matchesAnswer(guessInput, pictureData.acceptedAnswers);
+    const acceptedFinalAnswers = [pictureData.answer, ...(pictureData.acceptedAnswers || [])];
+    const isCorrect = acceptedFinalAnswers.some(
+      (ans) => String(guessInput).trim().toLowerCase() === String(ans).trim().toLowerCase()
+    );
     logGameTelemetry(MODE_ID, "answer_submitted", {
       correct: isCorrect,
       questionType: "final_guess",
-      clueIndex: currentClueIndex,
+      clueIndex: activeClueIndex,
       scoreAfter: isCorrect ? score : Math.max(10, score - 5),
     });
 
@@ -281,6 +254,7 @@ export default function RevealPictureModeOlympia() {
         revealedTiles: revealedCount,
         durationMs: Date.now() - startedAtRef.current,
       });
+      setGuessFeedback(null);
       setIsFinished(true);
       return;
     }
@@ -288,15 +262,10 @@ export default function RevealPictureModeOlympia() {
     setScore((prev) => Math.max(10, prev - 5));
     setGuessFeedback({
       correct: false,
-      answer: pictureData.answer,
-      explanation:
-        phase === "final-open"
-          ? "Đáp án chưa chính xác. Có thể nhập lại hoặc chuyển sang hình khác."
-          : "Đáp án chưa chính xác. Hãy chờ thêm dữ kiện ở lượt kế tiếp.",
+      explanation: allCluesRevealed
+        ? "Đáp án chưa chính xác. Có thể thử lại hoặc đổi sang hình khác."
+        : "Đáp án chưa chính xác. Hãy mở thêm dữ kiện để suy luận.",
     });
-    if (phase === "guess-active") {
-      setGuessAttempted(true);
-    }
   };
 
   const handleExit = async () => {
@@ -312,35 +281,21 @@ export default function RevealPictureModeOlympia() {
     navigate("/modes");
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (phase !== "question-active" || !questionTimerRunning) return;
+    if (questionPhase !== "active" || !questionTimerRunning || activeClueIndex === null) {
+      return;
+    }
     if (questionTimeLeft <= 0) {
-      revealCurrentClue(questionInputRef.current, true);
+      revealCurrentClue(questionInputRef.current, { timedOut: true });
       return;
     }
 
-    const timer = window.setInterval(() => {
+    const timer = window.setTimeout(() => {
       setQuestionTimeLeft((prev) => prev - 1);
     }, 1000);
 
-    return () => window.clearInterval(timer);
-  }, [phase, questionTimeLeft, currentClueIndex, clues, questionTimerRunning]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (phase !== "guess-active" || !guessTimerRunning) return;
-    if (guessTimeLeft <= 0) {
-      moveToNextClue();
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setGuessTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, [phase, guessTimeLeft, currentClueIndex, clues.length, guessTimerRunning]);
+    return () => window.clearTimeout(timer);
+  }, [questionPhase, questionTimeLeft, activeClueIndex, questionTimerRunning, clues]);
 
   useEffect(() => {
     if (isFinished && !xpSaved && score > 0) {
@@ -349,32 +304,26 @@ export default function RevealPictureModeOlympia() {
     }
   }, [isFinished, score, xpSaved]);
 
-  const toggleQuestionTimer = () => {
-    setQuestionTimerRunning((prev) => !prev);
-  };
-
-  const toggleGuessTimer = () => {
-    setGuessTimerRunning((prev) => !prev);
-  };
-
-  const renderKeywordBoxes = (keyword, revealed) => {
+  const renderKeywordBoxes = (keyword) => {
     const groups = getKeywordGroups(keyword);
     const sizeClass = getKeywordBoxClasses(keyword);
 
     return (
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2.5">
         {groups.map((group, groupIndex) => (
-          <div key={`${keyword}-${groupIndex}`} className="flex flex-wrap gap-1.5">
+          <div key={`${keyword}-${groupIndex}`} className="flex flex-nowrap gap-1.5">
             {group.map((char, charIndex) => (
               <div
                 key={`${char}-${charIndex}`}
-                className={`rounded-xl border font-black uppercase flex items-center justify-center ${sizeClass} ${
-                  revealed
-                    ? "border-emerald-400/30 bg-emerald-500/15 text-emerald-100"
-                    : "border-white/10 bg-slate-800 text-slate-500"
-                }`}
+                className={`rounded-2xl border font-black uppercase flex items-center justify-center shrink-0 ${sizeClass}`}
+                style={{
+                  borderColor: "rgba(212, 160, 83, 0.28)",
+                  background: "rgba(212, 160, 83, 0.12)",
+                  color: "var(--page-heading)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
+                }}
               >
-                {revealed ? char : ""}
+                {char}
               </div>
             ))}
           </div>
@@ -383,11 +332,17 @@ export default function RevealPictureModeOlympia() {
     );
   };
 
+  const resultMessage = useMemo(() => {
+    if (!questionFeedback) return null;
+    if (questionFeedback.skipped) return "Đã bỏ qua dữ kiện. Góc hình được mở nhưng bị trừ 15 điểm.";
+    if (questionFeedback.timeout) return "Hết 15 giây. Góc hình vẫn được mở nhưng bị trừ 10 điểm.";
+    if (questionFeedback.correct) return "Trả lời chính xác! Nhận 1 phần góc hình, không bị trừ điểm.";
+    return "Sai đáp án. Góc hình vẫn được mở nhưng bị trừ 10 điểm.";
+  }, [questionFeedback]);
+
   if (loading && !pictureData) {
     return (
-      <div
-        className="theme-page game-screen min-h-screen flex items-center justify-center text-2xl font-bold text-amber-500"
-      >
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar text-2xl font-bold text-amber-500">
         Đang tải dữ liệu trang sử...
       </div>
     );
@@ -395,9 +350,7 @@ export default function RevealPictureModeOlympia() {
 
   if (!pictureData || !clues.length) {
     return (
-      <div
-        className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 text-2xl font-bold text-amber-500"
-      >
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 overflow-y-auto overflow-x-hidden custom-scrollbar text-2xl font-bold text-amber-500">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
@@ -405,53 +358,31 @@ export default function RevealPictureModeOlympia() {
 
   if (isFinished) {
     return (
-      <div
-        className="theme-page game-screen min-h-screen flex flex-col items-center justify-center p-4"
-      >
-        <div
-          className="p-8 rounded-3xl shadow-2xl max-w-2xl w-full text-center"
-          style={{
-            background: "#16213e",
-            border: "1px solid rgba(255,255,255,0.1)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
-          }}
-        >
-          <CheckCircle size={64} className="text-green-400 mx-auto mb-4" />
-          <h2 className="vn-safe-heading text-3xl md:text-4xl font-black text-amber-400 mb-4">
+      <div className="theme-page game-screen min-h-screen flex flex-col items-center justify-center p-4 overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div className="theme-glass-card-strong max-w-3xl w-full rounded-[36px] p-6 md:p-8 text-center">
+          <CheckCircle size={68} className="mx-auto mb-4 text-emerald-500" />
+          <h2 className="vn-safe-heading text-3xl md:text-4xl font-black mb-3" style={{ color: "var(--page-heading)" }}>
             Lật mở trang sử thành công
           </h2>
-          <p className="text-xl font-bold text-white mb-6">
-            Đáp án là <span className="text-amber-500 uppercase">{pictureData.answer}</span>
+          <p className="text-lg md:text-xl font-bold mb-6" style={{ color: "var(--game-text-secondary)" }}>
+            Đáp án là <span className="uppercase" style={{ color: "var(--page-heading)" }}>{pictureData.answer}</span>
           </p>
-          <img
-            src={pictureData.imageUrl}
-            alt={pictureData.answer}
-            className="w-full h-auto max-h-80 object-contain rounded-xl mb-4 shadow-2xl bg-slate-900"
-            style={{ border: "2px solid rgba(255,255,255,0.1)" }}
-          />
-          <div className="grid gap-3 sm:grid-cols-2 mb-4 text-left">
-            {clues.map((clue, index) => (
-              <div key={clue.id} className="rounded-2xl border border-white/10 bg-slate-900/50 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Từ khóa {index + 1}</p>
-                <p className="mt-2 text-white font-bold">{clue.a}</p>
-              </div>
-            ))}
+
+          <div className="mx-auto aspect-square max-w-[520px] overflow-hidden rounded-[28px] border bg-white/40">
+            <img
+              src={pictureData.imageUrl}
+              alt={pictureData.answer}
+              className="h-full w-full object-cover"
+            />
           </div>
-          <p className="text-sm italic mb-4" style={{ color: "rgba(255,255,255,0.55)" }}>
-            {pictureData.caption}
-          </p>
-          <p className="text-2xl font-black text-green-400 mb-8">Thưởng: {score} XP</p>
-          <div className="flex gap-4">
-            <button
-              onClick={() => loadRound()}
-              className="flex-1 py-4 text-sm font-bold bg-white/10 hover:bg-white/20 text-white transition rounded-xl"
-            >
-              Chơi Hình Khác
+
+          <p className="mt-6 text-3xl font-black text-emerald-500">Thưởng: {score} XP</p>
+
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <button onClick={() => loadRound()} className="game-action-btn game-action-btn--secondary flex-1">
+              Hình Khác
             </button>
-            <button
-              onClick={handleExit}
-              className="flex-1 py-4 text-sm font-bold bg-amber-600 hover:bg-amber-500 text-white transition rounded-xl"
-            >
+            <button onClick={handleExit} className="game-action-btn game-action-btn--primary flex-1">
               Về Chọn Chế Độ
             </button>
           </div>
@@ -462,400 +393,339 @@ export default function RevealPictureModeOlympia() {
 
   return (
     <div
-      className="theme-page game-screen h-screen flex flex-col overflow-hidden p-4 md:p-6"
+      className="theme-page game-screen min-h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar px-3 py-4 md:px-6"
       style={{ background: "var(--page-bg-gradient)" }}
     >
-      <div className="w-full max-w-6xl mx-auto flex flex-col h-full gap-4 min-h-0">
-        <div className="w-full flex-shrink-0 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <div className="flex justify-start">
+      <div className="w-full max-w-[1500px] mx-auto flex flex-col gap-4 flex-1 min-h-0">
+        <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3">
           <button
             onClick={handleExit}
-            className="px-3 md:px-4 py-2 text-xs md:text-sm flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+            className="game-action-btn game-action-btn--secondary game-action-btn--compact"
           >
             <ArrowLeft size={16} />
             <span className="hidden sm:inline">Thoát</span>
           </button>
-        </div>
-        <h1
-          className="vn-safe-heading text-lg sm:text-2xl md:text-3xl font-black tracking-[0.08em] text-center flex items-center justify-center gap-2"
-          style={{
-            background: "linear-gradient(135deg, #f0d48a 0%, #d4a053 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          <ImageIcon size={24} className="text-amber-500 hidden sm:block" />
-          Lật mở trang sử
-        </h1>
-        <div className="flex justify-end">
-          <div
-            className="text-xs sm:text-sm md:text-base font-bold text-amber-300 px-3 py-2 rounded-lg"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
-          >
-            {revealedCount}/{clues.length} từ khóa
+
+          <div className="min-w-0 text-center">
+            <div className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2" style={{ background: "rgba(212,160,83,0.08)", border: "1px solid rgba(212,160,83,0.16)" }}>
+              <ImageIcon size={18} style={{ color: "var(--page-heading)" }} />
+              <h1 className="vn-safe-heading text-xl sm:text-3xl font-black tracking-[0.08em]" style={{ color: "var(--page-heading)" }}>
+                Lật mở trang sử
+              </h1>
+            </div>
+          </div>
+
+          <div className="theme-chip rounded-2xl px-4 py-3 text-center">
+            <div className="text-[11px] font-black uppercase tracking-[0.18em]">Dữ kiện</div>
+            <div className="mt-1 text-xl font-black">
+              {revealedCount}/{clues.length}
+            </div>
+          </div>
+
+          <div className="theme-chip rounded-2xl px-4 py-3 text-center">
+            <div className="text-[11px] font-black uppercase tracking-[0.18em]">Điểm</div>
+            <div className="mt-1 text-xl font-black text-emerald-600">{score} XP</div>
           </div>
         </div>
-      </div>
 
-      <div className="w-full flex-shrink-0">
-        <div className="h-3 w-full rounded-full bg-slate-900/80 border border-white/10 overflow-hidden">
+        <div className="h-3 w-full rounded-full overflow-hidden" style={{ background: "rgba(132,94,46,0.08)", border: "1px solid rgba(132,94,46,0.16)" }}>
           <div
-            className="h-full bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 transition-all duration-500"
-            style={{ width: progressWidth }}
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: progressWidth,
+              background: "linear-gradient(90deg, #f4c256 0%, #d4a053 45%, #ea580c 100%)",
+            }}
           />
         </div>
-      </div>
 
-      <div className="w-full grid gap-4 xl:grid-cols-[1.02fr_0.98fr] flex-1 min-h-0 pb-4">
-        <div className="custom-scrollbar overflow-y-auto flex flex-col gap-4 pr-1">
-          <div
-            className="relative w-full rounded-3xl overflow-hidden shadow-2xl"
-            style={{
-              border: "4px solid var(--page-card-border)",
-              background: "var(--nav-surface-solid)",
-              aspectRatio: "1 / 1",
-            }}
-          >
-            <div
-              className="absolute inset-0 w-full h-full"
-              style={{
-                backgroundImage: `url("${pictureData.imageUrl}")`,
-                backgroundSize: "contain",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                backgroundColor: "var(--bg-base)",
-              }}
-            />
+        <div className="grid flex-1 min-h-0 gap-4 xl:grid-cols-[minmax(0,1.18fr)_minmax(380px,0.82fr)]">
+          <div className="flex flex-col gap-4 min-h-0">
+            <div className="theme-glass-card-strong rounded-[36px] p-3 sm:p-4">
+              <div className="relative aspect-square overflow-hidden rounded-[28px]" style={{ background: "rgba(255,255,255,0.34)" }}>
+                <img
+                  src={pictureData.imageUrl}
+                  alt={pictureData.answer}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
 
-            <div
-              className="absolute inset-0 grid"
-              style={{
-                gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
-                gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)`,
-              }}
-            >
-              {clues.map((clue, index) => {
-                const isCurrentAndNotRevealed = index === currentClueIndex && !clue.revealed;
-                const canSelect = !clue.revealed && phase !== "question-active" && phase !== "guess-active" && index !== currentClueIndex;
-                
-                return (
                 <div
-                  key={clue.id}
-                  onClick={() => {
-                    if (canSelect) handleSelectClue(index);
-                  }}
-                  className={`border origin-center flex items-center justify-center transition-all duration-700 shadow-lg ${
-                    clue.revealed ? "opacity-0 pointer-events-none scale-0 rotate-[360deg]" : ""
-                  } ${
-                    canSelect ? "cursor-pointer hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:border-[var(--viet-gold)]" : ""
-                  } ${
-                    isCurrentAndNotRevealed ? "ring-4 ring-[var(--viet-gold)] z-10" : ""
-                  }`}
+                  className="absolute inset-0"
                   style={{
-                    background: "var(--nav-surface-solid)",
-                    borderColor: isCurrentAndNotRevealed ? "var(--viet-gold)" : "var(--page-card-border)",
-                    boxShadow: isCurrentAndNotRevealed ? "inset 0 0 48px var(--viet-gold-glow)" : "var(--page-card-shadow)",
+                    background:
+                      "linear-gradient(180deg, rgba(10,15,27,0.08) 0%, rgba(10,15,27,0.18) 100%)",
                   }}
+                />
+
+                {clues.map((clue, index) => {
+                  const tile = CLUE_TILES[index];
+                  const isActive = activeClueIndex === index && questionPhase === "active";
+
+                  return (
+                    <button
+                      key={clue.id}
+                      type="button"
+                      onClick={() => openClue(index)}
+                      disabled={clue.revealed || questionPhase === "active"}
+                      className={`absolute flex items-center justify-center border transition-all duration-700 ${
+                        clue.revealed ? "pointer-events-none opacity-0 scale-90" : ""
+                      } ${!clue.revealed ? "cursor-pointer" : ""}`}
+                      style={{
+                        top: tile.top,
+                        left: tile.left,
+                        width: "50%",
+                        height: "50%",
+                        background:
+                          "linear-gradient(135deg, #FFF9ED 0%, #F5E8C9 100%)",
+                        borderColor: isActive
+                          ? "rgba(212,160,83,0.72)"
+                          : "rgba(132,94,46,0.18)",
+                        boxShadow: isActive
+                          ? "0 0 0 4px rgba(212,160,83,0.2), inset 0 0 48px rgba(212,160,83,0.2)"
+                          : "inset 0 1px 0 rgba(255,255,255,0.65)",
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="text-sm sm:text-base font-black uppercase tracking-[0.24em]" style={{ color: "var(--page-heading)" }}>
+                          {tile.label}
+                        </div>
+                        <div className="mt-2 text-5xl sm:text-6xl font-black" style={{ color: "var(--page-heading)" }}>
+                          ?
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+
+
+              </div>
+            </div>
+
+            <div className="premium-glass-panel p-6 sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.24em]" style={{ color: "var(--page-heading)" }}>
+                    Đáp án cần tìm
+                  </div>
+                  <div className="mt-2 text-sm font-semibold" style={{ color: "var(--game-text-muted)" }}>
+                    Ô đoán đáp án chính
+                  </div>
+                </div>
+
+                {allCluesRevealed ? (
+                  <div className="theme-chip rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]">
+                    Đã mở đủ 4 góc
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="mt-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                <input
+                  type="text"
+                  value={guessInput}
+                  onChange={(event) => setGuessInput(event.target.value)}
+                  onKeyDown={(event) => event.key === "Enter" && submitGuess()}
+                  placeholder="Nhập đáp án lịch sử..."
+                  className="game-input w-full rounded-2xl px-4 py-4 text-lg font-semibold outline-none transition"
+                  style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)" }}
+                />
+                <button
+                  onClick={submitGuess}
+                  disabled={!guessInput.trim()}
+                  className="game-action-btn game-action-btn--primary"
                 >
-                  {!clue.revealed && (
-                    <div className="flex flex-col items-center">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] transition-colors" style={{ color: isCurrentAndNotRevealed ? 'var(--viet-gold)' : 'var(--text-muted)' }}>
-                        Góc {index + 1}
-                      </span>
-                      <span className="text-2xl md:text-4xl font-black" style={{ color: 'var(--viet-gold)' }}>
-                        ?
-                      </span>
-                    </div>
-                  )}
+                  <Search size={18} />
+                  Chốt Đáp Án
+                </button>
+              </div>
+
+              {guessFeedback ? (
+                <div className="mt-4 rounded-2xl border px-4 py-3" style={{ background: "rgba(239,68,68,0.08)", borderColor: "rgba(239,68,68,0.2)", color: "#b91c1c" }}>
+                  {guessFeedback.explanation}
                 </div>
-              )})}
+              ) : null}
+
+              {allCluesRevealed && !isFinished ? (
+                <div className="mt-4">
+                  <button onClick={() => loadRound()} className="game-action-btn game-action-btn--secondary">
+                    Đổi Hình Khác
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-300">Đáp án cần tìm</p>
-                <p className="mt-2 text-sm text-slate-300">Đáp án gồm {answerHintLabel}.</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-center">
-                <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Điểm hiện tại</div>
-                <div className="text-xl font-black text-green-400">{score} XP</div>
-              </div>
-            </div>
-            <p className="mt-4 text-sm italic text-slate-400">{pictureData.caption}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4 min-h-0 w-full h-full">
-          <div className="flex-1 min-h-[0] custom-scrollbar overflow-y-auto pr-1 pb-1">
-            <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                  Bảng Từ Khóa
+          <div className="flex flex-col gap-4 min-h-0">
+            <div className="theme-glass-card-strong rounded-[32px] p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.24em]" style={{ color: "var(--game-text-faint)" }}>
+                    Bảng từ khóa
+                  </div>
                 </div>
-                <div className="mt-2 text-sm text-slate-300">
-                  Mỗi câu hỏi mở ra một từ khóa và một góc hình ảnh.
+                <div className="theme-chip rounded-2xl px-4 py-3 text-center">
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em]">Tiến độ</div>
+                  <div className="mt-1 text-xl font-black">{revealedCount}/4</div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-center">
-                <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Lượt hiện tại</div>
-                <div className="text-lg font-black text-white">{Math.min(currentClueIndex + 1, clues.length)}/{clues.length}</div>
-              </div>
-            </div>
 
-            <div className="mt-5 space-y-4">
-              {clues.map((clue, index) => {
-                const isCurrent = index === currentClueIndex && phase !== "final-open";
-                const statusLabel = clue.revealed ? "Đã mở" : isCurrent ? "Đang xét" : "Chưa mở";
-                return (
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                {clues.map((clue, index) => (
                   <div
                     key={clue.id}
-                    className={`rounded-[24px] border p-4 ${
-                      clue.revealed
-                        ? "border-emerald-400/30 bg-emerald-500/10"
-                        : isCurrent
-                          ? "border-amber-400/30 bg-amber-500/10"
-                          : "border-white/10 bg-slate-950/60"
-                    }`}
+                    className="rounded-[26px] border p-4 sm:p-5"
+                    style={{
+                      background: clue.revealed
+                        ? clue.isCorrect
+                          ? "linear-gradient(135deg, rgba(220,252,231,0.7) 0%, rgba(240,253,244,0.88) 100%)"
+                          : "linear-gradient(135deg, rgba(254,226,226,0.7) 0%, rgba(254,242,242,0.88) 100%)"
+                        : "linear-gradient(135deg, rgba(255,255,255,0.56) 0%, rgba(255,250,242,0.84) 100%)",
+                      borderColor: clue.revealed
+                        ? clue.isCorrect
+                          ? "rgba(34,197,94,0.22)"
+                          : "rgba(239,68,68,0.22)"
+                        : "rgba(132,94,46,0.14)",
+                    }}
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <div className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
-                        Từ khóa {index + 1}
+                      <div className="text-sm font-black uppercase tracking-[0.18em]" style={{ color: "var(--page-heading)" }}>
+                        Dữ kiện {index + 1}
                       </div>
-                      <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-300">
-                        {statusLabel}
-                      </div>
-                    </div>
-                    <div className="mt-4">{renderKeywordBoxes(clue.a, clue.revealed)}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          </div>
-
-          <div className="flex-shrink-0 rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-xl">
-            <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-              Điều Khiển Lượt Chơi
-            </div>
-
-            {questionFeedback && (
-              <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/70 p-4">
-                <div className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
-                  Kết quả mở từ khóa
-                </div>
-                <p className="mt-2 text-white">
-                  {questionFeedback.timeout
-                    ? "Hết 15 giây. Từ khóa đã được mở."
-                    : questionFeedback.correct
-                      ? "Trả lời đúng. Từ khóa đã được mở."
-                      : "Trả lời chưa đúng, nhưng từ khóa vẫn được mở để tiếp tục suy luận."}
-                </p>
-                <p className="mt-2 text-sm text-slate-300">
-                  Từ khóa đã được mở trên bảng bên trái.
-                </p>
-              </div>
-            )}
-
-            {guessFeedback && (
-              <div className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4">
-                <div className="text-sm font-black uppercase tracking-[0.18em] text-rose-300">
-                  Phản hồi đoán đáp án
-                </div>
-                <p className="mt-2 text-white">{guessFeedback.explanation}</p>
-                <p className="mt-2 text-sm text-slate-300">
-                  Đáp án chỉ được công bố khi kết thúc hình này.
-                </p>
-              </div>
-            )}
-
-            {(phase === "question-ready" || phase === "question-active") && currentClue && (
-              <div className="mt-4">
-                <div className="rounded-[28px] border border-amber-400/10 bg-slate-950/70 p-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                      Câu hỏi {currentClueIndex + 1}
-                    </div>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-300">
-                      <Clock3 size={14} />
-                      {phase === "question-active" ? `${questionTimeLeft}s / ${QUESTION_SECONDS}s` : `${QUESTION_SECONDS}s`}
-                    </div>
-                  </div>
-
-                  {phase === "question-ready" ? (
-                    <div className="mt-6 rounded-2xl border border-sky-400/20 bg-sky-500/10 p-5">
-                      <p className="text-sm leading-7 text-slate-100">
-                        Câu hỏi và ô nhập đáp án đang ẩn. Bấm <span className="font-black text-sky-200">BẮT ĐẦU</span> để mở câu hỏi này và chạy 15 giây trả lời.
-                      </p>
-                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                        <button
-                          onClick={startQuestion}
-                          className="rounded-2xl bg-amber-500 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-amber-400"
-                        >
-                          <span className="inline-flex items-center gap-2">
-                            <HelpCircle size={18} />
-                            BẮT ĐẦU
-                          </span>
-                        </button>
-                        <button
-                          disabled
-                          className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 text-base font-black uppercase tracking-[0.18em] text-white/50"
-                        >
-                          DỪNG
-                        </button>
+                      <div
+                        className="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]"
+                        style={{
+                          background: clue.revealed
+                            ? clue.isCorrect ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)"
+                            : "rgba(132,94,46,0.08)",
+                          color: clue.revealed
+                            ? clue.isCorrect ? "#15803d" : "#b91c1c"
+                            : "var(--game-text-faint)",
+                        }}
+                      >
+                        {clue.revealed ? (clue.isCorrect ? "Đúng ✓" : "Sai ✗") : "Chưa mở"}
                       </div>
                     </div>
-                  ) : (
-                    <div className="mt-6 space-y-4">
-                      <h2 className="text-xl font-bold leading-relaxed text-white">
-                        {currentClue.q}
-                      </h2>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <button
-                          disabled
-                          className="rounded-2xl bg-amber-500 px-5 py-4 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
-                        >
-                          BẮT ĐẦU
-                        </button>
-                        <button
-                          onClick={toggleQuestionTimer}
-                          className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                        >
-                          {questionTimerRunning ? "DỪNG" : "TIẾP TỤC"}
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        value={questionInput}
-                        onChange={(event) => setQuestionInput(event.target.value)}
-                        onKeyDown={(event) => event.key === "Enter" && submitQuestion()}
-                        placeholder="Nhập câu trả lời ngắn..."
-                        disabled={!questionTimerRunning}
-                        className="w-full rounded-2xl border border-white/10 bg-slate-800 px-4 py-4 text-lg font-semibold text-white outline-none transition focus:border-amber-400/40 disabled:opacity-60"
-                      />
-                      <button
-                        onClick={submitQuestion}
-                        disabled={!questionTimerRunning || !questionInput.trim()}
-                        className="w-full rounded-2xl bg-emerald-600 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-emerald-500 disabled:opacity-50"
-                      >
-                        Chốt Câu Trả Lời
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
 
-            {(phase === "guess-ready" || phase === "guess-active" || phase === "final-open") && (
-              <div className="mt-4 rounded-[28px] border border-sky-400/10 bg-slate-950/70 p-6">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-xs font-black uppercase tracking-[0.24em] text-slate-400">
-                    {phase === "final-open" ? "Đoán Đáp Án Cuối" : "Đoán Nhanh Từ Hình Ảnh"}
-                  </div>
-                  {phase !== "final-open" && (
-                    <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-sky-300">
-                      <Clock3 size={14} />
-                      {phase === "guess-active" ? `${guessTimeLeft}s / ${GUESS_SECONDS}s` : `${GUESS_SECONDS}s`}
-                    </div>
-                  )}
-                </div>
-                <p className="mt-3 text-sm text-slate-300">
-                  {phase === "final-open"
-                    ? "Cả 4 từ khóa đã mở. Có thể nhập đáp án cuối để chốt."
-                    : "Sau khi mở từ khóa và một góc hình ảnh, học sinh có 15 giây để đoán nếu đã nhận ra đáp án."}
-                </p>
-
-                {phase === "guess-ready" ? (
-                  <div className="mt-6 space-y-3">
-                    <p className="text-sm leading-7 text-slate-100">
-                      Ô đoán đáp án đang chờ lệnh bắt đầu. Bấm <span className="font-black text-sky-200">BẮT ĐẦU</span> để chạy 15 giây đoán nhanh.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                        onClick={startGuessWindow}
-                        className="flex-1 rounded-2xl bg-sky-500 px-5 py-4 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-400"
-                      >
-                        BẮT ĐẦU
-                      </button>
-                      <button
-                        disabled
-                        className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black uppercase tracking-[0.18em] text-white/50"
-                      >
-                        DỪNG
-                      </button>
-                      <button
-                        onClick={moveToNextClue}
-                        className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                      >
-                        Bỏ Lượt Đoán
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mt-6 space-y-4">
-                    {phase === "guess-active" ? (
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <button
-                          disabled
-                          className="rounded-2xl bg-sky-500 px-5 py-4 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-400 disabled:opacity-50"
-                        >
-                          BẮT ĐẦU
-                        </button>
-                        <button
-                          onClick={toggleGuessTimer}
-                          className="rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                        >
-                          {guessTimerRunning ? "DỪNG" : "TIẾP TỤC"}
-                        </button>
-                      </div>
-                    ) : null}
-                    <input
-                      type="text"
-                      value={guessInput}
-                      onChange={(event) => setGuessInput(event.target.value)}
-                      onKeyDown={(event) => event.key === "Enter" && submitGuess()}
-                      placeholder="Nhập đáp án lịch sử..."
-                      disabled={phase === "guess-active" && !guessTimerRunning}
-                      className="w-full rounded-2xl border border-white/10 bg-slate-800 px-4 py-4 text-lg font-semibold text-white outline-none transition focus:border-sky-400/40 disabled:opacity-60"
-                    />
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                        onClick={submitGuess}
-                        disabled={(phase === "guess-active" && (!guessTimerRunning || guessAttempted)) || !guessInput.trim()}
-                        className="flex-1 rounded-2xl bg-amber-500 px-5 py-4 font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-amber-400 disabled:opacity-50"
-                      >
-                        <span className="inline-flex items-center gap-2">
-                          <Search size={18} />
-                          Xác Nhận Đáp Án
-                        </span>
-                      </button>
-                      {phase === "guess-active" ? (
-                        <button
-                          onClick={moveToNextClue}
-                          className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                        >
-                          Sang Lượt Kế
-                        </button>
+                    <div className="mt-4 min-h-[92px] flex items-center">
+                      {clue.revealed ? (
+                        renderKeywordBoxes(clue.a)
                       ) : (
-                        <button
-                          onClick={() => loadRound()}
-                          className="flex-1 rounded-2xl border border-white/10 bg-slate-800 px-5 py-4 font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-700"
-                        >
-                          Đổi Hình Khác
-                        </button>
+                        <div className="text-base font-bold" style={{ color: "var(--game-text-muted)" }}>
+                          Chưa mở
+                        </div>
                       )}
                     </div>
                   </div>
-                )}
+                ))}
+              </div>
+            </div>
+
+            {questionFeedback ? (
+              <div
+                className="theme-glass-card-strong rounded-[28px] p-5"
+                style={{
+                  borderColor: questionFeedback.correct
+                    ? "rgba(34,197,94,0.2)"
+                    : "rgba(239,68,68,0.2)",
+                }}
+              >
+                <div className="text-xs font-black uppercase tracking-[0.24em]" style={{ color: "var(--game-text-faint)" }}>
+                  Kết quả dữ kiện {questionFeedback.clueIndex + 1}
+                </div>
+                <div className="mt-3 text-base font-bold" style={{
+                  color: questionFeedback.correct ? "#15803d" : "#b91c1c",
+                }}>
+                  {resultMessage}
+                </div>
+              </div>
+            ) : (
+              <div className="theme-glass-card rounded-[28px] p-5">
+                <div className="text-xs font-black uppercase tracking-[0.24em]" style={{ color: "var(--game-text-faint)" }}>
+                  Trạng thái
+                </div>
+                <div className="mt-3 text-base font-bold" style={{ color: "var(--game-text-secondary)" }}>
+                  Sẵn sàng mở dữ kiện.
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {questionPhase === "active" && currentClue ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 game-overlay">
+          <div className="theme-glass-card-strong w-full max-w-3xl rounded-[36px] p-5 sm:p-7 shadow-2xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-xs font-black uppercase tracking-[0.24em]" style={{ color: "var(--game-text-faint)" }}>
+                  Dữ kiện {activeClueIndex + 1}
+                </div>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black uppercase tracking-[0.16em]" style={{ background: "rgba(212,160,83,0.08)", color: "var(--page-heading)" }}>
+                  <Clock3 size={16} />
+                  {questionTimeLeft}s / {QUESTION_SECONDS}s
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeQuestionOverlay}
+                className="flex h-11 w-11 items-center justify-center rounded-2xl border transition"
+                style={{
+                  background: "rgba(255,255,255,0.52)",
+                  borderColor: "rgba(132,94,46,0.14)",
+                  color: "var(--game-text)",
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-[28px] border px-5 py-6 sm:px-6" style={{ background: "rgba(255,255,255,0.56)", borderColor: "rgba(132,94,46,0.14)" }}>
+              <h2 className="vn-safe-heading text-xl sm:text-2xl font-black leading-[1.5]" style={{ color: "var(--game-text)" }}>
+                {currentClue.q}
+              </h2>
+
+              <div className="mt-6 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto]">
+                <input
+                  type="text"
+                  value={questionInput}
+                  onChange={(event) => setQuestionInput(event.target.value)}
+                  onKeyDown={(event) => event.key === "Enter" && submitQuestion()}
+                  placeholder="Nhập câu trả lời ngắn..."
+                  disabled={!questionTimerRunning}
+                  className="game-input w-full rounded-2xl px-4 py-4 text-lg font-semibold outline-none transition disabled:opacity-60"
+                />
+                <button
+                  type="button"
+                  onClick={() => setQuestionTimerRunning((prev) => !prev)}
+                  className="game-action-btn game-action-btn--secondary"
+                >
+                  {questionTimerRunning ? <Pause size={18} /> : <Play size={18} />}
+                  {questionTimerRunning ? "Tạm Dừng" : "Tiếp Tục"}
+                </button>
+                <button
+                  type="button"
+                  onClick={submitQuestion}
+                  disabled={!questionTimerRunning || !questionInput.trim()}
+                  className="game-action-btn game-action-btn--primary"
+                >
+                  Chốt Trả Lời
+                </button>
+              </div>
+
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => revealCurrentClue("", { skipped: true })}
+                  className="text-sm font-black uppercase tracking-[0.16em]"
+                  style={{ color: "var(--game-text-faint)" }}
+                >
+                  Bỏ qua dữ kiện này
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
-  </div>
   );
 }

@@ -1,0 +1,56 @@
+# Kế hoạch Khắc Phục Lỗi Giao Diện & Tối Ưu Logic Câu Hỏi
+
+Theo yêu cầu của bạn, tôi nhận thấy có 2 vấn đề lớn trên toàn bộ hệ thống game cần được giải quyết triệt để: một là giao diện bị cắt xén (mất component) trên màn hình nhỏ/toàn màn hình, và hai là logic luật chơi (trả lời câu hỏi không đúng 100% vẫn qua, câu hỏi bị lặp từ với đáp án).
+
+Dưới đây là kế hoạch giải quyết toàn bộ:
+
+## User Review Required
+
+> [!WARNING]
+> Việc tôi đổi cơ chế từ khóa (chấm điểm) thành **Tuyệt đối chính xác từng chữ cái và dấu câu (accent-strict)** sẽ khiến game khó lên khá nhiều. Người chơi phải gõ có dấu Tiếng Việt đầy đủ và đúng từng chữ. Bạn hãy xác nhận điều này đúng như mong muốn nhé!
+> Về việc câu hỏi "Không được chứa từ liên quan đến đáp án": Tôi sẽ tinh chỉnh lại toàn bộ bảng câu hỏi ở chế độ Lật mở trang sử để người chơi không thể "bắt bài" đoán chữ. Mời bạn xem trước một vài câu ở phần dưới.
+
+## Proposed Changes
+
+### 1. Khắc Phục Lỗi Mất Component (Scroll Bug)
+Hầu hết các trang trong chế độ chơi đang sử dụng class `overflow-hidden` ở container ngoài cùng, khiến cho bị khóa cuộn trang. Khi mở Full-screen hoặc thu nhỏ màn hình gây ra tình trạng tràn hoặc mất hẳn giao diện (Component bị che khuất).
+- **Giải pháp:** Sẽ gỡ bỏ `overflow-hidden` và thay thế bằng `overflow-y-auto overflow-x-hidden custom-scrollbar` trên **toàn bộ 8 Modes** (Kể cả Trang chủ và Chọn Mode).
+- **Các file áp dụng:**
+  - `HomePage.js`
+  - `ModeSelection.js`
+  - `TimeAttackMode.js`
+  - `TerritoryMap.js`
+  - `SurvivalMode.js`
+  - `PvPMode.js`
+  - `PictureSequenceMode.js`
+  - `MillionaireMode.js`
+  - `MatchingMode.js`
+
+### 2. Tinh Chỉnh Cốt Lõi Tính Điểm (Strict Matching)
+- **Tệp tin:** `frontend/src/utils/gameHelpers.js`
+- **Thay đổi:** Nâng cấp hàm `normalizeText()` (đang được import ở tất cả các form đánh giá đáp án trong mọi màn chơi). Tôi sẽ loại bỏ tính năng **"tự động xóa dấu Tiếng Việt"**. Các đáp án chỉ được tự động bỏ in hoa/khoảng trắng thừa. Yêu cầu nhập đúng bảng mã Unicode (Đúng từng chữ cái và dấu câu).
+
+### 3. Tối Ưu Bảng Dữ Liệu Câu Hỏi
+- **Tệp tin:** `frontend/src/data/theme4GameData.js`
+- **Thay đổi:** Viết lại hoặc tinh giản các câu hỏi lỡ bị "lộ đáp án". Ví dụ:
+  - *"Phong trào nào đặt cơ sở... "* -> Ans: Phong trào Tây Sơn. (Sẽ sửa thành: *"Cuộc đấu tranh tiêu biểu nào ở cuối thế kỉ XVIII đã đặt cơ sở..."* -> Ans: Phong trào Tây Sơn).
+  - *"Dòng sông nào ba lần ghi dấu chiến công..."* -> Ans: Sông Bạch Đằng. (Sẽ sửa đáp án thành: Bạch Đằng, hoặc xóa chữ "Dòng sông" ở đáp án).
+  - *"Được vận dụng trong cuộc kháng chiến nào..."* -> Ans: Kháng chiến chống quân Nam Hán. (Sẽ sửa đáp án thành: Chống quân Nam Hán).
+  - *"Sự kiện mở đầu..."* -> Ans: Pháp nổ súng tấn công... (Sẽ sửa thành: *"Hành động vũ trang nào mở đầu chuỗi ngày..."*).
+  - v.v.
+
+---
+
+## Open Questions
+
+Bạn hãy xem qua những câu hỏi ví dụ được sửa. Đối với đáp án vốn dĩ có các từ cố định như "Sông...", "Trận...", bạn muốn tôi viết lại câu hỏi để né từ đó, hay đơn giản chỉ đổi đáp án thành tên riêng (ví dụ: Đáp án chỉ là `Bạch Đằng`, thay vì `Sông Bạch Đằng`)? 
+
+## Verification Plan
+
+### Automated Tests
+- Kiểm tra trực quan bằng thao tác `npm run dev` xem game biên dịch thành công hay không.
+- Mở Terminal test thử bộ khung GameHelpers.
+
+### Manual Verification
+- Bạn sẽ trực tiếp vào game để test chế độ "Toàn màn hình". Dùng chuột cuộn xuống xem các component có trôi theo đúng quy chuẩn không. 
+- Bạn nhập thử đáp án sai chữ cái/sai tiếng Việt để xem hệ thống có trả về lỗi "Sai đáp án" như dự kiến không.

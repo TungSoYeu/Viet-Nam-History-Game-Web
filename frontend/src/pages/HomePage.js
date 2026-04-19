@@ -238,7 +238,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="homepage-shell min-h-[100dvh] lg:h-[100dvh] w-full relative overflow-x-hidden lg:overflow-hidden flex flex-col"
+      className="homepage-shell min-h-[100dvh] lg:h-[100dvh] w-full relative overflow-x-hidden overflow-y-auto custom-scrollbar flex flex-col"
       style={{
         backgroundColor: 'var(--bg-base)',
         backgroundImage: "url('/assets/images/background_homepage.jpg')",

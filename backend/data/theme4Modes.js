@@ -15,14 +15,14 @@ const theme4Modes = [
   {
     id: "understanding-teammates",
     name: "Hiểu ý đồng đội",
-    desc: "5 gói đoán ý với 50 từ khóa lịch sử trọng tâm.",
+    desc: "6 gói đoán ý với 60 từ khóa lịch sử trọng tâm.",
     longDesc:
-      "Đây là một trò chơi tương tác trực tiếp giữa học sinh. Mỗi gói có 10 từ khóa thuộc các nhóm: nhân vật lịch sử, sự kiện hoặc phong trào, địa danh hoặc trận đánh, và khái niệm hay thuật ngữ quan trọng của Chủ đề 4.",
+      "Đây là một trò chơi tương tác trực tiếp giữa học sinh. Mỗi gói có 10 từ khóa thuộc các nhóm: nhân vật lịch sử, sự kiện hoặc phong trào, địa danh hoặc trận đánh, và khái niệm hay thuật ngữ quan trọng của Chủ đề 4. Những từ chưa đoán được có thể bỏ qua để quay lại ở lượt sau.",
     path: "/pvp",
     bgImage: "/assets/images/bg-pvp-teamwork.svg",
     gradient:
       "linear-gradient(135deg, rgba(219, 39, 119, 0.8), rgba(236, 72, 153, 0.8))",
-    stats: "5 gói | 10 từ/gói",
+    stats: "6 gói | 10 từ/gói",
     rewardText: "Hoạt động lớp học",
   },
   {

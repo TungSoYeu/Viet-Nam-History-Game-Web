@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Lightbulb, Package, Target, Trophy } from "lucide-react";
+import { ArrowLeft, Package, Target, Trophy } from "lucide-react";
 import { connectingHistoryRounds } from "../data/theme4GameData";
 import useTheme4ModeData from "../hooks/useTheme4ModeData";
 import {
@@ -308,7 +308,7 @@ export default function MatchingMode() {
 
   if (loading && !roundState.round) {
     return (
-      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-transparent">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-4 border-amber-400/30 border-t-amber-400 animate-spin" />
           <span className="text-sm font-bold text-amber-300 tracking-wide animate-pulse">Đang tải dữ liệu kết nối...</span>
@@ -319,7 +319,7 @@ export default function MatchingMode() {
 
   if (!roundState.round) {
     return (
-      <div className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 bg-transparent">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent">
         <div className="rounded-3xl border border-amber-400/20 bg-slate-900/80 p-8 max-w-md shadow-2xl">
           <div className="text-5xl mb-4">📭</div>
           <p className="text-lg font-bold text-amber-300">Chưa có vòng nối hợp lệ</p>
@@ -330,15 +330,13 @@ export default function MatchingMode() {
   }
 
   /* ── Timer visual helpers ── */
-  const timerPercent = roundStarted ? (timeLeft / ROUND_TIME) * 100 : 100;
   const timerColor = timeLeft <= 5 ? "#ef4444" : timeLeft <= 10 ? "#f59e0b" : "#38bdf8";
-  const timerCircle = 2 * Math.PI * 18; // r=18
 
   if (isFinished) {
     const totalPossible = activeConnectingRounds.length * 50;
     const percent = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
     return (
-      <div className="theme-page game-screen min-h-screen p-4 flex items-center justify-center bg-transparent">
+      <div className="theme-page game-screen min-h-screen p-4 flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent">
         <div className="max-w-lg w-full rounded-[28px] text-center shadow-2xl overflow-hidden"
           style={{ background: "linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(7,11,20,0.98) 100%)", border: "1px solid rgba(255,255,255,0.08)" }}
         >
@@ -390,7 +388,7 @@ export default function MatchingMode() {
   }
 
   return (
-    <div className="theme-page game-screen h-screen flex flex-col p-2 sm:p-3 bg-transparent relative z-10 overflow-hidden">
+    <div className="theme-page game-screen h-screen flex flex-col p-2 sm:p-3 bg-transparent relative z-10 overflow-y-auto overflow-x-hidden custom-scrollbar">
       <div className="max-w-[1600px] mx-auto flex flex-col h-full w-full min-h-0">
 
         {/* ═══ HEADER BAR ═══ */}
@@ -404,68 +402,50 @@ export default function MatchingMode() {
             <span className="hidden sm:inline">Thoát</span>
           </button>
 
-          <div className="flex-1 text-center">
-            <h2 className="vn-safe-heading text-sm sm:text-base font-black tracking-wide"
+        <div className="flex-1 text-center">
+          <h2 className="vn-safe-heading text-sm sm:text-base font-black tracking-wide"
               style={{ background: "linear-gradient(135deg, #f0d48a, #d4a053)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
             >
               Kết nối lịch sử
             </h2>
+            <p className="mt-2 text-sm font-black text-white sm:text-base">
+              {roundState.round.title}
+            </p>
           </div>
 
-          {/* Mini timer circle */}
-          <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
-            <svg width="40" height="40" viewBox="0 0 40 40" className="absolute -rotate-90">
-              <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
-              <circle cx="20" cy="20" r="18" fill="none" stroke={timerColor} strokeWidth="2.5"
-                strokeDasharray={timerCircle} strokeDashoffset={timerCircle * (1 - timerPercent / 100)}
-                strokeLinecap="round" className="transition-all duration-1000"
-              />
-            </svg>
-            <span className="text-[11px] font-black" style={{ color: timerColor }}>
-              {roundStarted ? timeLeft : ROUND_TIME}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <div className="px-2 py-1 rounded-lg text-[11px] font-black text-slate-300"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="rounded-2xl border px-4 py-3 text-center"
+              style={{ borderColor: "rgba(251,191,36,0.2)", background: "rgba(251,191,36,0.08)" }}
             >
-              {roundIndex + 1}<span className="text-slate-500">/{activeConnectingRounds.length}</span>
+              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-300/80">
+                Thời gian
+              </div>
+              <div className="mt-1 text-2xl font-black" style={{ color: timerColor }}>
+                {roundStarted ? timeLeft : ROUND_TIME}s
+              </div>
             </div>
-            <div className="px-2 py-1 rounded-lg text-[11px] font-black"
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 px-4 py-3 text-center">
+              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                Lượt
+              </div>
+              <div className="mt-1 text-2xl font-black text-white">
+                {roundIndex + 1}/{activeConnectingRounds.length}
+              </div>
+            </div>
+            <div className="rounded-2xl border px-4 py-3 text-center"
               style={{ color: "#fbbf24", background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)" }}
             >
-              {score} XP
+              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-300/80">
+                XP
+              </div>
+              <div className="mt-1 text-2xl font-black">{score}</div>
             </div>
           </div>
-        </div>
-
-        {/* ═══ INSTRUCTION + PROGRESS ═══ */}
-        <div className="flex-shrink-0 mb-1.5 flex items-center gap-2 px-3 py-1.5 rounded-xl"
-          style={{ background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.12)" }}
-        >
-          <Lightbulb size={14} className="text-amber-400 shrink-0" />
-          <span className="flex-1 text-xs font-bold text-amber-200/90 line-clamp-1">
-            {roundState.round.title}. {roundState.round.instruction}
-          </span>
-          <span className="text-[10px] font-black text-amber-400/60 shrink-0">
-            {placedCount}/{roundState.cards.length}
-          </span>
-        </div>
-
-        {/* Progress bar */}
-        <div className="flex-shrink-0 mb-2 h-1 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
-          <div className="h-full rounded-full transition-all duration-700 ease-out"
-            style={{
-              width: `${((roundIndex + (review ? 1 : 0)) / activeConnectingRounds.length) * 100}%`,
-              background: "linear-gradient(90deg, #38bdf8, #34d399, #fbbf24)",
-            }}
-          />
         </div>
 
         {/* Notice */}
         {notice ? (
-          <div className={`flex-shrink-0 mb-1.5 rounded-xl px-3 py-1.5 text-xs font-bold border ${
+          <div className={`flex-shrink-0 mb-2 rounded-xl px-3 py-2 text-sm font-bold border ${
             notice.type === "success"
               ? "border-emerald-400/20 bg-emerald-500/8 text-emerald-300"
               : notice.type === "warning"
@@ -477,44 +457,22 @@ export default function MatchingMode() {
         ) : null}
 
         {/* ═══ GAME AREA ═══ */}
-        {!roundStarted && !review ? (
-          /* Pre-start state */
-          <div className="flex-1 flex items-center justify-center">
-            <div className="max-w-md w-full text-center p-8 rounded-3xl"
-              style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(56,189,248,0.12)", backdropFilter: "blur(12px)" }}
-            >
-              <div className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-4 rotate-3"
-                style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.15))", border: "1px solid rgba(56,189,248,0.2)" }}
-              >
-                <Package size={28} className="text-sky-400" />
-              </div>
-              <h3 className="text-lg font-black text-white mb-2">Sẵn sàng kết nối</h3>
-              <p className="text-sm text-slate-300 leading-relaxed mb-1">
-                Kéo thả các thẻ dữ kiện vào ô đáp án tương ứng trong <span className="font-black text-sky-300">{ROUND_TIME} giây</span>.
-              </p>
-              <p className="text-xs text-slate-500">
-                Mỗi cặp đúng = <span className="text-amber-400 font-black">+10 XP</span>
-              </p>
-            </div>
-          </div>
-        ) : (
-          /* Active game board */
-          <div className="flex flex-col xl:flex-row w-full gap-2.5 flex-1 min-h-0 overflow-hidden">
+        <div className="flex flex-col xl:flex-row w-full gap-3 flex-1 min-h-0 overflow-hidden">
 
             {/* ── LEFT: Draggable cards ── */}
-            <div className="xl:w-[42%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
-              style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+            <div className="xl:w-[45%] w-full flex flex-col min-h-0 overflow-hidden rounded-[28px]"
+              style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}
             >
-              <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
                     style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.2))" }}
                   >
-                    <Package size={13} className="text-amber-400" />
+                    <Package size={16} className="text-amber-400" />
                   </div>
-                  <span className="text-xs font-black text-amber-300 uppercase tracking-wider">Thẻ dữ kiện</span>
+                  <span className="text-sm font-black text-amber-300 uppercase tracking-wider">Thẻ dữ kiện</span>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                <span className="rounded-full px-3 py-1 text-xs font-bold"
                   style={{ color: placedCount === roundState.cards.length ? "#34d399" : "#94a3b8", background: "rgba(255,255,255,0.04)" }}
                 >
                   {availableCards.length} còn lại
@@ -523,20 +481,20 @@ export default function MatchingMode() {
 
               {/* Drop zone to return cards */}
               <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, "")}
-                className="flex-shrink-0 mx-2 mt-2 rounded-lg border border-dashed px-2 py-1 text-center text-[10px] transition-colors"
-                style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.02)" }}
+                className="flex-shrink-0 mx-3 mt-3 rounded-xl border border-dashed px-3 py-2 text-center text-xs font-bold transition-colors"
+                style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(226,232,240,0.75)", background: "rgba(255,255,255,0.03)" }}
               >
                 ↩ Kéo thẻ về đây để bỏ
               </div>
 
               {/* Cards list */}
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-2">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 space-y-3">
                 {availableCards.length > 0 ? (
                   availableCards.map((item) => (
                     <div key={item.id}
                       draggable={roundStarted && timerRunning && !review}
                       onDragStart={(e) => handleDragStart(e, item.id)}
-                      className={`group flex items-center gap-3 px-4 py-2.5 md:py-3 rounded-2xl cursor-grab active:cursor-grabbing transition-all duration-200 ${
+                      className={`group flex items-center gap-4 px-4 py-3 md:py-4 rounded-[24px] cursor-grab active:cursor-grabbing transition-all duration-200 ${
                         roundStarted && timerRunning && !review
                           ? "hover:translate-x-1 hover:shadow-lg hover:shadow-amber-500/5"
                           : "opacity-50 cursor-not-allowed"
@@ -547,57 +505,56 @@ export default function MatchingMode() {
                       }}
                     >
                       {item.image ? (
-                        <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 rounded-xl overflow-hidden shadow-md"
+                        <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl overflow-hidden shadow-md"
                           style={{ border: "1px solid rgba(255,255,255,0.1)" }}
                         >
                           <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                         </div>
                       ) : (
-                        <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 rounded-xl flex items-center justify-center text-2xl"
+                        <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl flex items-center justify-center text-3xl"
                           style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.05))", border: "1px solid rgba(251,191,36,0.15)" }}
                         >
                            📜
                         </div>
                       )}
-                      <span className="flex-1 text-sm md:text-base font-bold text-white/90 leading-snug">{item.content}</span>
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      <span className="flex-1 text-base md:text-lg font-bold text-white leading-snug">{item.content}</span>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         style={{ background: "rgba(251,191,36,0.15)" }}
                       >
-                        <span className="text-[10px] text-amber-400">→</span>
+                        <span className="text-xs text-amber-400">→</span>
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6 text-center">
                     <div className="text-2xl mb-2">✅</div>
-                    <p className="text-xs text-emerald-300 font-bold">Đã đặt hết thẻ!</p>
-                    <p className="text-[10px] text-slate-500 mt-1">Bấm Hoàn thành khi sẵn sàng</p>
+                    <p className="text-sm text-emerald-300 font-bold">Đã đặt hết thẻ</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* ── RIGHT: Answer slots ── */}
-            <div className="xl:w-[58%] w-full flex flex-col min-h-0 overflow-hidden rounded-2xl"
-              style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+            <div className="xl:w-[55%] w-full flex flex-col min-h-0 overflow-hidden rounded-[28px]"
+              style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}
             >
-              <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
                     style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.2))" }}
                   >
-                    <Target size={13} className="text-emerald-400" />
+                    <Target size={16} className="text-emerald-400" />
                   </div>
-                  <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">Ô đáp án</span>
+                  <span className="text-sm font-black text-emerald-300 uppercase tracking-wider">Ô đáp án</span>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                <span className="rounded-full px-3 py-1 text-xs font-bold"
                   style={{ color: "#94a3b8", background: "rgba(255,255,255,0.04)" }}
                 >
                   {roundState.slots.length} ô
                 </span>
               </div>
 
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 space-y-2">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 space-y-3">
                 {roundState.slots.map((slot) => {
                   const placedCard = getCardInSlot(slot.id);
                   const slotReview = review?.evaluation?.[slot.id];
@@ -625,12 +582,12 @@ export default function MatchingMode() {
                     <div key={slot.id}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => handleDrop(e, slot.id)}
-                      className="flex items-center gap-3 px-4 py-2.5 md:py-3 rounded-2xl transition-all duration-200"
+                      className="flex items-center gap-4 px-4 py-3 md:py-4 rounded-[24px] transition-all duration-200"
                       style={{ background: bgColor, border: `1.5px solid ${borderColor}` }}
                     >
                       {/* Slot label */}
                       <div className="shrink-0 w-[42%] min-w-0">
-                        <span className="text-sm md:text-base font-bold leading-snug block" style={{ color: labelColor }}>
+                        <span className="block text-base md:text-lg font-bold leading-snug" style={{ color: labelColor }}>
                           {slot.content}
                         </span>
                       </div>
@@ -647,20 +604,20 @@ export default function MatchingMode() {
                         {placedCard ? (
                           <div draggable={roundStarted && timerRunning && !review}
                             onDragStart={(e) => handleDragStart(e, placedCard.id)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-xl cursor-grab active:cursor-grabbing transition-all border"
+                            className="flex items-center gap-3 px-3 py-3 rounded-2xl cursor-grab active:cursor-grabbing transition-all border"
                             style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
                           >
                             {placedCard.image ? (
                               <img src={placedCard.image} alt={placedCard.content}
-                                className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover shrink-0 border"
+                                className="w-12 h-12 md:w-14 md:h-14 rounded-xl object-cover shrink-0 border"
                                 style={{ borderColor: "rgba(255,255,255,0.1)" }}
                               />
                             ) : null}
-                            <span className="text-sm md:text-base font-bold text-white/90 truncate">{placedCard.content}</span>
+                            <span className="text-base md:text-lg font-bold text-white truncate">{placedCard.content}</span>
                           </div>
                         ) : (
-                          <div className="rounded-xl border border-dashed py-3 text-center text-xs md:text-sm transition-colors"
-                            style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.2)" }}
+                          <div className="rounded-2xl border border-dashed py-4 text-center text-sm md:text-base font-bold transition-colors"
+                            style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(226,232,240,0.55)" }}
                           >
                             Thả thẻ vào đây
                           </div>
@@ -683,7 +640,6 @@ export default function MatchingMode() {
               </div>
             </div>
           </div>
-        )}
 
         {/* ═══ BOTTOM ACTION BAR ═══ */}
         <div className="flex-shrink-0 mt-2 flex items-center gap-2 p-2 rounded-2xl"

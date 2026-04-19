@@ -336,7 +336,7 @@ export default function TimeAttackMode() {
 
   if (loading || (targetQuestionCount > 0 && !sessionReady)) {
     return (
-      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar bg-slate-950 text-amber-300">
         Đang tải bộ câu hỏi nhanh...
       </div>
     );
@@ -344,7 +344,7 @@ export default function TimeAttackMode() {
 
   if ((phase === "intro" || phase === "prep" || phase === "play-ready") && !finished) {
     return (
-      <div className="theme-page game-screen min-h-screen bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center">
+      <div className="theme-page game-screen min-h-screen overflow-y-auto overflow-x-hidden custom-scrollbar bg-[radial-gradient(circle_at_top,#78350f_0%,#020617_72%)] px-4 py-8 text-white flex items-center justify-center">
         <div className="w-full max-w-3xl rounded-[32px] border border-amber-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
             <Bolt size={38} />
@@ -415,7 +415,7 @@ export default function TimeAttackMode() {
 
   if (!currentQuestion && phase === "play" && !finished) {
     return (
-      <div className="theme-page game-screen min-h-screen flex items-center justify-center bg-slate-950 text-amber-300">
+      <div className="theme-page game-screen min-h-screen flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar bg-slate-950 text-amber-300">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
       </div>
     );
@@ -423,7 +423,7 @@ export default function TimeAttackMode() {
 
   if (finished || phase === "finished") {
     return (
-      <div className="theme-page game-screen min-h-screen bg-[radial-gradient(circle_at_top,#451a03_0%,#020617_68%)] px-4 py-8 text-white flex items-center justify-center">
+      <div className="theme-page game-screen min-h-screen overflow-y-auto overflow-x-hidden custom-scrollbar bg-[radial-gradient(circle_at_top,#451a03_0%,#020617_68%)] px-4 py-8 text-white flex items-center justify-center">
         <Confetti active={true} count={100} />
         <div className="w-full max-w-3xl rounded-[32px] border border-amber-400/20 bg-slate-900/90 p-6 sm:p-8 shadow-2xl text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">

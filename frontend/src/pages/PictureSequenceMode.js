@@ -386,7 +386,7 @@ export default function PictureSequenceMode() {
   if (loading || (totalRounds > 0 && !sessionReady)) {
     return (
       <div
-        className="theme-page game-screen flex h-full min-h-0 items-center justify-center px-6 text-center text-2xl font-black"
+        className="theme-page game-screen flex h-full min-h-0 items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar px-6 text-center text-2xl font-black"
         style={{ color: goldTextColor }}
       >
         Đang chuẩn bị phần mảnh vỡ lịch sử...
@@ -396,7 +396,7 @@ export default function PictureSequenceMode() {
   if (!currentRound || totalRounds === 0) {
     return (
       <div
-        className="theme-page game-screen flex h-full min-h-0 items-center justify-center px-6 text-center text-2xl font-black"
+        className="theme-page game-screen flex h-full min-h-0 items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar px-6 text-center text-2xl font-black"
         style={{ color: goldTextColor }}
       >
         Chưa có bộ dữ liệu hợp lệ cho chế độ chơi này.
@@ -405,7 +405,7 @@ export default function PictureSequenceMode() {
   }
 
   return (
-    <div className="theme-page game-screen flex h-full min-h-0 flex-col overflow-y-auto px-3 py-4 sm:px-4 xl:overflow-hidden">
+    <div className="theme-page game-screen flex h-full min-h-0 flex-col overflow-y-auto px-3 py-4 sm:px-4 xl:overflow-y-auto overflow-x-hidden custom-scrollbar">
       <div className="mx-auto flex min-h-full w-full max-w-none flex-1 flex-col gap-4 xl:min-h-0">
         <div className="game-panel-strong grid gap-3 rounded-[28px] p-3 shadow-2xl md:grid-cols-[1fr_auto_1fr] md:items-center sm:p-4">
           <div className="flex justify-center md:justify-start">
