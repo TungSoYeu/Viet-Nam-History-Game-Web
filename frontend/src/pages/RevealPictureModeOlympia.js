@@ -56,6 +56,7 @@ export default function RevealPictureModeOlympia() {
   );
 
   const [pictureData, setPictureData] = useState(null);
+  const [phase, setPhase] = useState("select");
   const [clues, setClues] = useState([]);
   const [activeClueIndex, setActiveClueIndex] = useState(null);
   const [questionPhase, setQuestionPhase] = useState("idle");
@@ -99,14 +100,8 @@ export default function RevealPictureModeOlympia() {
       userAnswer: "",
     }));
 
-  const loadRound = (sourceSets = activeRevealPictureSets) => {
-    if (!Array.isArray(sourceSets) || sourceSets.length === 0) {
-      setPictureData(null);
-      setClues([]);
-      return;
-    }
-
-    const selected = shuffleArray(sourceSets)[0];
+  const startRound = (selected) => {
+    if (!selected) return;
     sessionActiveRef.current = false;
     setPictureData(selected);
     setClues(buildClues(selected));
@@ -121,17 +116,18 @@ export default function RevealPictureModeOlympia() {
     setScore(100);
     setXpSaved(false);
     setQuestionTimerRunning(false);
+    setPhase("play");
+  };
+
+  const resetToSelect = () => {
+    setPictureData(null);
+    setPhase("select");
+    setIsFinished(false);
   };
 
   useEffect(() => {
     questionInputRef.current = questionInput;
   }, [questionInput]);
-
-  useEffect(() => {
-    if (!loading) {
-      loadRound(activeRevealPictureSets);
-    }
-  }, [activeRevealPictureSets, loading]);
 
   const startSessionIfNeeded = () => {
     if (sessionActiveRef.current || !pictureData) return;
@@ -340,7 +336,7 @@ export default function RevealPictureModeOlympia() {
     return "Sai đáp án. Góc hình vẫn được mở nhưng bị trừ 10 điểm.";
   }, [questionFeedback]);
 
-  if (loading && !pictureData) {
+  if (loading && !activeRevealPictureSets?.length) {
     return (
       <div className="theme-page game-screen min-h-screen flex items-center justify-center overflow-y-auto overflow-x-hidden custom-scrollbar text-2xl font-bold text-amber-500">
         Đang tải dữ liệu trang sử...
@@ -348,10 +344,103 @@ export default function RevealPictureModeOlympia() {
     );
   }
 
-  if (!pictureData || !clues.length) {
+  if (!activeRevealPictureSets || activeRevealPictureSets.length === 0) {
     return (
       <div className="theme-page game-screen min-h-screen flex items-center justify-center text-center px-6 overflow-y-auto overflow-x-hidden custom-scrollbar text-2xl font-bold text-amber-500">
         Chưa có bộ câu hỏi hợp lệ cho chế độ chơi này.
+      </div>
+    );
+  }
+
+  if (phase === "select") {
+    return (
+      <div
+        className="theme-page game-screen h-full min-h-0 min-h-screen flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-6 lg:p-8"
+        style={{ background: "var(--page-bg-gradient)", color: "var(--text-primary)" }}
+      >
+        <div className="max-w-[1180px] w-full mx-auto flex flex-col min-h-0 custom-scrollbar overflow-y-auto pr-1 pb-4">
+          <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <button
+              onClick={() => navigate("/modes")}
+              className="game-action-btn game-action-btn--secondary self-start text-sm"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <ArrowLeft size={18} /> Quay lại
+            </button>
+            <div
+              className="self-start rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em]"
+              style={{ color: "var(--page-chip-text)", background: "var(--page-chip-bg)", border: "1px solid var(--page-chip-border)" }}
+            >
+              Lật mở trang sử
+            </div>
+          </div>
+
+          <div className="mb-10 max-w-4xl">
+            <h1
+              className="vn-safe-heading text-3xl sm:text-4xl lg:text-5xl font-black"
+              style={{
+                background: "linear-gradient(135deg, #f0d48a, #d4a053)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Chọn Hình Bí Ẩn
+            </h1>
+            <p className="mt-4 max-w-3xl text-sm leading-7 sm:text-base" style={{ color: "var(--text-secondary)" }}>
+              Dưới mỗi hình bức ảnh là một nhân vật lịch sử đang bị che khuất. Trả lời các câu hỏi phụ để mở khóa dần mảnh ghép.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {activeRevealPictureSets.map((pkg, index) => (
+              <button
+                key={pkg.id || `pic-${index}`}
+                onClick={() => startRound(pkg)}
+                className="group text-left rounded-[2rem] p-7 sm:p-8 transition-all hover:-translate-y-1 active:scale-[0.99]"
+                style={{
+                  background: "linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.78))",
+                  border: "1px solid var(--page-card-border)",
+                  boxShadow: "0 20px 44px rgba(0, 0, 0, 0.26)",
+                }}
+              >
+                <div className="flex h-full items-start gap-5">
+                  <div
+                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.4rem]"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(236,72,153,0.92), rgba(168,85,247,0.92))",
+                    }}
+                  >
+                    <Sparkles size={28} className="text-white" />
+                  </div>
+                  <div className="flex min-h-[132px] flex-1 flex-col">
+                    <div
+                      className="mb-4 inline-flex w-max items-center rounded-full px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em]"
+                      style={{ color: "var(--page-chip-text)", background: "var(--page-chip-bg)", border: "1px solid var(--page-chip-border)" }}
+                    >
+                      Bức ảnh số {index + 1}
+                    </div>
+                    <h2
+                      className="vn-safe-heading text-xl sm:text-2xl font-black leading-snug"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      Hình Bí Ẩn {index + 1}
+                    </h2>
+                    <p className="mt-3 text-sm leading-6" style={{ color: "var(--text-secondary)" }}>
+                      Lật mở các mảnh ghép để khám phá nhân vật hoặc sự kiện bí ẩn đằng sau bức ảnh.
+                    </p>
+                    <div
+                      className="mt-auto inline-flex items-center gap-2 pt-5 text-xs font-black uppercase tracking-[0.16em]"
+                      style={{ color: "var(--page-heading)" }}
+                    >
+                      <Play size={14} />
+                      Bắt đầu
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -379,11 +468,11 @@ export default function RevealPictureModeOlympia() {
           <p className="mt-6 text-3xl font-black text-emerald-500">Thưởng: {score} XP</p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <button onClick={() => loadRound()} className="game-action-btn game-action-btn--secondary flex-1">
+            <button onClick={resetToSelect} className="game-action-btn game-action-btn--secondary flex-1">
               Hình Khác
             </button>
             <button onClick={handleExit} className="game-action-btn game-action-btn--primary flex-1">
-              Về Chọn Chế Độ
+              Vào Các Chế Độ
             </button>
           </div>
         </div>
@@ -399,11 +488,11 @@ export default function RevealPictureModeOlympia() {
       <div className="w-full max-w-[1500px] mx-auto flex flex-col gap-4 flex-1 min-h-0">
         <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3">
           <button
-            onClick={handleExit}
+            onClick={resetToSelect}
             className="game-action-btn game-action-btn--secondary game-action-btn--compact"
           >
             <ArrowLeft size={16} />
-            <span className="hidden sm:inline">Thoát</span>
+            <span className="hidden sm:inline">Quay Lại</span>
           </button>
 
           <div className="min-w-0 text-center">
@@ -507,7 +596,7 @@ export default function RevealPictureModeOlympia() {
                     Đáp án cần tìm
                   </div>
                   <div className="mt-2 text-sm font-semibold" style={{ color: "var(--game-text-muted)" }}>
-                    Ô đoán đáp án chính
+                    {pictureData?.answer ? `Đáp án gồm ${pictureData.answer.replace(/\\s/g, "").length} chữ cái` : "Ô đoán đáp án chính"}
                   </div>
                 </div>
 
@@ -546,7 +635,7 @@ export default function RevealPictureModeOlympia() {
 
               {allCluesRevealed && !isFinished ? (
                 <div className="mt-4">
-                  <button onClick={() => loadRound()} className="game-action-btn game-action-btn--secondary">
+                  <button onClick={resetToSelect} className="game-action-btn game-action-btn--secondary">
                     Đổi Hình Khác
                   </button>
                 </div>

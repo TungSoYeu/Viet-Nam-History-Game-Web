@@ -3,6 +3,7 @@ import { Camera, X, ShieldCheck } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import Button from '../Button';
 import { useProvinces } from '../../hooks/useProvinces';
+import { GOOGLE_CLIENT_ID } from '../../config/env';
 
 export default function ProfileModal({ 
   user, username, role, isTeacher, isEditing, setIsEditing,
@@ -14,8 +15,8 @@ export default function ProfileModal({
   previewUrl, handleFileChange, selectedFile, uploading, handleUploadAvatar,
   setShowProfile, getAvatarUrl, handleGoogleSuccess, toast, getRoleLabel 
 }) {
-
   const { provinces } = useProvinces();
+  const hasGoogleLogin = Boolean(GOOGLE_CLIENT_ID);
   
   // Lấy danh sách districts dựa trên selectedProvince đã chọn
   const districts = React.useMemo(() => {
@@ -107,7 +108,7 @@ export default function ProfileModal({
                               <ShieldCheck size={18} className="fill-green-900" />
                               <span className="text-xs font-black uppercase tracking-wider">Đã liên kết Google</span>
                             </div>
-                          ) : (
+                          ) : hasGoogleLogin ? (
                             <div className="profile-status-info p-4 rounded-xl border border-blue-500/30 flex items-center justify-between mt-2">
                               <div className="flex-1">
                                 <p className="text-sm font-bold text-blue-300">Chưa liên kết Google</p>
@@ -122,7 +123,7 @@ export default function ProfileModal({
                                 />
                               </div>
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     )}
