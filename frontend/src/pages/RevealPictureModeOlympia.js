@@ -19,9 +19,6 @@ import {
   saveXp,
   shuffleArray,
 } from "../utils/gameHelpers";
-
-/* eslint-disable react-hooks/exhaustive-deps */
-
 const QUESTION_SECONDS = 15;
 const GRID_SIZE = 4;
 const MODE_ID = "turning-page";
@@ -160,10 +157,8 @@ export default function RevealPictureModeOlympia() {
       (ans) => String(submittedAnswer).trim().toLowerCase() === String(ans).trim().toLowerCase()
     );
 
-    // Always reveal the tile regardless of answer correctness
     const shouldReveal = true;
 
-    // Scoring: correct = no penalty, wrong = -10, timeout = -10, skip = -15
     const penalty = isCorrect ? 0 : skipped ? 15 : 10;
 
     setClues((prev) =>
