@@ -81,7 +81,6 @@ export default function MillionaireMode() {
     }));
   }, [currentSet, revealedCount]);
 
-  // Tìm vị trí xa nhất của cột từ khóa (màu vàng) để căn thẳng tắp toàn bộ các hàng
   const maxHighlightIndex = useMemo(() => {
     if (!currentSet) return 0;
     return Math.max(...currentSet.clues.map(clue => {
@@ -107,7 +106,7 @@ export default function MillionaireMode() {
         ? Math.max(0, Math.min(answer.length - 1, explicitHighlightIndex))
         : fallbackHighlightIndex;
       
-      // Đồng bộ padding để cột vàng luôn thẳng hàng
+    
       const padding = Math.max(0, maxHighlightIndex - highlightIndex);
 
       return {
@@ -126,7 +125,7 @@ export default function MillionaireMode() {
     return Math.max(...boardRows.map((row) => row.padding + row.answer.length));
   }, [boardRows]);
 
-  // THUẬT TOÁN ĐO KÍCH THƯỚC CHUẨN XÁC, ÉP KÍCH THƯỚC TO HẾT CỠ
+ 
   useEffect(() => {
     const el = gridContainerRef.current;
     if (!el) return;
@@ -136,7 +135,7 @@ export default function MillionaireMode() {
     const measure = () => {
       const rect = el.getBoundingClientRect();
       
-      // Nếu layout chưa giãn ra (height = 0), thử lại sau 50ms
+    
       if (rect.width === 0 || rect.height === 0) {
         timeoutId = setTimeout(measure, 50);
         return;
@@ -145,18 +144,16 @@ export default function MillionaireMode() {
       const numRows = boardRows.length || 1;
       const numCols = maxRowCells || 10;
 
-      // Trừ đi khoảng lề an toàn (padding 16px * 2 của container = 32)
       const availW = rect.width - BOARD_ROW_LABEL_WIDTH - BOARD_ROW_LABEL_GAP - (numCols - 1) * BOARD_CELL_GAP - 32;
       const availH = rect.height - (numRows - 1) * BOARD_ROW_GAP - 32;
 
-      // Tính pixel lớn nhất mỗi ô có thể đạt được
       const pxByW = availW / numCols;
       const pxByH = availH / numRows;
 
-      // Chọn số nhỏ hơn để đảm bảo không bị tràn
+      
       let exactPx = Math.floor(Math.min(pxByW, pxByH));
       
-      // Giữ kích thước tối thiểu để an toàn
+     
       setCellPx(Math.max(exactPx, 25));
     };
 
