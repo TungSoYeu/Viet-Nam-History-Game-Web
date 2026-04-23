@@ -1,12 +1,3 @@
-/**
- * ProgressRing — SVG circular progress indicator.
- * Desktop-optimized with hover tooltip.
- *
- * @param {number} percent - Progress percentage (0-100)
- * @param {number} size - Ring diameter in pixels
- * @param {number} strokeWidth - Ring stroke width
- * @param {string} label - Center text
- */
 export default function ProgressRing({ percent = 0, size = 48, strokeWidth = 4, label = '' }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
