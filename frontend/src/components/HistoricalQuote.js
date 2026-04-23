@@ -13,10 +13,6 @@ const QUOTES = [
   { text: 'Ta thà làm quỷ nước Nam, chứ không thèm làm vương đất Bắc.', author: 'Trần Bình Trọng', year: '1285' },
 ];
 
-/**
- * HistoricalQuote — Displays rotating historical quotes with fade animation.
- * Desktop-optimized with large serif italic text.
- */
 export default function HistoricalQuote() {
   const [index, setIndex] = useState(() => Math.floor(Math.random() * QUOTES.length));
   const [animClass, setAnimClass] = useState('quote-enter');
