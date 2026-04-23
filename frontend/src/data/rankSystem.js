@@ -79,10 +79,6 @@ export function getRank(xp = 0) {
     progressPercent,
   };
 }
-
-/**
- * Format XP number with Vietnamese separators.
- */
 export function formatXP(xp) {
   return Number(xp || 0).toLocaleString('vi-VN');
 }
