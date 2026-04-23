@@ -10,7 +10,7 @@ import { buildApiHeaders, buildApiUrl } from '../utils/classroomContext';
 
 export default function SurvivalMode() {
   const navigate = useNavigate();
-  const [selectedPeriod, setSelectedPeriod] = useState(null); // 'all' or lessonId
+  const [selectedPeriod, setSelectedPeriod] = useState(null); 
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -33,7 +33,6 @@ export default function SurvivalMode() {
     })
       .then(res => res.json())
       .then(data => {
-        // Shuffle and take only 10 questions for Challenge Mode
         const sampledQuestions = data
             .sort(() => Math.random() - 0.5)
             .slice(0, 10);
@@ -70,7 +69,6 @@ export default function SurvivalMode() {
         setScore(prev => prev + data.experienceGain);
         setStreak(prev => prev + 1);
       } else {
-        // Strict Rule: One mistake = Failure
         setStreak(0);
         setIsFailed(true);
       }
