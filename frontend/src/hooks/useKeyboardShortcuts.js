@@ -3,8 +3,6 @@ export default function useKeyboardShortcuts(shortcuts = {}, enabled = true) {
   const handleKeyDown = useCallback(
     (e) => {
       if (!enabled) return;
-
-      // Don't intercept when user is typing in an input
       const tag = e.target?.tagName?.toLowerCase();
       if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
       if (e.target?.isContentEditable) return;
