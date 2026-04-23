@@ -1,4 +1,3 @@
-// frontend/src/pages/Timeline.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Trophy, ChevronRight, ScrollText } from 'lucide-react';
