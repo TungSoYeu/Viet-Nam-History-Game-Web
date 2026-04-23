@@ -4,8 +4,6 @@ import { loadSlim } from "@tsparticles/slim";
 
 const ParticlesBackground = ({ type = "dust" }) => {
   const [init, setInit] = useState(false);
-
-  // Chỉ khởi tạo engine một lần duy nhất
   useEffect(() => {
     initParticlesEngine(async (engine) => {
       await loadSlim(engine);
@@ -18,11 +16,11 @@ const ParticlesBackground = ({ type = "dust" }) => {
     background: { color: "transparent" },
     fpsLimit: 120,
     particles: {
-      color: { value: "#FFD700" }, // Màu vàng Gold
+      color: { value: "#FFD700" }, 
       move: {
         enable: true,
         speed: { min: 0.1, max: 0.5 },
-        direction: "top", // Bay lên nhẹ nhàng
+        direction: "top", 
         outModes: { default: "out" },
       },
       number: { density: { enable: true }, value: 80 },
@@ -35,7 +33,7 @@ const ParticlesBackground = ({ type = "dust" }) => {
   const embersOptions = {
     background: { color: "transparent" },
     particles: {
-      color: { value: ["#ff4d00", "#ffae00", "#ff0000"] }, // Tông đỏ cam của lửa
+      color: { value: ["#ff4d00", "#ffae00", "#ff0000"] }, 
       move: {
         enable: true,
         speed: { min: 1, max: 3 },
@@ -45,7 +43,7 @@ const ParticlesBackground = ({ type = "dust" }) => {
       number: { value: 50 },
       opacity: { value: { min: 0.3, max: 0.8 } },
       size: { value: { min: 1, max: 4 } },
-      wobble: { enable: true, distance: 10, speed: 10 }, // Hiệu ứng lảo đảo
+      wobble: { enable: true, distance: 10, speed: 10 }, 
     },
   };
 
@@ -60,7 +58,7 @@ const ParticlesBackground = ({ type = "dust" }) => {
           left: 0,
           width: "100%",
           height: "100%",
-          zIndex: -1, // Luôn nằm dưới nội dung
+          zIndex: -1, 
         }}
       />
     );
