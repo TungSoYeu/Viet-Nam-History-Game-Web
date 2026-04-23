@@ -1,15 +1,11 @@
 import { Shield, Award, Crown, Star, Gem } from 'lucide-react';
-
-/**
- * Rank System — XP thresholds, names, colors, and icons for each rank tier.
- */
 export const RANKS = [
   {
     id: 'rookie',
     name: 'Tân binh',
     minXP: 0,
     maxXP: 99,
-    color: '#b45309',       // Bronze
+    color: '#b45309',   
     gradient: 'linear-gradient(135deg, #78350f, #b45309)',
     borderColor: 'rgba(180, 83, 9, 0.4)',
     glowClass: '',
@@ -20,7 +16,7 @@ export const RANKS = [
     name: 'Chiến binh',
     minXP: 100,
     maxXP: 499,
-    color: '#94a3b8',       // Silver
+    color: '#94a3b8',       
     gradient: 'linear-gradient(135deg, #64748b, #94a3b8)',
     borderColor: 'rgba(148, 163, 184, 0.4)',
     glowClass: '',
@@ -31,7 +27,7 @@ export const RANKS = [
     name: 'Tướng quân',
     minXP: 500,
     maxXP: 1499,
-    color: '#fbbf24',       // Gold
+    color: '#fbbf24',       
     gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
     borderColor: 'rgba(251, 191, 36, 0.4)',
     glowClass: 'glow-gold',
@@ -42,7 +38,7 @@ export const RANKS = [
     name: 'Đại tướng',
     minXP: 1500,
     maxXP: 4999,
-    color: '#38bdf8',       // Diamond
+    color: '#38bdf8',       
     gradient: 'linear-gradient(135deg, #0ea5e9, #38bdf8)',
     borderColor: 'rgba(56, 189, 248, 0.4)',
     glowClass: 'glow-gold',
@@ -53,19 +49,13 @@ export const RANKS = [
     name: 'Quốc sĩ',
     minXP: 5000,
     maxXP: Infinity,
-    color: '#f0d48a',       // Legendary
+    color: '#f0d48a',       
     gradient: 'linear-gradient(135deg, #d4a053, #f0d48a, #d4a053)',
     borderColor: 'rgba(212, 160, 83, 0.5)',
     glowClass: 'glow-legendary',
     icon: Gem,
   },
 ];
-
-/**
- * Get rank data for a given XP amount.
- * @param {number} xp
- * @returns {Object} rank data including progress to next rank
- */
 export function getRank(xp = 0) {
   const numXp = Number(xp) || 0;
   let rank = RANKS[0];
