@@ -1,12 +1,4 @@
 import React from 'react';
-
-/**
- * Reusable Skeleton Loader with multiple variants
- * 
- * @param {string} variant - 'card' | 'list' | 'hero' | 'text'
- * @param {number} count - number of skeleton items to render
- * @param {string} className - additional CSS classes
- */
 export default function SkeletonLoader({ variant = 'card', count = 1, className = '' }) {
   const items = Array.from({ length: count }, (_, i) => i);
 
