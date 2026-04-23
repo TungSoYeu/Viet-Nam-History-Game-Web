@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Puzzle, Trophy } from "lucide-react";
@@ -63,7 +62,7 @@ export default function MillionaireMode() {
   const [scorePop, setScorePop] = useState(false);
   
   const gridContainerRef = useRef(null);
-  const [cellPx, setCellPx] = useState(40); // Khởi tạo an toàn
+  const [cellPx, setCellPx] = useState(40); 
 
   const activeCrosswordSets =
     Array.isArray(remoteCrosswordSets) && remoteCrosswordSets.length > 0
