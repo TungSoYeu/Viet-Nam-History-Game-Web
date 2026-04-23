@@ -1,7 +1,3 @@
-/**
- * Database of notable historical events by day (month-day key).
- * Format: { "MM-DD": [{ year, event, category }] }
- */
 const HISTORICAL_EVENTS = {
   "01-01": [{ year: "1946", event: "Việt Nam Dân chủ Cộng hòa bắt đầu thực hiện Tổng tuyển cử trên toàn quốc.", category: "Chính trị" }],
   "01-06": [{ year: "1946", event: "Tổng tuyển cử đầu tiên của nước Việt Nam Dân chủ Cộng hòa.", category: "Chính trị" }],
@@ -38,10 +34,6 @@ const HISTORICAL_EVENTS = {
   "12-24": [{ year: "1972", event: "Chiến thắng 'Hà Nội — Điện Biên Phủ trên không' (B-52).", category: "Quân sự" }],
 };
 
-/**
- * Get today's historical event or the closest available one.
- * @returns {{ year, event, category, date }} or null
- */
 export function getTodayEvent() {
   const now = new Date();
   const key = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -49,8 +41,6 @@ export function getTodayEvent() {
   if (HISTORICAL_EVENTS[key]) {
     return { ...HISTORICAL_EVENTS[key][0], date: key };
   }
-
-  // Find closest date
   const allKeys = Object.keys(HISTORICAL_EVENTS).sort();
   let closest = allKeys[0];
   for (const k of allKeys) {
@@ -60,10 +50,6 @@ export function getTodayEvent() {
 
   return { ...HISTORICAL_EVENTS[closest][0], date: closest };
 }
-
-/**
- * Get a random historical event for display.
- */
 export function getRandomEvent() {
   const keys = Object.keys(HISTORICAL_EVENTS);
   const key = keys[Math.floor(Math.random() * keys.length)];
