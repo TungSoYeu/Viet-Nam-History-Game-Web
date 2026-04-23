@@ -14,8 +14,6 @@ import ComboIndicator from "../components/animations/ComboIndicator";
 import RadarChart from "../components/game/RadarChart";
 import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
 const PREP_TIME = 20;
 const PLAY_TIME = 60;
 const SESSION_TIME = PLAY_TIME;
