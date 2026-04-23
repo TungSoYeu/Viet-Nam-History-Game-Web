@@ -18,8 +18,6 @@ export function matchesAnswer(userAnswer, acceptedAnswers = []) {
   return acceptedAnswers.some((answer) => {
     const cleanAnswer = normalizeText(answer);
     if (!cleanAnswer) return false;
-
-    // Yêu cầu gõ chính xác hoàn toàn (strict match)
     return cleanUser === cleanAnswer;
   });
 }
