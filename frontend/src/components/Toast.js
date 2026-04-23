@@ -91,7 +91,6 @@ export function ToastProvider({ children }) {
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    // Fallback to alert() if provider is not found
     return {
       success: (msg) => alert(msg),
       error: (msg) => alert(msg),
