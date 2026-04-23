@@ -22,8 +22,6 @@ export default function LandingPage() {
   const [parallaxOffset, setParallaxOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    // Removed eager preloading to improve initial performance
-
     const intervalId = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % BACKGROUND_IMAGES.length);
     }, 3500);
