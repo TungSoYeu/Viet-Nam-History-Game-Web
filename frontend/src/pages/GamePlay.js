@@ -1,4 +1,3 @@
-// frontend/src/pages/GamePlay.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Questions from '../components/Questions';
