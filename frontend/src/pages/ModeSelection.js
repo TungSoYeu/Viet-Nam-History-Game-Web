@@ -37,7 +37,7 @@ export default function ModeSelection() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1 // Hiệu ứng xuất hiện lần lượt giữa các card
+        staggerChildren: 0.1 
       }
     }
   };
@@ -47,7 +47,6 @@ export default function ModeSelection() {
     visible: { y: 0, opacity: 1 }
   };
 
-  // Mode Detail Overlay
   if (selectedMode) {
     return (
       <AnimatedPage>
@@ -187,7 +186,7 @@ export default function ModeSelection() {
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
                     transformOrigin: 'center',
-                    width: '101%', // Tăng nhẹ kích thước để tránh lộ viền trắng
+                    width: '101%',
                     height: '101%',
                     left: '-0.5%',
                     top: '-0.5%'
