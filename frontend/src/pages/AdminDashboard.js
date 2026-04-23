@@ -26,30 +26,30 @@ export default function AdminDashboard() {
   const [qType, setQType] = useState('general');
   const [qLocation, setQLocation] = useState('');
 
-  // Lesson Form State
+
   const [lTitle, setLTitle] = useState('');
   const [lDescription, setLDescription] = useState('');
   const [lOrder, setLOrder] = useState(1);
   const [lWikiContent, setLWikiContent] = useState('');
-  const [lFlashcards, setLFlashcards] = useState([]); // Array of {front, back}
+  const [lFlashcards, setLFlashcards] = useState([]); 
 
-  // Matching Form State
+
   const [mTitle, setMTitle] = useState('');
   const [mType, setMType] = useState('Character-Dynasty');
   const [mPairs, setMPairs] = useState([{ left: '', right: '' }]);
 
-  // Chronological State
+  
   const [chronoTitle, setChronoTitle] = useState('');
   const [chronoEvents, setChronoEvents] = useState([
     { text: '', order: 1 }, { text: '', order: 2 }, { text: '', order: 3 }, { text: '', order: 4 }, { text: '', order: 5 }
   ]);
 
-  // Guess Character State
+
   const [charName, setCharName] = useState('');
   const [charAliases, setCharAliases] = useState('');
   const [charClues, setCharClues] = useState(['', '', '', '', '']);
 
-  // Reveal Picture State
+ 
   const [revImageUrl, setRevImageUrl] = useState('');
   const [revAnswer, setRevAnswer] = useState('');
   const [revQuestions, setRevQuestions] = useState(Array(9).fill({ q: '', a: '' }));
