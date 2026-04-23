@@ -13,7 +13,6 @@ export function useApiData(url, options = {}) {
     setLoading(true);
     setError(null);
     try {
-      // Auto-include auth header if token is in localStorage
       const token = localStorage.getItem('token');
       const headers = { ...(options.fetchOptions?.headers || {}) };
       if (token && !headers['Authorization']) {
@@ -35,7 +34,6 @@ export function useApiData(url, options = {}) {
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
   useEffect(() => {
