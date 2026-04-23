@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Scroll } from 'lucide-react';
 import { getTodayEvent, getRandomEvent } from '../data/historicalEvents';
-
-/**
- * TodayInHistory — Widget showing a historical event for today's date.
- * Desktop-optimized sidebar widget with hover expand.
- */
 export default function TodayInHistory({ className = '' }) {
   const [event, setEvent] = useState(null);
   const [expanded, setExpanded] = useState(false);
