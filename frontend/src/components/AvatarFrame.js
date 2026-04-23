@@ -1,14 +1,4 @@
 import { getRank } from '../data/rankSystem';
-
-/**
- * AvatarFrame — Avatar with rank-based glowing border frame.
- * Desktop-optimized with hover zoom.
- *
- * @param {string} avatar - Avatar image URL or null
- * @param {string} username - Username for fallback initial
- * @param {number} xp - User's total XP
- * @param {number} size - Avatar size in pixels
- */
 export default function AvatarFrame({ avatar, username = '', xp = 0, size = 48 }) {
   const rank = getRank(xp);
   const initial = (username || '?').charAt(0).toUpperCase();
