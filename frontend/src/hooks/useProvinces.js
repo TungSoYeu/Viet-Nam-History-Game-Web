@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 
 const API_OPEN_PROVINCE = "https://provinces.open-api.vn/api/";
-
-// Basic in-memory cache to avoid duplicate calls across route navigations
 let cachedProvinces = [];
 
 export function useProvinces() {
