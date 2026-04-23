@@ -1,13 +1,4 @@
 import { useEffect, useCallback } from 'react';
-
-/**
- * useKeyboardShortcuts — Desktop-only keyboard shortcut handler.
- * Disabled on touch-only devices.
- *
- * @param {Object} shortcuts - Map of key names to handler functions
- *   e.g. { 'Escape': () => close(), 'ArrowLeft': () => prev() }
- * @param {boolean} enabled - Whether shortcuts are active
- */
 export default function useKeyboardShortcuts(shortcuts = {}, enabled = true) {
   const handleKeyDown = useCallback(
     (e) => {
@@ -30,7 +21,6 @@ export default function useKeyboardShortcuts(shortcuts = {}, enabled = true) {
   );
 
   useEffect(() => {
-    // Only enable on devices with a keyboard (desktop)
     const hasPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     if (!hasPointer || !enabled) return;
 
