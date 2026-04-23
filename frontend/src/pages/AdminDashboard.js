@@ -11,12 +11,12 @@ export default function AdminDashboard() {
   const [lessons, setLessons] = useState([]);
   const [activeTab, setActiveTab] = useState('question');
   const [loading, setLoading] = useState(false);
-  const [editId, setEditId] = useState(null); // ID của item đang sửa (null = thêm mới)
+  const [editId, setEditId] = useState(null); 
   
-  // List states
+  
   const [listData, setListData] = useState([]);
 
-  // Question Form State
+  
   const [qContent, setQContent] = useState('');
   const [qOptions, setQOptions] = useState(['', '', '', '']);
   const [qCorrect, setQCorrect] = useState('');
